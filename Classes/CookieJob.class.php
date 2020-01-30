@@ -60,7 +60,7 @@ class CookieJob {
 
 		$this->cookie[$cookieName]['ctime'] = strtotime($time);
 
-		//if (preg_match('+ '.[0-9].'Years|Days|'., subject))
+		//if (preg_match('+ '.[0-9].'[Years][Days]'., subject))
 
 
 		/*	

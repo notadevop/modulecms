@@ -128,7 +128,7 @@ class UserIdentificatior {
 			
 			if($redirect){ header( "refresh:2; url=".HOST ); }
 
-			debugger('Вы вышли из своего аккаунта',__METHOD__);
+			$this->infoGen['logout'] = 'Вы вышли из своего аккаунта';
 			
 		}
 		// Установить сессию 
@@ -173,35 +173,39 @@ class UserIdentificatior {
 
 		if (count($this->errGen) > 0) { return; }
 
-		$mr = $this
+		$ue = $this
 				->auth
 				->userExist($email);
 
-		if (!$mr) {
+		$ub = $this->auth->userNotBlocked($email);
+
+		$ua = $this->auth->userIsActivated($email);
+
+		if (!$ue) {
 
 			$this->errGen['noprofile'] = 'Неправильные имя или пароль!';
 			return;
-		} 
-
-		if (!$this->auth->userNotBlocked($email)) {
+		} else if (!$ub) {
 
 			$this->errGen['ublocked'] = 'Ошибка! Пользователь заблокирован или удален.';
 			return;
-		} 
+		} else if (!$ua) {
 
-		// TODO: Аккаунт активированн или нет возможно проверка 
-		// по дате последнего визита или дате регистрации 
+			$this->errGen['notactived'] = 'Ошибка! Пользователь не активирован.'; 
+			return;
+		}
 
-		$profile = $this->auth->login($email, $pass);
+		$profile = $this
+					->auth
+					->login($email, $pass);
 
 		if ($this->defineUserProfile($profile)) {
 
-			$this->saveAuthAction($profile['useremail'], $profile['tokenHash']);
+			$this->saveAuthAction($email, $profile['tokenHash']);
 
 			if(REDIRECTLOGIN) {
 
 				//header('Location: /'); // Перебрасываем отуда, откуда пришел. 
-				// TODO: header('Location: /');
 				debugger('Сохранил куки и перекидываю пользователя',__METHOD__);
 			}
 
@@ -267,8 +271,12 @@ class UserIdentificatior {
 			return;
 		}
 
-		$ue = $this->auth->userExist($mail);
-		$ub = $this->auth->userNotBlocked($mail);
+		$ue = $this
+			->auth
+			->userExist($mail);
+		$ub = $this
+			->auth
+			->userNotBlocked($mail);
 
 		if (!$ue || !$ub) {
 
@@ -277,8 +285,8 @@ class UserIdentificatior {
 		} 
 		
 		$profile = $this
-					->auth
-					->authin($mail, $token);
+						->auth
+						->authin($mail, $token);
 
 		if ($this->defineUserProfile($profile)) {
 
@@ -324,37 +332,36 @@ class UserIdentificatior {
 
 		if (!$mr || !$ms) {
 
-			$this->errGen['noprofile'] = 'Ошибка пользователя! Возможные причины: заблокирован, удален или такого пользователя не существует!';
+			$this->errGen['noprofile'] = 'Ошибка! Возможно пользователь: заблокирован, удален или не существует!';
 			return;
 		} 
 
-		$metat = $this->auth->restoration($email);
+		$meta = $this
+					->auth
+					->generateActivations($email);
 
-		if (!empty($metat)) {
-
-			debugger($metat,__METHOD__);
-			
-			$link = HOST.'/?action=restore&userid='.$metat['id'].'&confirm='.$metat['cofirm'].'&token='.$metat['token'];
-
-			debugger('<a href="'.$link.'" target="_blank">'.$link.'</a>');
-			
-			$this->infoGen['emailsent'] = 'Сылка сгенерированна и письмо должно быть отправленно!';
-			// TODO: Отправка емайла пользователю для восстановления пароля
-
-		} else {
+		if (empty($meta)) {
 
 			debugger('пустой хеш!',__METHOD__);
+			return;
 		}
+
+		$link = HOST.'/?action=pwd&userid='.$meta['id'].'&confirm='.$meta['cofirm'].'&token='.$meta['token'];
+
+		debugger('<a href="'.$link.'" target="_blank">'.$link.'</a>');
+
+		// TODO: Отправка емайла пользователю для восстановления пароля
 	}
 
-	function resetPassword() {
+	// Должен вернуть true | false 
+
+	function confirmRestoreAction(): bool {
 
 		$this
 			->glob
 			->setGlobParam('_GET');
 
 		$params = array('userid','confirm', 'token');
-
 
 		foreach ($params as $key => $value) {
 			
@@ -368,7 +375,7 @@ class UserIdentificatior {
 					->glob
 					->isExist($value);
 
-			if(!$param) { return; }
+			if(!$param) { return false; }
 
 			$p[$value] = $this
 						->glob
@@ -377,34 +384,85 @@ class UserIdentificatior {
 			$p[$value] = $this->filtration($p[$value], $Opt);
 		}
 
-		if (count($this->errGen) > 0) { return; }
 
-		$sp = $this->auth->verifyActivations($p['userid'],$p['token'], $p['confirm']);
+		$getpass = function($param) {
 
-		if ($sp) {
+			$this
+				->glob
+				->setGlobParam('_POST');
 
-			debugger('Показать форму с вводом пароля!',__METHOD__);
-		} else {
+			if (!$this
+					->glob
+					->isExist($param)) { return; }
 
-			$this->errgen['nouser'] = 'Пусто!';
+			$Opt = array(
+				'maxSym' 	=> 100, 
+				'minSym' 	=> 6, 
+				'checkMail' => false
+			);
+
+			$pass1 	= $this
+						->glob
+						->getGlobParam($param);
+
+			return $this->filtration($pass1, $Opt);
+		};
+
+		$pass1 = $getpass('restorepwd1');
+		$pass2 = $getpass('restorepwd2');
+
+		if (count($this->errGen) > 0) { return false; }
+
+		$sp = $this
+				->auth
+				->verifyActivations($p['userid'],$p['token'], $p['confirm']);
+
+		if (!$sp) {
+
+			$this->errGen['notvalid'] = 'Ошибка параметров подтверждения пользователя!';
+			return false;
 		}
 
+		// Возвращаем для вывода окна паролей
+		if (empty($pass1) || empty($pass2)) { return true; }
+
+		if ($pass1 !== $pass2) {
+
+			$this->errGen['mismatch'] = 'Ошибка! пароли не совпадают.';
+			return false;
+		}
+
+		$r = $this
+				->auth
+				->updateLoginPassword($p['userid'], $pass1);
+
+		if(!$r) { $this->errGen['Ошибка обновления пароля!']; return false; }
+		
+		$this->infoGen['updatepwd'] = 'Пароль обновлен!';
+
+		// TODO: Переправить пользователя на форму входа
+		return true;
 	}
 
 	function __init_auth() {
 
+		// Переменная которвя соберает всю информацию об авторизации и аутентификации пользователя
+		$authStatus = array();
+
+		// Авторизация и Аутентификация отрабатывают в любой части кода
 		$this->authAction();
 		$this->loginAction();
+
+		// Восстановление только по путям _GET
 		$this->restoreAction();
-
-		$this->resetPassword();
-
-		//$this->cjob->viewCookie(['mailhash','tokenhash']);
-
+		$this->confirmRestoreAction();
+		
+		// Регистрация только по путям _GET 
 
 		$this->logout(true); 
-	
 		debugger($this->errGen,__METHOD__);
 		debugger($this->infoGen,__METHOD__);
+
+		//$this->cjob->viewCookie(['mailhash','tokenhash']);
 	}
 }

@@ -1,6 +1,6 @@
 
 
-	<form action="?action=restore" method="POST">
+	<form action="" method="POST">
 
 		<input type="text" name="restoremail" value="jcmaxuser@gmail.com" />
 		<br /><br />

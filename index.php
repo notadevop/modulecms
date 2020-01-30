@@ -38,6 +38,7 @@ switch(@$_GET['action']) {
 	case'login': 	require_once ( ROOTPATH . 'Templates/default/login.tpl.php'); 		break;
 	case'register': require_once ( ROOTPATH . 'Templates/default/register.tpl.php'); 	break;
 	case'restore': 	require_once ( ROOTPATH . 'Templates/default/restore.tpl.php'); 	break;
+	case'pwd': 		require_once ( ROOTPATH . 'Templates/default/pwdReset.tpl.php'); 	break;
 	default: 		debugger('Не указано!'); break;
 }
 require_once ( ROOTPATH . 'Templates/default/footer.tpl.php');

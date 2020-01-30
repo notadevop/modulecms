@@ -46,9 +46,7 @@ class Auth extends Database {
 			FROM `users` WHERE user_id = :userid LIMIT 1';
 
 			$binder = array(':userid' => $identify);
-
 		} 
-	
 
 		$this->preAction($sql, $binder);
 
@@ -71,21 +69,18 @@ class Auth extends Database {
 		$priv = new Priveleges();
 		$priv->initRoles($userid);
 
-		$s = null;
+		if ($priv->hasPrivilege('deleted')) { return null; }
 
-		if ($priv->hasPrivilege('deleted')) {
+		if ($priv->hasPrivilege('blocked')) { return false; }
 			
-			$s = null; 	
+		return true;
+	}
 
-		} else if ( $priv->hasPrivilege('blocked') ) {
-			
-			$s = false; 
-		} else { 
-			
-			$s = true;
-		}
+	function userIsActivated(string $useremail): bool {
 
-		return $s;
+		$profile = $this->getUserProfile($useremail);
+
+		return !empty($profile['regdate']) ? true : false;
 	}
 
 	// Проверяет сущуествует пользователь или нет, 
@@ -93,9 +88,7 @@ class Auth extends Database {
 
 	public function userExist(string $useremail): bool {
 
-		$userid = $this->getUserProfile($useremail)['id'];
-
-		return (empty($userid) || $userid == null) ? false : true;
+		return (empty($this->getUserProfile($useremail)['id'])) ? false : true;
 	}
 
 
@@ -198,9 +191,7 @@ class Auth extends Database {
 						->modifier
 						->strToHash($userpass);
 
-		if( $dbpwdhash !== $userpwdhash ) { 
-			debugger('разные пароли!',__METHOD__);
-			return null; }
+		if( $dbpwdhash !== $userpwdhash ) { return null; }
 
 		return array( 
 			'userid' 	=> $profile['id'],
@@ -241,9 +232,7 @@ class Auth extends Database {
 			->postAction()
 			->fetchAll();
 
-		if (empty($profile)) { 
-			debugger('Профиль не найден в базе!',__METHOD__);
-			return null; }
+		if (empty($profile)) { return null; }
 
 		$profile = $profile[0];
 
@@ -261,11 +250,7 @@ class Auth extends Database {
 						->createFingerprint($userhash, $uagent);
 
 		// Если отпечатки не похожи выходим из аутентификаци 
-		if ($dbfinger !== $userfinger) { 
-			//debugger('из базы фингер: '.$dbfinger,__METHOD__);
-			//debugger('пользователя фингер: '.$userfinger,__METHOD__);
-			//debugger('Отпечатки не совпадают!',__METHOD__);
-			return null; }
+		if ($dbfinger !== $userfinger) { return null; }
 
 		return array( 
 			'userid' 	=> $profile['id'],
@@ -297,22 +282,9 @@ class Auth extends Database {
 			->postAction()
 			->fetch();
 
-		$cleanHash = function() use (&$userid) {
-
-			$sql = 'DELETE FROM users_activation WHERE activation_user_id = :uid';
-
-			$binder = array(':uid' => $userid);
-
-			$this->preAction($sql, $binder);
-
-			if(!$this->doAction()) { return null; }
-
-			return true;
-		};
-
 		if ($token !== $activator['token'] || $confirm !== $activator['confirm']) { 
 
-			debugger('Непcовпадают ключи: ',__METHOD__);
+			debugger('Неcовпадают ключи: ',__METHOD__);
 			return false; }
 
 		if ($verifexpir) {
@@ -325,25 +297,20 @@ class Auth extends Database {
 
 			$interval 	= $past->diff($now);
 
-			debugger('Разница в днях: '.$interval->format('%h'), __METHOD__);
+			debugger('Разница в часах: '.$interval->format('%h'), __METHOD__);
 
-			if ($interval->format('%h') > REGWAITER) { 
-				
-				$cleanHash();
-				return false; 
-			}
+			if ($interval->format('%h') > REGWAITER) { return false; }
 		}
 
-		$cleanHash();
-
-		// TODO: Удалить этот ключ из базы данных
+		// TODO: Удалить этот ключ из базы данных в целях безопасности
 
 		return true;
 	}
 
 	function updateActivations(int $userid): ?array {
 
-		$sql = 'SELECT COUNT(*) as count FROM users_activation 
+		$sql = 'SELECT COUNT(*) as count 
+				FROM users_activation 
 				WHERE activation_user_id = :actuid LIMIT 1';
 
 		$binder = array(':actuid' => $userid);
@@ -388,26 +355,50 @@ class Auth extends Database {
 		return array('cofirm' => $binder[':actconfirm'], 'token' => $binder[':actoken']);
 	}
 
-	function resetLoginPassword(int $userid, string $userpass): bool {
+	function clearActivations(int $userid): bool {
 
-		/*
-		$profile = $this->getUserProfile($useremail);
+		$profile = $this->getUserProfile($userid);
 
-		if (empty($profile)) { return null; }
-		*/
+		if (empty($profile)) { return false; }
 
+		$sql = 'DELETE FROM users_activation WHERE activation_user_id = :uid';
+
+		$binder = array(':uid' => $userid);
+
+		$this->preAction($sql, $binder);
+
+		if(!$this->doAction()) { return false; }
+
+		return true;
+	}
+
+	function updateLoginPassword(int $userid, string $userpass): bool {
+
+		$profile = $this->getUserProfile($userid);
+
+		if (empty($profile)) { return false; }
+		
 		$userpass = $this
 						->modifier
 						->strToHash($userpass);
 
-		$sql = 'UPDATE users SET user_password = :userpass, WHERE user_id = :uid';
+		$sql = 'UPDATE users SET user_password = :userpass WHERE user_id = :uid';
 
-		$binder = array(':userpass' => $userpass);
+		$binder = array(
+			':uid'		=> $userid,
+			':userpass' => $userpass
+		);
 
+		$this->preAction($sql, $binder);
+
+		if(!$this->doAction()) { return false; }
+
+		return $this->clearActivations($userid); 
 	}
 
+	// Генерирует токен и подтверждение для восстановления или подтверждения регистрации 
 
-	function restoration(string $usermail): ?array{
+	function generateActivations(string $usermail): ?array{
 
 		$profile = $this->getUserProfile($usermail);
 
