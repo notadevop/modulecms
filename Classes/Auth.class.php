@@ -22,18 +22,33 @@ class Auth extends Database {
 
 	// Функция которая возвращает профиль пользователя 
 
-	private function getUserProfile(string $useremail): ?array {
+	private function getUserProfile($identify): ?array {
 
 		$sql = 'SELECT 
-		`user_id` as id, 
-		`user_name` as name, 
-		`user_email` as email, 
-		`user_password` as password,  
-		`user_registration_date` as regdate 
-		FROM `users` 
-		WHERE user_email = :useremail LIMIT 1';
+			`user_id` as id, 
+			`user_name` as name, 
+			`user_email` as email, 
+			`user_password` as password,  
+			`user_registration_date` as regdate 
+			FROM `users` WHERE user_email = :useremail LIMIT 1';
 
-		$binder = array(':useremail' => $useremail);
+		$binder = array(':useremail' => $identify);
+
+		
+		if (is_int($identify) || is_numeric($identify)) {
+
+			$sql = 'SELECT 
+			`user_id` as id, 
+			`user_name` as name, 
+			`user_email` as email, 
+			`user_password` as password,  
+			`user_registration_date` as regdate 
+			FROM `users` WHERE user_id = :userid LIMIT 1';
+
+			$binder = array(':userid' => $identify);
+
+		} 
+	
 
 		$this->preAction($sql, $binder);
 
@@ -261,7 +276,138 @@ class Auth extends Database {
 		);
 	}
 
-	function restoration(string $usermail): ?string{
+	function verifyActivations(int $userid, string $token, string $confirm, bool $verifexpir=false): bool {
+
+		$sql = 'SELECT 
+					activation_token as token, 
+					activation_confirm as confirm, 
+					activation_created as created 
+				FROM users_activation 
+				WHERE activation_user_id = :actuid LIMIT 1';
+
+		$binder = array(':actuid' => $userid);
+
+		$this->preAction($sql, $binder);
+
+		if(!$this->doAction()) { 
+			debugger('SQL не прошел!',__METHOD__);
+			return false; }
+
+		$activator = $this
+			->postAction()
+			->fetch();
+
+		$cleanHash = function() use (&$userid) {
+
+			$sql = 'DELETE FROM users_activation WHERE activation_user_id = :uid';
+
+			$binder = array(':uid' => $userid);
+
+			$this->preAction($sql, $binder);
+
+			if(!$this->doAction()) { return null; }
+
+			return true;
+		};
+
+		if ($token !== $activator['token'] || $confirm !== $activator['confirm']) { 
+
+			debugger('Непcовпадают ключи: ',__METHOD__);
+			return false; }
+
+		if ($verifexpir) {
+
+			$past 	= strtotime($activator['created']);
+			$now 	= strtotime(time());
+
+			$past 	= new DateTime($past);
+			$now 	= new DateTime($now);
+
+			$interval 	= $past->diff($now);
+
+			debugger('Разница в днях: '.$interval->format('%h'), __METHOD__);
+
+			if ($interval->format('%h') > REGWAITER) { 
+				
+				$cleanHash();
+				return false; 
+			}
+		}
+
+		$cleanHash();
+
+		// TODO: Удалить этот ключ из базы данных
+
+		return true;
+	}
+
+	function updateActivations(int $userid): ?array {
+
+		$sql = 'SELECT COUNT(*) as count FROM users_activation 
+				WHERE activation_user_id = :actuid LIMIT 1';
+
+		$binder = array(':actuid' => $userid);
+
+		$this->preAction($sql, $binder);
+
+		if(!$this->doAction()) { return null; }
+
+		$counter = $this
+			->postAction()
+			->fetch()['count'];
+
+		if ($counter > 0) { 
+
+			$sql = 'UPDATE users_activation SET 
+				activation_token = :actoken,
+				activation_confirm = :actconfirm,
+				activation_created = :actdate
+				WHERE activation_user_id = :actuid';
+
+		} else {
+			$sql = 'INSERT INTO users_activation 
+				(activation_user_id, activation_token, activation_confirm, activation_created) 
+				VALUES (:actuid, :actoken, :actconfirm, :actdate)';
+		}
+
+		$binder = array(
+				':actuid'		=> $userid,
+				':actoken'		=> $this
+						->modifier
+						->randomHash(rand(30, 50), false),
+				':actconfirm'	=> $this
+						->modifier
+						->randomHash(rand(30, 50), false),
+				':actdate'		=> time(),
+		);
+
+		$this->preAction($sql, $binder);
+
+		if(!$this->doAction()) { return null; }
+
+		return array('cofirm' => $binder[':actconfirm'], 'token' => $binder[':actoken']);
+	}
+
+	function resetLoginPassword(int $userid, string $userpass): bool {
+
+		/*
+		$profile = $this->getUserProfile($useremail);
+
+		if (empty($profile)) { return null; }
+		*/
+
+		$userpass = $this
+						->modifier
+						->strToHash($userpass);
+
+		$sql = 'UPDATE users SET user_password = :userpass, WHERE user_id = :uid';
+
+		$binder = array(':userpass' => $userpass);
+
+	}
+
+
+	function restoration(string $usermail): ?array{
 
 		$profile = $this->getUserProfile($usermail);
 
@@ -269,9 +415,15 @@ class Auth extends Database {
 
 		// Генерируем хеш код для восстановления
 
-		$tokenHash = $this->updateUserHash($profile['id']);
+		$t = $this->updateActivations($profile['id']);
 
-		return $tokenHash;
+		if (!empty($t)) { 
+
+			$t['id'] = $profile['id'];
+			return $t; 
+		}
+
+		return null;
 	}
 
 	// -> terminate all connections 

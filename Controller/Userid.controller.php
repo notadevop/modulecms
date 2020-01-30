@@ -11,6 +11,8 @@ class UserIdentificatior {
 	private $cookies;
 	private $errGen;
 
+	private $infoGen;
+
 	function __construct() {
 		
 		$this->cjob = new CookieJob();
@@ -92,7 +94,6 @@ class UserIdentificatior {
 					'mailhash' 	=> $email, 
 					'tokenhash' => $hash
 				);
-
 		$this
 			->cjob
 			->setCookies($authParams);
@@ -102,11 +103,9 @@ class UserIdentificatior {
 			$this
 				->cjob 
 				->setCookieTime($key, $time);
-
 			$this
 				->cjob
 				->setPathDomenCookie($key, $this->AuthParams['host'], $this->AuthParams['domain']);
-
 			$this
 				->cjob
 				->saveCookie($key);
@@ -135,7 +134,6 @@ class UserIdentificatior {
 		// Установить сессию 
 	}
 
-
 	function loginAction() {
 
 		$this
@@ -148,8 +146,6 @@ class UserIdentificatior {
 		$p = $this
 			->glob
 			->isExist('loginpasswd');
-
-
 
 		if(!$e || !$p) { return; } 
 
@@ -193,6 +189,9 @@ class UserIdentificatior {
 			return;
 		} 
 
+		// TODO: Аккаунт активированн или нет возможно проверка 
+		// по дате последнего визита или дате регистрации 
+
 		$profile = $this->auth->login($email, $pass);
 
 		if ($this->defineUserProfile($profile)) {
@@ -202,15 +201,15 @@ class UserIdentificatior {
 			if(REDIRECTLOGIN) {
 
 				//header('Location: /'); // Перебрасываем отуда, откуда пришел. 
+				// TODO: header('Location: /');
 				debugger('Сохранил куки и перекидываю пользователя',__METHOD__);
 			}
+
+			$this->infoGen['loggedin'] = 'Вы вошли в свой аккаунт!';
 			return;
 		}
 
 		$this->errGen['noprofile'] = 'Неправильные имя или пароль!';
-
-		// TODO: header('Location: /');
-		
 	}
 
 	function defineUserProfile($profile): bool {
@@ -252,15 +251,15 @@ class UserIdentificatior {
 			'checkMail' => false
 		);
 
-		$mailhash 	= $this
+		$mail 	= $this
 						->glob
 						->getGlobParam('mailhash');
-		$tokenhash 	= $this
+		$token 	= $this
 						->glob
 						->getGlobParam('tokenhash');
 
-		$mailhash 	= $this->filtration($mailhash, $nameOpt);
-		$tokenhash 	= $this->filtration($tokenhash, $passOpt);
+		$mail 	= $this->filtration($mail, $nameOpt);
+		$token 	= $this->filtration($token, $passOpt);
 		
 		if (count($this->errGen) > 0) {
 
@@ -268,7 +267,10 @@ class UserIdentificatior {
 			return;
 		}
 
-		if (!$this->auth->userExist($mailhash) || !$this->auth->userNotBlocked($mailhash)) {
+		$ue = $this->auth->userExist($mail);
+		$ub = $this->auth->userNotBlocked($mail);
+
+		if (!$ue || !$ub) {
 
 			$this->logout(false, true);
 			return;
@@ -276,7 +278,7 @@ class UserIdentificatior {
 		
 		$profile = $this
 					->auth
-					->authin($mailhash, $tokenhash);
+					->authin($mail, $token);
 
 		if ($this->defineUserProfile($profile)) {
 
@@ -326,16 +328,67 @@ class UserIdentificatior {
 			return;
 		} 
 
-		$hash = $this->auth->restoration($email);
+		$metat = $this->auth->restoration($email);
 
-		if (!empty($hash)) {
+		if (!empty($metat)) {
 
-			$link = HOST.'/?action=restore&user='.$email.'&confirm='.$hash;
+			debugger($metat,__METHOD__);
+			
+			$link = HOST.'/?action=restore&userid='.$metat['id'].'&confirm='.$metat['cofirm'].'&token='.$metat['token'];
 
 			debugger('<a href="'.$link.'" target="_blank">'.$link.'</a>');
+			
+			$this->infoGen['emailsent'] = 'Сылка сгенерированна и письмо должно быть отправленно!';
+			// TODO: Отправка емайла пользователю для восстановления пароля
+
 		} else {
+
 			debugger('пустой хеш!',__METHOD__);
 		}
+	}
+
+	function resetPassword() {
+
+		$this
+			->glob
+			->setGlobParam('_GET');
+
+		$params = array('userid','confirm', 'token');
+
+
+		foreach ($params as $key => $value) {
+			
+			$Opt = array(
+				'maxSym' 	=> 50, 
+				'minSym' 	=> $value == 'userid' ? 1 : 30, 
+				'checkMail' => false
+			);
+
+			$param = $this
+					->glob
+					->isExist($value);
+
+			if(!$param) { return; }
+
+			$p[$value] = $this
+						->glob
+						->getGlobParam($value);
+
+			$p[$value] = $this->filtration($p[$value], $Opt);
+		}
+
+		if (count($this->errGen) > 0) { return; }
+
+		$sp = $this->auth->verifyActivations($p['userid'],$p['token'], $p['confirm']);
+
+		if ($sp) {
+
+			debugger('Показать форму с вводом пароля!',__METHOD__);
+		} else {
+
+			$this->errgen['nouser'] = 'Пусто!';
+		}
+
 	}
 
 	function __init_auth() {
@@ -344,8 +397,14 @@ class UserIdentificatior {
 		$this->loginAction();
 		$this->restoreAction();
 
+		$this->resetPassword();
+
+		//$this->cjob->viewCookie(['mailhash','tokenhash']);
+
+
 		$this->logout(true); 
 	
 		debugger($this->errGen,__METHOD__);
+		debugger($this->infoGen,__METHOD__);
 	}
 }
