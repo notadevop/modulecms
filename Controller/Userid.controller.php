@@ -84,34 +84,6 @@ class UserIdentificatior {
 					->getKey('key');
 	}
 
-	// Устанавливаем куки и сессию или удаляем их в зависимости от переменной $gopast
-	
-	function saveAuthAction(string $email='',string $hash='', bool $gopast=false): void{
-
-		$time = !$gopast ? $this->AuthParams['future'] : $this->AuthParams['past'];
-
-		$authParams = array(
-					'mailhash' 	=> $email, 
-					'tokenhash' => $hash
-				);
-		$this
-			->cjob
-			->setCookies($authParams);
-
-		foreach ($authParams as $key => $value) {
-			
-			$this
-				->cjob 
-				->setCookieTime($key, $time);
-			$this
-				->cjob
-				->setPathDomenCookie($key, $this->AuthParams['host'], $this->AuthParams['domain']);
-			$this
-				->cjob
-				->saveCookie($key);
-		}
-	}
-
 	function logout(bool $redirect=false, bool $clean=false) {
 
 		$this
@@ -176,10 +148,10 @@ class UserIdentificatior {
 		$ue = $this
 				->auth
 				->userExist($email);
-
-		$ub = $this->auth->userNotBlocked($email);
-
-		$ua = $this->auth->userIsActivated($email);
+		$ub = $this
+				->auth
+				->userNotBlocked($email);
+		
 
 		if (!$ue) {
 
@@ -187,45 +159,40 @@ class UserIdentificatior {
 			return;
 		} else if (!$ub) {
 
-			$this->errGen['ublocked'] = 'Ошибка! Пользователь заблокирован или удален.';
+			$this->errGen['ublocked'] = 'Ошибка! Пользователь заблокирован или не активирован.';
 			return;
-		} else if (!$ua) {
-
-			$this->errGen['notactived'] = 'Ошибка! Пользователь не активирован.'; 
-			return;
-		}
+		} 
 
 		$profile = $this
 					->auth
-					->login($email, $pass);
+					->findUser($email, $pass);
 
-		if ($this->defineUserProfile($profile)) {
+		if (!$this->defineUserProfile($profile)) {
 
-			$this->saveAuthAction($email, $profile['tokenHash']);
-
-			if(REDIRECTLOGIN) {
-
-				//header('Location: /'); // Перебрасываем отуда, откуда пришел. 
-				debugger('Сохранил куки и перекидываю пользователя',__METHOD__);
-			}
-
-			$this->infoGen['loggedin'] = 'Вы вошли в свой аккаунт!';
+			$this->errGen['noprofile'] = 'Неправильные имя или пароль!';
 			return;
 		}
+		
+		$this->saveAuthAction($email, $profile['tokenHash']);
 
-		$this->errGen['noprofile'] = 'Неправильные имя или пароль!';
+		if(REDIRECTLOGIN) {
+
+			//header('Location: /'); // Перебрасываем отуда, откуда пришел. 
+			debugger('Сохранил куки и перекидываю пользователя',__METHOD__);
+		}
+
+		$this->infoGen['loggedin'] = 'Вы вошли в свой аккаунт!';
+		return;
 	}
 
 	function defineUserProfile($profile): bool {
 
-		if (!empty($profile)) {
+		if (empty($profile)) { return false; }
 
-			define('PROFILE', $profile);
-			debugger(PROFILE, __METHOD__);
+		define('PROFILE', $profile);
+		debugger(PROFILE, __METHOD__);
 
-			return true;
-		}
-		return false;
+		return true;
 	}
 
 	function authAction() {
@@ -286,7 +253,7 @@ class UserIdentificatior {
 		
 		$profile = $this
 						->auth
-						->authin($mail, $token);
+						->authUser($mail, $token);
 
 		if ($this->defineUserProfile($profile)) {
 
@@ -296,6 +263,36 @@ class UserIdentificatior {
 
 		$this->logout(false, true);		
 	}
+
+		// Устанавливаем куки и сессию или удаляем их в зависимости от переменной $gopast
+	
+	function saveAuthAction(string $email='',string $hash='', bool $gopast=false): void{
+
+		$time = !$gopast ? $this->AuthParams['future'] : $this->AuthParams['past'];
+
+		$authParams = array(
+					'mailhash' 	=> $email, 
+					'tokenhash' => $hash
+				);
+		$this
+			->cjob
+			->setCookies($authParams);
+
+		foreach ($authParams as $key => $value) {
+			
+			$this
+				->cjob 
+				->setCookieTime($key, $time);
+			$this
+				->cjob
+				->setPathDomenCookie($key, $this->AuthParams['host'], $this->AuthParams['domain']);
+			$this
+				->cjob
+				->saveCookie($key);
+		}
+	}
+
+	// ----------------------------------------------
 
 	function restoreAction() {
 
@@ -340,18 +337,16 @@ class UserIdentificatior {
 					->auth
 					->generateActivations($email);
 
-		if (empty($meta)) {
-
-			debugger('пустой хеш!',__METHOD__);
-			return;
-		}
+		if (empty($meta)) { return; }
 
 		$link = HOST.'/?action=pwd&userid='.$meta['id'].'&confirm='.$meta['cofirm'].'&token='.$meta['token'];
 
-		debugger('<a href="'.$link.'" target="_blank">'.$link.'</a>');
+		debugger('<a href="'.$link.'" target="_blank">'.$link.'</a>', __METHOD__);
 
 		// TODO: Отправка емайла пользователю для восстановления пароля
 	}
+
+	// ----------------------------------------------
 
 	// Должен вернуть true | false 
 
@@ -383,7 +378,6 @@ class UserIdentificatior {
 
 			$p[$value] = $this->filtration($p[$value], $Opt);
 		}
-
 
 		$getpass = function($param) {
 
@@ -444,10 +438,30 @@ class UserIdentificatior {
 		return true;
 	}
 
+	// добавляет нового пользователя в базу данных 
+	// ----------------------------------------------
+
+	function registerAction() {
+
+
+	}
+
+	// проверяет уже посланные данные для активации пользователя
+	// ----------------------------------------------
+
+	function confirmRegisterAction() {
+
+
+	}
+
+	// ----------------------------------------------
+
 	function __init_auth() {
 
 		// Переменная которвя соберает всю информацию об авторизации и аутентификации пользователя
 		$authStatus = array();
+
+
 
 		// Авторизация и Аутентификация отрабатывают в любой части кода
 		$this->authAction();
@@ -460,9 +474,12 @@ class UserIdentificatior {
 		// Регистрация только по путям _GET 
 
 		$this->logout(true); 
+		
 		debugger($this->errGen,__METHOD__);
 		debugger($this->infoGen,__METHOD__);
 
-		//$this->cjob->viewCookie(['mailhash','tokenhash']);
+		//$this
+		//	->cjob
+		//	->viewCookie(['mailhash','tokenhash']);
 	}
 }

@@ -15,38 +15,41 @@ class Auth extends Database {
 
 	private $modifier;
 
-	function __destruct() {
+	function __destruct() { $this->resetAction(); }
 
-		$this->resetAction();
-	}
+	// -----------------------------------------------
 
-	// Функция которая возвращает профиль пользователя 
+	private function getUserProfile($idoremail): ?array {
 
-	private function getUserProfile($identify): ?array {
-
-		$sql = 'SELECT 
-			`user_id` as id, 
-			`user_name` as name, 
-			`user_email` as email, 
-			`user_password` as password,  
-			`user_registration_date` as regdate 
-			FROM `users` WHERE user_email = :useremail LIMIT 1';
-
-		$binder = array(':useremail' => $identify);
 
 		
-		if (is_int($identify) || is_numeric($identify)) {
+		if (is_int($idoremail) || is_numeric($idoremail)) {
 
 			$sql = 'SELECT 
 			`user_id` as id, 
 			`user_name` as name, 
 			`user_email` as email, 
 			`user_password` as password,  
-			`user_registration_date` as regdate 
+			`user_registration_date` as regdate,
+			`user_last_visit` as lastvisit,
+			`user_activated` as actstatus
 			FROM `users` WHERE user_id = :userid LIMIT 1';
 
-			$binder = array(':userid' => $identify);
-		} 
+			$binder = array(':userid' => intval($idoremail));
+		} else {
+
+			$sql = 'SELECT 
+			`user_id` as id, 
+			`user_name` as name, 
+			`user_email` as email, 
+			`user_password` as password,  
+			`user_registration_date` as regdate, 
+			`user_last_visit` as lastvisit,
+			`user_activated` as actstatus
+			FROM `users` WHERE user_email = :useremail LIMIT 1';
+
+			$binder = array(':useremail' => $idoremail);
+		}
 
 		$this->preAction($sql, $binder);
 
@@ -59,44 +62,50 @@ class Auth extends Database {
 		return !empty($profile) ? $profile : null;
 	}
 
+	// -----------------------------------------------
 
-	public function userNotBlocked(string $useremail): ?bool {
-
-		$userid = $this->getUserProfile($useremail)['id'];
-
-		if (empty($userid)) { return null; }
-
-		$priv = new Priveleges();
-		$priv->initRoles($userid);
-
-		if ($priv->hasPrivilege('deleted')) { return null; }
-
-		if ($priv->hasPrivilege('blocked')) { return false; }
-			
-		return true;
-	}
-
-	function userIsActivated(string $useremail): bool {
+	public function userNotBlocked(string $useremail): bool {
 
 		$profile = $this->getUserProfile($useremail);
 
-		return !empty($profile['regdate']) ? true : false;
+		// TODO: установить в базу таблицу с settings и там указывать все настройки 
+		// Например указать привелегию для блокировки пользователя 
+		// и подставить тут выбраз из настроек 
+
+		// ==> SQL Table -> settings: DeletedUser: perm_id <-- FK 
+
+		return $profile['actstatus'] == 0 ? false : true;
 	}
 
-	// Проверяет сущуествует пользователь или нет, 
-	// если включить checkBan то проверяет забанен ли пользователь или нет
+	// ----------------------------------------------
 
-	public function userExist(string $useremail): bool {
+	public function userIsActivated(string $useremail): bool {
 
-		return (empty($this->getUserProfile($useremail)['id'])) ? false : true;
+		$profile = $this->getUserProfile($useremail);
+
+		if (empty($profile['regdate'])) { return false; }
+
+		if ($profile['actstatus'] == 0) { return false; }
+
+		return true;
 	}
 
+	// ---------------------------------------------
 
-	//  ------------- UPDATE HASH ----------------- 
+	public function userExist($emailorid): bool {
+
+		$id = $this->getUserProfile($emailorid)['id'];
+
+		return (empty($id)) ? false : true;
+	}
+
+	//  -------------------------------------------- 
 
 	// TODO: Переделать метод для поддержки нескольких входов и сессий, для входа с нескольких браузеров!!!!!
 
 	private function updateUserHash(string $userid, bool $newLogin=false): ?string {
+
+		$userid = intval($userid);
 
 		$visitor = new Visitor();
 
@@ -150,7 +159,7 @@ class Auth extends Database {
 
 			$interval 	= $current->diff($tomorrow);
 
-			debugger('Разница в днях: '.$interval->format('%s'), __METHOD__);
+			debugger('ПОЧИНИТЬ ВРЕМЯ ПРОВЕРКИ ХЕША БАЗЕ ДАННЫХ: '.$interval->format('%s'), __METHOD__);
 
 			//$updateHash = $interval->format('%d') > UPDATEAUTHINTERVAL ? $newHash : $result['token'];
 
@@ -167,19 +176,15 @@ class Auth extends Database {
 
 		$this->preAction($sql, $binder);
 
-		if(!$this->doAction()) {
-
-			debugger('Хеш не обновлен и не добавлен в базу!',__METHOD__);
-			return null;
-		}
+		if(!$this->doAction()) { return null; }
 
 		return $updateHash;
 	}
 
 
-	// -----------------  LOGIN ------------
+	// ---------------------------------------------
 
-	function login(string $useremail, string $userpass): ?array {
+	public function findUser(string $useremail, string $userpass): ?array {
 
 		$profile = $this->getUserProfile($useremail);
 
@@ -202,11 +207,32 @@ class Auth extends Database {
 		);
 	}
 
+	// ----------------------------------------------
 
-	// TODO: Для сохранения в куки шифруем токен и емайл, 
-	// чтобы не могли получить оригиналы 
+	public function insertNewUser(string $email, string $pass, string $username): bool{
 
-	function authin(string $email, string $userhash): ?array {
+		$profile = $this->getUserProfile($email);
+
+		if (!empty($profile)) { return false; }
+
+		$sql = 'INSERT INTO users () VALUES ()';
+
+		$binder = array(
+					':usermail' => $email,
+					':password'	=> $this
+										->modifier
+										->strToHash($userpass),
+					':username'	=> $username
+		);
+
+		// TOOD: Добавить так же роли в базу данных данных по привелегиям
+
+		return false;		
+	}
+
+	// ---------------------------------------------
+
+	public function authUser(string $email, string $userhash): ?array {
 
 		$visitor= new Visitor();
 
@@ -261,7 +287,11 @@ class Auth extends Database {
 		);
 	}
 
-	function verifyActivations(int $userid, string $token, string $confirm, bool $verifexpir=false): bool {
+	// -------------------------------------------
+
+	public function verifyActivations(int $userid, string $token, string $confirm, bool $verifytime=false): bool {
+
+		$userid = intval($userid);
 
 		$sql = 'SELECT 
 					activation_token as token, 
@@ -274,44 +304,43 @@ class Auth extends Database {
 
 		$this->preAction($sql, $binder);
 
-		if(!$this->doAction()) { 
-			debugger('SQL не прошел!',__METHOD__);
-			return false; }
+		if(!$this->doAction()) { return false; }
 
 		$activator = $this
 			->postAction()
 			->fetch();
 
-		if ($token !== $activator['token'] || $confirm !== $activator['confirm']) { 
+		if ($token !== $activator['token'] || $confirm !== $activator['confirm']) { return false; }
 
-			debugger('Неcовпадают ключи: ',__METHOD__);
-			return false; }
+		if (!$verifytime) { return true; }
 
-		if ($verifexpir) {
+		$past 	= strtotime($activator['created']);
+		$now 	= strtotime(time());
 
-			$past 	= strtotime($activator['created']);
-			$now 	= strtotime(time());
+		$past 	= new DateTime($past);
+		$now 	= new DateTime($now);
 
-			$past 	= new DateTime($past);
-			$now 	= new DateTime($now);
+		$interval = $past->diff($now);
 
-			$interval 	= $past->diff($now);
+		debugger('ПОЧИНИТЬ ВРЕМЯ ДЛЯ ПРОВЕРКИ АКТИВАЦИИ: '.$interval->format('%h'), __METHOD__);
 
-			debugger('Разница в часах: '.$interval->format('%h'), __METHOD__);
-
-			if ($interval->format('%h') > REGWAITER) { return false; }
+		if ($interval->format('%h') > REGWAITER) { 
+		
+			$this->clearActivations($userid); 
+			return false; 
 		}
-
-		// TODO: Удалить этот ключ из базы данных в целях безопасности
-
+	
 		return true;
 	}
 
-	function updateActivations(int $userid): ?array {
+	// --------------------------------------------
+
+	public function updateActivations(int $userid): ?array {
+
+		$userid = intval($userid);
 
 		$sql = 'SELECT COUNT(*) as count 
-				FROM users_activation 
-				WHERE activation_user_id = :actuid LIMIT 1';
+				FROM users_activation WHERE activation_user_id = :actuid LIMIT 1';
 
 		$binder = array(':actuid' => $userid);
 
@@ -355,7 +384,11 @@ class Auth extends Database {
 		return array('cofirm' => $binder[':actconfirm'], 'token' => $binder[':actoken']);
 	}
 
-	function clearActivations(int $userid): bool {
+	// --------------------------------------------
+
+	public function clearActivations(int $userid): bool {
+
+		$userid = intval($userid);
 
 		$profile = $this->getUserProfile($userid);
 
@@ -372,7 +405,11 @@ class Auth extends Database {
 		return true;
 	}
 
-	function updateLoginPassword(int $userid, string $userpass): bool {
+	// --------------------------------------------
+
+	public function updateLoginPassword(int $userid, string $userpass): bool {
+
+		$userid = intval($userid);
 
 		$profile = $this->getUserProfile($userid);
 
@@ -396,31 +433,69 @@ class Auth extends Database {
 		return $this->clearActivations($userid); 
 	}
 
+	// --------------------------------------------
+
 	// Генерирует токен и подтверждение для восстановления или подтверждения регистрации 
 
-	function generateActivations(string $usermail): ?array{
+	public function generateActivations(string $usermail): ?array{
 
-		$profile = $this->getUserProfile($usermail);
+		$id = $this->getUserProfile($usermail)['id'];
 
-		if (empty($profile)) { return null; }
+		if (empty($id)) { return null; }
 
 		// Генерируем хеш код для восстановления
 
-		$t = $this->updateActivations($profile['id']);
+		$t = $this->updateActivations($id);
 
 		if (!empty($t)) { 
 
-			$t['id'] = $profile['id'];
+			$t['id'] = $id;
 			return $t; 
 		}
 
 		return null;
 	}
 
+	// --------------------------------------------
+
+	public function activateOrBlockUser(int $userid, bool $block=false): bool {
+
+		$userid = intval($userid);
+
+		$profile = $this->getUserProfile($useremail);
+
+		if (empty($profile['id'])) { return false; }
+
+		// проверить время регистрации пользователя, если отсутствует то обновить
+
+		$sql = 'UPDATE users SET users_activated = :status WHERE user_id = :uid';
+
+		$binder = array(
+			':uid' 		=> $userid,
+			':status'	=> (!$block ? 1 : 0)
+		);
+
+		$this->preAction($sql, $binder);
+
+		if(!$this->doAction()) { return false; }
+
+		return true;
+	}
+
+	// --------------------------------------------
+
+	public function deleteNotActivatedUsers() {
+
+
+	}
+
+
+	// --------------------------------------------
+
 	// -> terminate all connections 
 	function logout(string $userid, bool $termalldev = false): bool {
 
-		// Удаление всех сессий из базы данных
+		// Удаление cесии данного пользователя или всех сессий из базы данных
 
 		return false;
 	}

@@ -51,6 +51,7 @@ CREATE TABLE `users` (
   `user_password` varchar(255) NOT NULL,
   `user_last_visit` int(15) NOT NULL,
   `user_registration_date` int(15) NOT NULL
+  `user_activated` int(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user_tokens` (
