@@ -55,20 +55,14 @@ function debugger($input, string $funcname = '', bool $debug = false): void {
 		$string = '';
 
 		if(is_array($in)) {
-		
 			foreach ($in as $key => $value) {
-		
 				if (is_array($value)) {
-		
 					$clos($value);
-		
 				} else {
-		
 					$string .= gettype($value).': ['.$key.'] => '.$value.'<br />';
 				}
 			}
 		} else {
-
 			$string = $in;	
 		}
 
@@ -76,9 +70,7 @@ function debugger($input, string $funcname = '', bool $debug = false): void {
 
 		$string = '<i>Откуда инфо:</i> <b>'.$funcname.' </b></br>'.$string;
 
-
 		$debug ? var_dump($string) : print_r($string);
-
 
 		/*
 		$filename = "./debugfile.txt";

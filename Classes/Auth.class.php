@@ -21,8 +21,6 @@ class Auth extends Database {
 
 	private function getUserProfile($idoremail): ?array {
 
-
-		
 		if (is_int($idoremail) || is_numeric($idoremail)) {
 
 			$sql = 'SELECT 
@@ -209,26 +207,33 @@ class Auth extends Database {
 
 	// ----------------------------------------------
 
-	public function insertNewUser(string $email, string $pass, string $username): bool{
+	public function insertNewUser(string $email, string $pass, string $username): bool {
 
-		$profile = $this->getUserProfile($email);
+		$profile = $this->getUserProfile($email)['id'];
 
 		if (!empty($profile)) { return false; }
 
-		$sql = 'INSERT INTO users () VALUES ()';
+		$sql = 'INSERT INTO users (user_name, user_email, user_password, user_registration_date, user_last_visit, user_activated) 
+					VALUES (:username, :usermail, :userpass, :userregdate, :userlastv, :useractiv)';
+
 
 		$binder = array(
-					':usermail' => $email,
-					':password'	=> $this
-										->modifier
-										->strToHash($userpass),
-					':username'	=> $username
+					':usermail' 	=> $email,
+					':userpass'		=> $this->modifier->strToHash($pass),
+					':username'		=> $username,
+					':userregdate' 	=> time(),
+					':userlastv'	=> 0,
+					':useractiv'	=> 0
 		);
 
-		// TOOD: Добавить так же роли в базу данных данных по привелегиям
+		debugger($binder,__METHOD__);
 
-		return false;		
-	}
+		$this->preAction($sql, $binder);
+
+		if(!$this->doAction()) { return false; }
+
+		return true;		
+	}      
 
 	// ---------------------------------------------
 
@@ -335,7 +340,7 @@ class Auth extends Database {
 
 	// --------------------------------------------
 
-	public function updateActivations(int $userid): ?array {
+	public function updateActivations(int $userid, bool $cleanact=false, bool $checkbydate=false): ?array {
 
 		$userid = intval($userid);
 
@@ -351,6 +356,10 @@ class Auth extends Database {
 		$counter = $this
 			->postAction()
 			->fetch()['count'];
+
+		// Тут проверка на удаление и на время 
+
+
 
 		if ($counter > 0) { 
 
@@ -486,6 +495,7 @@ class Auth extends Database {
 
 	public function deleteNotActivatedUsers() {
 
+		// Определяем время и разницу во времени
 
 	}
 

@@ -10,18 +10,36 @@ class UserIdentificatior {
 	private $filter;
 	private $cookies;
 	private $errGen;
-
 	private $infoGen;
+	private $pluginExecutor;
+
 
 	function __construct() {
 		
-		$this->cjob = new CookieJob();
-		$this->auth = new Auth();
-		$this->glob = new GlobalParams();
-		$this->filter = new Filter(); 
+		$this->cjob 	= new CookieJob();
+		$this->auth 	= new Auth();
+		$this->glob 	= new GlobalParams();
+		$this->filter 	= new Filter(); 
 
-		$this->errGen = array();
+		$this->errGen 	= array();
 
+		$this->pluginExecutor = function($category) {
+
+			switch($category) {
+				case 'login': 			
+					break;
+				case 'restore': 		
+					break;
+				case 'registration': 	
+					break;
+				default: 				
+					break;
+			}
+
+			// тут описать обьекто который будет работать с плагинами
+			// Обработка запросов кода из плагинов, например проверка captca 
+			return true;
+		};
 
 		$this->AuthParams = array(
 			'future' 	=> '+2 Hours',
@@ -35,6 +53,8 @@ class UserIdentificatior {
 
 		$this->errors = array();
 	}
+
+	// ----------------------------------------------
 
 	function filtration(string $input, array $options): string {
 
@@ -84,6 +104,8 @@ class UserIdentificatior {
 					->getKey('key');
 	}
 
+	// ----------------------------------------------
+
 	function logout(bool $redirect=false, bool $clean=false) {
 
 		$this
@@ -105,6 +127,8 @@ class UserIdentificatior {
 		}
 		// Установить сессию 
 	}
+
+	// ----------------------------------------------
 
 	function loginAction() {
 
@@ -185,6 +209,8 @@ class UserIdentificatior {
 		return;
 	}
 
+	// ----------------------------------------------
+
 	function defineUserProfile($profile): bool {
 
 		if (empty($profile)) { return false; }
@@ -194,6 +220,8 @@ class UserIdentificatior {
 
 		return true;
 	}
+
+	// ----------------------------------------------
 
 	function authAction() {
 
@@ -264,7 +292,7 @@ class UserIdentificatior {
 		$this->logout(false, true);		
 	}
 
-		// Устанавливаем куки и сессию или удаляем их в зависимости от переменной $gopast
+	// Устанавливаем куки и сессию или удаляем их в зависимости от переменной $gopast
 	
 	function saveAuthAction(string $email='',string $hash='', bool $gopast=false): void{
 
@@ -443,6 +471,103 @@ class UserIdentificatior {
 
 	function registerAction() {
 
+		$this
+			->glob
+			->setGlobParam('_POST');
+
+		$email = $this
+			->glob
+			->isExist('userregemail');
+		$name = $this
+			->glob
+			->isExist('userregname');
+
+		$pass1 = $this
+			->glob
+			->isExist('userregpassword1');
+
+		$pass2 = $this
+			->glob
+			->isExist('userregpassword2');
+
+		if(!$email || !$name || !$pass1 || !$pass2) { return false; } 
+
+		$email 	= $this
+					->glob
+					->getGlobParam('userregemail');
+		$name 	= $this
+					->glob
+					->getGlobParam('userregname');
+		$pass1 	= $this
+					->glob
+					->getGlobParam('userregpassword1');
+		$pass2 	= $this
+					->glob
+					->getGlobParam('userregpassword2');
+
+		$emailOpt = array(
+			'maxSym' 	=> 40, 
+			'minSym' 	=> 6, 
+			'checkMail' => true
+		);
+
+		$nameOpt = array(
+			'maxSym' 	=> 30, 
+			'minSym' 	=> 4, 
+			'checkMail' => false
+		);
+
+		$passOpt = array(
+			'maxSym' 	=> 35, 
+			'minSym' 	=> 6, 
+			'checkMail' => false
+		);
+
+		$email 	= $this->filtration($email, $emailOpt);
+		$name 	= $this->filtration($name, $nameOpt);
+		$pass1 	= $this->filtration($pass1, $passOpt);
+		$pass2 	= $this->filtration($pass2, $passOpt);
+
+		if (count($this->errGen) > 0) { return false; }
+
+		if ($pass1 !== $pass2) {
+
+			$this->errGen['mismatch'] = 'Ошибка! пароли не совпадают.';
+			return false;
+		}
+
+		$exist = $this
+					->auth
+					->userExist($email);
+
+		if ($exist) {
+
+			$this->errGen['noprofile'] = 'Ошибка! Возможно такой пользователь уже зарегестрирован!';
+			return false;
+		}
+
+		$r = $this
+				->auth
+				->insertNewUser($email, $pass1, $name);
+
+		if (!$r) {
+
+			$this->errGen['noregistration'] = 'Ошибка! Не получилось зарегестрироваться! Проверьте еще раз ваши данные.';
+			return false;
+		}
+
+		$meta = $this
+			->auth
+			->generateActivations($email);
+
+		if (empty($meta)) { 
+
+			debugger('meta',__METHOD__);
+			return; }
+
+		$link = HOST.'/?action=pwd&userid='.$meta['id'].'&confirm='.$meta['cofirm'].'&token='.$meta['token'];
+
+		debugger('<a href="'.$link.'" target="_blank">'.$link.'</a>', __METHOD__);
 
 	}
 
@@ -451,7 +576,7 @@ class UserIdentificatior {
 
 	function confirmRegisterAction() {
 
-
+		// Добавляем последний визит, привелегии пользователю
 	}
 
 	// ----------------------------------------------
@@ -461,8 +586,6 @@ class UserIdentificatior {
 		// Переменная которвя соберает всю информацию об авторизации и аутентификации пользователя
 		$authStatus = array();
 
-
-
 		// Авторизация и Аутентификация отрабатывают в любой части кода
 		$this->authAction();
 		$this->loginAction();
@@ -470,11 +593,14 @@ class UserIdentificatior {
 		// Восстановление только по путям _GET
 		$this->restoreAction();
 		$this->confirmRestoreAction();
+
+		$this->registerAction();
+
 		
 		// Регистрация только по путям _GET 
 
 		$this->logout(true); 
-		
+
 		debugger($this->errGen,__METHOD__);
 		debugger($this->infoGen,__METHOD__);
 

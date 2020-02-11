@@ -110,15 +110,6 @@ class Filter {
 		return true;
 	}
 
-	/*
-	// NOTUSED!!!!!
-	public function verifyForLimits(string $key): void {
-
-		$this->isNotMore($key);
-		$this->isNotLess($key);
-	}
-	*/
-
 	// Обрезаем стринговое значение 
 	
 	public function cutString(stirng $key): void {
@@ -211,7 +202,7 @@ class Filter {
 			default: 		return false;							break;
 		}
 
-		return filter_var($input, $validator);
+		return !filter_var($input, $validator) ? false : true ;
 	}
 
 	public function sanitizer(string $key, string $category): void {
