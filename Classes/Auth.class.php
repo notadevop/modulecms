@@ -123,10 +123,10 @@ class Auth extends Database {
 					->postAction()
 					->fetch();
 
-		$rand 		= rand(30, 100);
-		$newHash 	= $this
-						->modifier
-						->randomHash($rand, false);
+		$rand 	= rand(30, 100);
+		$newHash= $this
+					->modifier
+					->randomHash($rand, false);
 
 		$updateHash = '';
 
@@ -182,17 +182,17 @@ class Auth extends Database {
 
 	// ---------------------------------------------
 
-	public function findUser(string $useremail, string $userpass): ?array {
+	public function findUser(string $email, string $userpass): ?array {
 
-		$profile = $this->getUserProfile($useremail);
+		$profile = $this->getUserProfile($email);
 
 		if (empty($profile)) { return null; }
 
 		$dbpwdhash = $profile['password'];
 
 		$userpwdhash = $this
-						->modifier
-						->strToHash($userpass);
+							->modifier
+							->strToHash($userpass);
 
 		if( $dbpwdhash !== $userpwdhash ) { return null; }
 
@@ -214,8 +214,7 @@ class Auth extends Database {
 		if (!empty($profile)) { return false; }
 
 		$sql = 'INSERT INTO users (user_name, user_email, user_password, user_registration_date, user_last_visit, user_activated) 
-					VALUES (:username, :usermail, :userpass, :userregdate, :userlastv, :useractiv)';
-
+		VALUES (:username, :usermail, :userpass, :userregdate, :userlastv, :useractiv)';
 
 		$binder = array(
 					':usermail' 	=> $email,
@@ -234,6 +233,33 @@ class Auth extends Database {
 
 		return true;		
 	}      
+
+	// ---------------------------------------------
+
+	function activateRegisteredUser(int $userid): bool {
+
+		$uid = $this->getUserProfile($userid)['id'];
+
+		if (empty($uid)) { return false; }
+
+		// Тут устанавливаем привелегии только зарегестрированного пользователя 
+		// в настройках системы можно установить какие привелегии пользователь получает
+
+		$defPerms = 4; // <== Вытаскиваем из настроек указанные для регистрации привелегии
+
+		$sql = 'INSERT INTO user_role (user_id, role_id) VALUES (:userid, :roleid)';
+
+		$binder = array(
+			':userid' => $userid,
+			':roleid' => $defPerms
+		);
+
+		$this->preAction($sql, $binder);
+
+		if(!$this->doAction()) { return false; }
+
+		return true;	
+	}
 
 	// ---------------------------------------------
 
@@ -309,15 +335,18 @@ class Auth extends Database {
 
 		$this->preAction($sql, $binder);
 
-		if(!$this->doAction()) { return false; }
+		if(!$this->doAction()) 
+			{ return false; }
 
 		$activator = $this
 			->postAction()
 			->fetch();
 
-		if ($token !== $activator['token'] || $confirm !== $activator['confirm']) { return false; }
+		if ($token !== $activator['token'] || $confirm !== $activator['confirm']) 
+			{ return false; }
 
-		if (!$verifytime) { return true; }
+		if (!$verifytime) 
+			{ return true; }
 
 		$past 	= strtotime($activator['created']);
 		$now 	= strtotime(time());
@@ -358,8 +387,6 @@ class Auth extends Database {
 			->fetch()['count'];
 
 		// Тут проверка на удаление и на время 
-
-
 
 		if ($counter > 0) { 
 
@@ -452,8 +479,6 @@ class Auth extends Database {
 
 		if (empty($id)) { return null; }
 
-		// Генерируем хеш код для восстановления
-
 		$t = $this->updateActivations($id);
 
 		if (!empty($t)) { 
@@ -495,7 +520,8 @@ class Auth extends Database {
 
 	public function deleteNotActivatedUsers() {
 
-		// Определяем время и разницу во времени
+		// Определяем время и разницу во времени 
+		// и по ним определить кого удалить 
 
 	}
 
@@ -508,11 +534,5 @@ class Auth extends Database {
 		// Удаление cесии данного пользователя или всех сессий из базы данных
 
 		return false;
-	}
-	
-	//function registration() {}
-	//function confirmRegistration() {}
-	//function confirmRestoration() {}
-	//function updateUserProfile() {}
-	
+	}	
 }

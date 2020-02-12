@@ -577,6 +577,91 @@ class UserIdentificatior {
 	function confirmRegisterAction() {
 
 		// Добавляем последний визит, привелегии пользователю
+
+		$this
+			->glob
+			->setGlobParam('_GET');
+
+		$params = array('userid','confirm', 'token');
+
+		foreach ($params as $key => $value) {
+			
+			$Opt = array(
+				'maxSym' 	=> 50, 
+				'minSym' 	=> $value == 'userid' ? 1 : 30, 
+				'checkMail' => false
+			);
+
+			$param = $this
+					->glob
+					->isExist($value);
+
+			if(!$param) { return false; }
+
+			$p[$value] = $this
+						->glob
+						->getGlobParam($value);
+
+			$p[$value] = $this->filtration($p[$value], $Opt);
+		}
+
+		$getpass = function($param) {
+
+			$this
+				->glob
+				->setGlobParam('_POST');
+
+			if (!$this
+					->glob
+					->isExist($param)) { return; }
+
+			$Opt = array(
+				'maxSym' 	=> 100, 
+				'minSym' 	=> 6, 
+				'checkMail' => false
+			);
+
+			$pass1 	= $this
+						->glob
+						->getGlobParam($param);
+
+			return $this->filtration($pass1, $Opt);
+		};
+
+		$pass1 = $getpass('restorepwd1');
+		$pass2 = $getpass('restorepwd2');
+
+		if (count($this->errGen) > 0) { return false; }
+
+		$sp = $this
+				->auth
+				->verifyActivations($p['userid'],$p['token'], $p['confirm']);
+
+		if (!$sp) {
+
+			$this->errGen['notvalid'] = 'Ошибка параметров подтверждения пользователя!';
+			return false;
+		}
+
+		$atatus = $this
+						->auth
+						->activateRegisteredUser($p['userid']);
+
+		$good = false;
+
+		if ($astatus) {
+
+			$this->infoGen['regactivated'] = 'Аккаунт активирован!';
+			$good = true;
+		} else {
+
+			$this->errGen['regactivated'] = 'Ошибка активации пользователя!';
+		}
+
+
+		// TODO: Переправить пользователя на форму входа
+		return $good;
+
 	}
 
 	// ----------------------------------------------
