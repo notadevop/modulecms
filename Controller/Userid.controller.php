@@ -23,7 +23,7 @@ class UserIdentificatior {
 
 		$this->errGen 	= array();
 
-		$this->pluginExecutor = function($category) {
+		$this->pluginExecutor = function(string $category):bool {
 
 			switch($category) {
 				case 'login': 			
@@ -36,10 +36,41 @@ class UserIdentificatior {
 					break;
 			}
 
-			// тут описать обьекто который будет работать с плагинами
+			// тут описать обьект который будет работать с плагинами
 			// Обработка запросов кода из плагинов, например проверка captca 
 			return true;
 		};
+
+
+		/*
+			post keys:
+				loginemail
+				loginpassword
+
+				restoreemail
+				restorepassword1 
+				restorepassword2 
+				
+				registeremail
+				registername
+				registerpassword1
+				registerpassword2
+
+			get keys:
+				userid 
+				token 
+				confirm 
+				restoreconfirm
+				registerconfirm
+	
+				restore 
+				registers
+
+			cookie keys
+				cookieemail (id)
+				cookietoken
+		*/
+
 
 		$this->AuthParams = array(
 			'future' 	=> '+2 Hours',
@@ -174,7 +205,7 @@ class UserIdentificatior {
 				->userExist($email);
 		$ub = $this
 				->auth
-				->userNotBlocked($email);
+				->userActivated($email);
 		
 
 		if (!$ue) {
@@ -271,7 +302,7 @@ class UserIdentificatior {
 			->userExist($mail);
 		$ub = $this
 			->auth
-			->userNotBlocked($mail);
+			->userActivated($mail);
 
 		if (!$ue || !$ub) {
 
@@ -353,7 +384,7 @@ class UserIdentificatior {
 				->userExist($email);
 		$ms = $this
 				->auth
-				->userNotBlocked($email);		
+				->userActivated($email);		
 
 		if (!$mr || !$ms) {
 
@@ -456,7 +487,7 @@ class UserIdentificatior {
 
 		$r = $this
 				->auth
-				->updateLoginPassword($p['userid'], $pass1);
+				->updateUserPassword($p['userid'], $pass1);
 
 		if(!$r) { $this->errGen['Ошибка обновления пароля!']; return false; }
 		

@@ -1,8 +1,9 @@
 	<form action="" method="POST">
-
-		<input type="text" name="restorepwd1" value="jcmaxu" />
+		<p>Новый пароль пользователя</p>
+		<input type="text" name="restorepwd1" value="" />
 		<br /><br />
-		<input type="text" name="restorepwd2" value="jcmaxu" />
+		<p>Повторить новый пароль пользователя</p>
+		<input type="text" name="restorepwd2" value="" />
 		<br /><br />
 		<input type="submit" name="Restoreaction" value="Restore" />
 	</form>
