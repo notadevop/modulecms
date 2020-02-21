@@ -2,7 +2,7 @@
 
 
 
-class UserIdentificatior {
+class UserIdentificator {
 
 	private $cjob; 
 	private $auth;
@@ -41,45 +41,11 @@ class UserIdentificatior {
 			return true;
 		};
 
-
-		/*
-			post keys:
-				loginemail
-				loginpassword
-
-				restoreemail
-				restorepassword1 
-				restorepassword2 
-				
-				registeremail
-				registername
-				registerpassword1
-				registerpassword2
-
-			get keys:
-				userid 
-				token 
-				confirm 
-				restoreconfirm
-				registerconfirm
-	
-				restore 
-				registers
-
-			cookie keys
-				cookieemail (id)
-				cookietoken
-		*/
-
-
 		$this->AuthParams = array(
 			'future' 	=> '+2 Hours',
 			'past'		=> '-2 Hours',
 			'host'		=> '/',
 			'domain'	=> 'localhost'
-			//'loginKey' 	=> '',
-			// 'passKey'  	=> '',
-			// 'recovKey'
 		);
 
 		$this->errors = array();
@@ -87,7 +53,7 @@ class UserIdentificatior {
 
 	// ----------------------------------------------
 
-	function filtration(string $input, array $options): string {
+	private function filtration(string $input, array $options): string {
 
 		$this
 			->filter
@@ -111,21 +77,15 @@ class UserIdentificatior {
 			$this->errGen['noprofile'] = 'Ошибка! Укажите правильный емайл';
 		}
 
-		if (!$this
-				->filter
-				->isNotEmpty('key')) {
+		if (!$this->filter->isNotEmpty('key')) {
 
 			$this->errGen['nores'] = 'Недопустима пустая строка!';
 		
-		} else if (!$this
-						->filter
-						->isNotMore('key')) {
+		} else if (!$this->filter->isNotMore('key')) {
 			
 			$this->errGen['strLimit'] = 'Недопустимое кол-во символов! Слишком большие значение.';
 		
-		} else if (!$this
-						->filter
-						->isNotLess('key')) {
+		} else if (!$this->filter->isNotLess('key')) {
 
 			$this->errGen['strLimit'] = 'Недопустимое кол-во символов! Слишком маленькое значение.'; 
 		}
@@ -137,7 +97,7 @@ class UserIdentificatior {
 
 	// ----------------------------------------------
 
-	function logout(bool $redirect=false, bool $clean=false) {
+	function logout(bool $redirect=false, bool $clean=false): bool{
 
 		$this
 			->glob
@@ -154,14 +114,18 @@ class UserIdentificatior {
 			if($redirect){ header( "refresh:2; url=".HOST ); }
 
 			$this->infoGen['logout'] = 'Вы вышли из своего аккаунта';
+
+			return true;
 			
 		}
 		// Установить сессию 
+
+		return false;
 	}
 
 	// ----------------------------------------------
 
-	function loginAction() {
+	function loginAction():bool {
 
 		$this
 			->glob
@@ -174,7 +138,7 @@ class UserIdentificatior {
 			->glob
 			->isExist('loginpasswd');
 
-		if(!$e || !$p) { return; } 
+		if(!$e || !$p) { return false; } 
 
 		$nameOpt = array(
 			'maxSym' 	=> 30, 
@@ -198,7 +162,7 @@ class UserIdentificatior {
 		$email 	= $this->filtration($email, $nameOpt);
 		$pass 	= $this->filtration($pass, $passOpt);
 
-		if (count($this->errGen) > 0) { return; }
+		if (count($this->errGen) > 0) { return false; }
 
 		$ue = $this
 				->auth
@@ -211,11 +175,11 @@ class UserIdentificatior {
 		if (!$ue) {
 
 			$this->errGen['noprofile'] = 'Неправильные имя или пароль!';
-			return;
+			return false;
 		} else if (!$ub) {
 
 			$this->errGen['ublocked'] = 'Ошибка! Пользователь заблокирован или не активирован.';
-			return;
+			return false;
 		} 
 
 		$profile = $this
@@ -225,7 +189,7 @@ class UserIdentificatior {
 		if (!$this->defineUserProfile($profile)) {
 
 			$this->errGen['noprofile'] = 'Неправильные имя или пароль!';
-			return;
+			return false;
 		}
 		
 		$this->saveAuthAction($email, $profile['tokenHash']);
@@ -234,15 +198,16 @@ class UserIdentificatior {
 
 			//header('Location: /'); // Перебрасываем отуда, откуда пришел. 
 			debugger('Сохранил куки и перекидываю пользователя',__METHOD__);
+			return true;
 		}
 
 		$this->infoGen['loggedin'] = 'Вы вошли в свой аккаунт!';
-		return;
+		return true;
 	}
 
 	// ----------------------------------------------
 
-	function defineUserProfile($profile): bool {
+	private function defineUserProfile($profile): bool {
 
 		if (empty($profile)) { return false; }
 
@@ -254,7 +219,7 @@ class UserIdentificatior {
 
 	// ----------------------------------------------
 
-	function authAction() {
+	function authAction():bool {
 
 		$this
 			->glob
@@ -267,7 +232,7 @@ class UserIdentificatior {
 					->glob
 					->isExist('tokenhash');
 
-		if (!$mail || !$token) { return; }
+		if (!$mail || !$token) { return false; }
 
 		$nameOpt = array(
 			'maxSym' 	=> 500, 
@@ -294,7 +259,7 @@ class UserIdentificatior {
 		if (count($this->errGen) > 0) {
 
 			$this->logout(false, true);
-			return;
+			return false;
 		}
 
 		$ue = $this
@@ -307,7 +272,7 @@ class UserIdentificatior {
 		if (!$ue || !$ub) {
 
 			$this->logout(false, true);
-			return;
+			return false;
 		} 
 		
 		$profile = $this
@@ -317,15 +282,16 @@ class UserIdentificatior {
 		if ($this->defineUserProfile($profile)) {
 
 			$this->saveAuthAction($profile['useremail'], $profile['tokenHash']);
-			return;
+			return true;
 		}
 
-		$this->logout(false, true);		
+		$this->logout(false, true);	
+		return false;	
 	}
 
 	// Устанавливаем куки и сессию или удаляем их в зависимости от переменной $gopast
 	
-	function saveAuthAction(string $email='',string $hash='', bool $gopast=false): void{
+	private function saveAuthAction(string $email='',string $hash='', bool $gopast=false): void{
 
 		$time = !$gopast ? $this->AuthParams['future'] : $this->AuthParams['past'];
 
@@ -353,7 +319,7 @@ class UserIdentificatior {
 
 	// ----------------------------------------------
 
-	function restoreAction() {
+	function restoreAction():bool {
 
 		$this
 			->glob
@@ -363,7 +329,7 @@ class UserIdentificatior {
 					->glob
 					->isExist('restoremail');
 
-		if(!$email) { return; }
+		if(!$email) { return false; }
 
 		$emailOpt = array(
 			'maxSym' 	=> 100, 
@@ -377,7 +343,7 @@ class UserIdentificatior {
 
 		$email 	= $this->filtration($email, $emailOpt);
 
-		if (count($this->errGen) > 0) { return; }
+		if (count($this->errGen) > 0) { return false; }
 
 		$mr = $this
 				->auth
@@ -389,25 +355,25 @@ class UserIdentificatior {
 		if (!$mr || !$ms) {
 
 			$this->errGen['noprofile'] = 'Ошибка! Возможно пользователь: заблокирован, удален или не существует!';
-			return;
+			return false;
 		} 
 
 		$meta = $this
 					->auth
 					->generateActivations($email);
 
-		if (empty($meta)) { return; }
+		if (empty($meta)) { return false ; }
 
 		$link = HOST.'/?action=pwd&userid='.$meta['id'].'&confirm='.$meta['cofirm'].'&token='.$meta['token'];
 
 		debugger('<a href="'.$link.'" target="_blank">'.$link.'</a>', __METHOD__);
 
 		// TODO: Отправка емайла пользователю для восстановления пароля
+
+		return true;
 	}
 
 	// ----------------------------------------------
-
-	// Должен вернуть true | false 
 
 	function confirmRestoreAction(): bool {
 
@@ -500,7 +466,7 @@ class UserIdentificatior {
 	// добавляет нового пользователя в базу данных 
 	// ----------------------------------------------
 
-	function registerAction() {
+	function registerAction(): bool {
 
 		$this
 			->glob
@@ -588,24 +554,26 @@ class UserIdentificatior {
 		}
 
 		$meta = $this
-			->auth
-			->generateActivations($email);
+					->auth
+					->generateActivations($email);
 
 		if (empty($meta)) { 
 
 			debugger('meta',__METHOD__);
-			return; }
+			return false; 
+		}
 
 		$link = HOST.'/?action=pwd&userid='.$meta['id'].'&confirm='.$meta['cofirm'].'&token='.$meta['token'];
 
 		debugger('<a href="'.$link.'" target="_blank">'.$link.'</a>', __METHOD__);
 
+		return true;
 	}
 
 	// проверяет уже посланные данные для активации пользователя
 	// ----------------------------------------------
 
-	function confirmRegisterAction() {
+	function confirmRegisterAction(): bool {
 
 		// Добавляем последний визит, привелегии пользователю
 
@@ -689,7 +657,6 @@ class UserIdentificatior {
 			$this->errGen['regactivated'] = 'Ошибка активации пользователя!';
 		}
 
-
 		// TODO: Переправить пользователя на форму входа
 		return $good;
 
@@ -697,31 +664,94 @@ class UserIdentificatior {
 
 	// ----------------------------------------------
 
-	function __init_auth() {
+	function __init_auth(string $authAction='loginAction') {
 
 		// Переменная которвя соберает всю информацию об авторизации и аутентификации пользователя
-		$authStatus = array();
 
-		// Авторизация и Аутентификация отрабатывают в любой части кода
-		$this->authAction();
-		$this->loginAction();
+		$action = $authAction;
 
-		// Восстановление только по путям _GET
-		$this->restoreAction();
-		$this->confirmRestoreAction();
+		$gen = function($k, $val) use (&$authMeta) {
 
-		$this->registerAction();
+			foreach ($authMeta as $key => $value) {
+				
+				$authMeta[$key] = ($k == $key) ? $val : !$val;
+			}
+		}; 
 
-		
-		// Регистрация только по путям _GET 
+
+		$authMeta = array(
+			'viewLoginForm' 		=> false, // Окно входа
+			'viewRegistrationForm' 	=> false, // Форма регистрации
+			'viewRestoreForm'		=> false, // поле восстановления
+			'viewRestoreConfirmForm'=> false, // Форма ввода новых паролей 
+			'userAuthentificated'	=> false, // Проверка на авторизованного пользователя
+			'viewDefaultPage'		=> true, // по умолчанию страница для вывода инфо
+		);
 
 		$this->logout(true); 
+
+
+		if ($this->authAction()) {
+
+			$auth = true;
+			$action = 'authentficated';
+		} 
+
+		// Действия по авторизации
+
+		// при указанном екшене который дается в pageBuilder выполняем определенные действия 
+		// и если возвращается false то выводим форму указаного действия 
+		// если true то страницу по умолчанию
+
+		switch($action) {
+
+			case'loginAction': 			
+				if(!$this->loginAction()){
+
+					$gen('viewLoginForm',true);
+				}
+				break;
+			case'restoreAction':		
+				if(!$this->restoreAction()){
+
+					$gen('viewRestoreForm',true);
+				}	
+				break;
+			case'confRestoreAction':		
+				if(!$this->confirmRestoreAction()){
+
+					$gen('viewRestoreConfirmForm',true);
+				}	
+				break;
+			case'registrationAction':			
+				if(!$this->registerAction()){
+
+					$gen('viewRestoreForm',true);
+				}	
+				break;
+			default: 													
+				debugger('no func param');
+				break;
+		}
+
+		$this->logout(true); 
+
+		if (!empty($authMeta['errors'])) {
+
+			$authMeta['errors'] = $this->errGen;
+		}
+
+		if (!empty($authMeta['info'])) {
+
+			$authMeta['info'] = $this->errGen;
+		}
+		
+		//---------------------------------
 
 		debugger($this->errGen,__METHOD__);
 		debugger($this->infoGen,__METHOD__);
 
-		//$this
-		//	->cjob
-		//	->viewCookie(['mailhash','tokenhash']);
+		return $authMeta;
+
 	}
 }

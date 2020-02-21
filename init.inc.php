@@ -9,19 +9,25 @@ spl_autoload_register(function ($class_name) {
 
 	$flag = false;
 
+	// Указанна папка => префикс файла
+
 	$folders = array(
-		'Includes' 	=> '.inc.',
-		'Classes' 	=> '.class.'
+		'includes' 	 => '.inc.',
+		'Classes' 	 => '.class.',
+		'Controller' => '.controller.'
 	);
 
 	try {
 		foreach ($folders as $key => $value) {
 			$path = ROOTPATH.$key.DS.$class_name.$value.'php'; 
+
 			if (file_exists($path)) {
 				$flag = true; 
+				break;
 			} 
 		}
 		if (!$flag) {
+			echo $class_name;
 			throw new Exception("Не найден системный класс. Выхожу...");
 		}
 

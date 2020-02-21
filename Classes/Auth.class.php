@@ -205,8 +205,6 @@ class Auth extends Database {
 
 		$this->preAction($sql, $binder);
 
-
-
 		if(!$this->doAction()) { return null; }
 
 		$profile = $this
@@ -347,6 +345,9 @@ class Auth extends Database {
 	public function deleteNotActivatedUsers(): bool{
 
 		$sql = 'SELECT user_id, user_last_visit, user_activated FROM users';
+
+
+
 
 		// Определяем время и разницу во времени 
 		// и по ним определить кого удалить 

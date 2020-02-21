@@ -132,7 +132,8 @@ CREATE TABLE `users_activation` (
   `activation_user_id`  int(255) NOT NULL,
   `activation_token`    varchar(255) NOT NULL,
   `activation_confirm`  varchar(255) NOT NULL,
-  `activation_created`  int(11) NOT NULL
+  `activation_created`  int(12) NOT NULL
+  `activation_expired`  int(12) NOT NULL
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 ALTER TABLE `users_activation`
