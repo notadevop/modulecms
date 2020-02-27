@@ -2,26 +2,24 @@
 
 
 
-class UserIdentificator {
+class UserIdentificator extends Errors {
 
 	private $cjob; 
 	private $auth;
 	private $glob; 
 	private $filter;
 	private $cookies;
-	private $errGen;
-	private $infoGen;
 	private $pluginExecutor;
 
 
 	function __construct() {
+
+		parent::__construct();
 		
 		$this->cjob 	= new CookieJob();
 		$this->auth 	= new Auth();
 		$this->glob 	= new GlobalParams();
 		$this->filter 	= new Filter(); 
-
-		$this->errGen 	= array();
 
 		$this->pluginExecutor = function(string $category):bool {
 
@@ -74,20 +72,20 @@ class UserIdentificator {
 
 		if ($options['checkMail'] && !$this->filter->validator('key', 'email')) {
 
-			$this->errGen['noprofile'] = 'Ошибка! Укажите правильный емайл';
+			$this->collectErrors('noprofile', 'Ошибка! Укажите правильный емайл');
 		}
 
 		if (!$this->filter->isNotEmpty('key')) {
 
-			$this->errGen['nores'] = 'Недопустима пустая строка!';
+			$this->collectErrors('strWrong', 'Недопустима пустая строка!');
 		
 		} else if (!$this->filter->isNotMore('key')) {
 			
-			$this->errGen['strLimit'] = 'Недопустимое кол-во символов! Слишком большие значение.';
+			$this->collectErrors('strLimit', 'Недопустимое кол-во символов! Большое значение.');
 		
 		} else if (!$this->filter->isNotLess('key')) {
 
-			$this->errGen['strLimit'] = 'Недопустимое кол-во символов! Слишком маленькое значение.'; 
+			$this->collectErrors('strLimit', 'Недопустимое кол-во символов! Маленькое значение.'); 
 		}
 
 		return $this
@@ -105,15 +103,11 @@ class UserIdentificator {
 
 		if ($this->glob->isExist('logout') || $clean) { 
 
-			$email 	= '';
-			$hash 	= '';
-			$clean 	= true;
-
-			$this->saveAuthAction($email, $hash, $clean);
+			$this->saveAuthAction('', '', true); // пустые емай и хеш и стираем данные
 			
 			if($redirect){ header( "refresh:2; url=".HOST ); }
 
-			$this->infoGen['logout'] = 'Вы вышли из своего аккаунта';
+			$this->collectErrors('logout', 'Вы вышли из своего аккаунта!');
 
 			return true;
 			
@@ -162,7 +156,7 @@ class UserIdentificator {
 		$email 	= $this->filtration($email, $nameOpt);
 		$pass 	= $this->filtration($pass, $passOpt);
 
-		if (count($this->errGen) > 0) { return false; }
+		if (count($this->getErrors()) > 0) { return false; }
 
 		$ue = $this
 				->auth
@@ -171,14 +165,13 @@ class UserIdentificator {
 				->auth
 				->userActivated($email);
 		
-
 		if (!$ue) {
 
-			$this->errGen['noprofile'] = 'Неправильные имя или пароль!';
+			$this->collectErrors('noprof', 'Неправильные имя или пароль!');
 			return false;
 		} else if (!$ub) {
 
-			$this->errGen['ublocked'] = 'Ошибка! Пользователь заблокирован или не активирован.';
+			$this->collectErrors('blockedprof', 'Ошибка! Пользователь заблокирован или не активирован.');
 			return false;
 		} 
 
@@ -188,7 +181,7 @@ class UserIdentificator {
 
 		if (!$this->defineUserProfile($profile)) {
 
-			$this->errGen['noprofile'] = 'Неправильные имя или пароль!';
+			$this->collectErrors('noprof', 'Неправильные имя или пароль!');
 			return false;
 		}
 		
@@ -201,7 +194,8 @@ class UserIdentificator {
 			return true;
 		}
 
-		$this->infoGen['loggedin'] = 'Вы вошли в свой аккаунт!';
+		$this->collectErrors('loggedin', 'Вы вошли в свой аккаунт!');
+
 		return true;
 	}
 
@@ -211,8 +205,12 @@ class UserIdentificator {
 
 		if (empty($profile)) { return false; }
 
-		define('PROFILE', $profile);
-		debugger(PROFILE, __METHOD__);
+		debugger($profile, __METHOD__);
+
+		if (!defined('PROFILE')) {
+
+			define('PROFILE', $profile);
+		}
 
 		return true;
 	}
@@ -256,7 +254,7 @@ class UserIdentificator {
 		$mail 	= $this->filtration($mail, $nameOpt);
 		$token 	= $this->filtration($token, $passOpt);
 		
-		if (count($this->errGen) > 0) {
+		if (count($this->getErrors()) > 0) {
 
 			$this->logout(false, true);
 			return false;
@@ -343,7 +341,7 @@ class UserIdentificator {
 
 		$email 	= $this->filtration($email, $emailOpt);
 
-		if (count($this->errGen) > 0) { return false; }
+		if (count($this->getErrors()) > 0) { return false; }
 
 		$mr = $this
 				->auth
@@ -354,7 +352,7 @@ class UserIdentificator {
 
 		if (!$mr || !$ms) {
 
-			$this->errGen['noprofile'] = 'Ошибка! Возможно пользователь: заблокирован, удален или не существует!';
+			$this->collectErrors('noprof', 'Ошибка! Возможно пользователь: заблокирован, удален или не существует!');
 			return false;
 		} 
 
@@ -364,7 +362,7 @@ class UserIdentificator {
 
 		if (empty($meta)) { return false ; }
 
-		$link = HOST.'/?action=pwd&userid='.$meta['id'].'&confirm='.$meta['cofirm'].'&token='.$meta['token'];
+		$link = HOST.'/auth/confirmRestore/?userid='.$meta['id'].'&confirm='.$meta['cofirm'].'&token='.$meta['token'];
 
 		debugger('<a href="'.$link.'" target="_blank">'.$link.'</a>', __METHOD__);
 
@@ -430,7 +428,7 @@ class UserIdentificator {
 		$pass1 = $getpass('restorepwd1');
 		$pass2 = $getpass('restorepwd2');
 
-		if (count($this->errGen) > 0) { return false; }
+		if (count($this->getErrors()) > 0) { return false; }
 
 		$sp = $this
 				->auth
@@ -438,7 +436,7 @@ class UserIdentificator {
 
 		if (!$sp) {
 
-			$this->errGen['notvalid'] = 'Ошибка параметров подтверждения пользователя!';
+			$this->collectErrors('notvalid', 'Ошибка параметров подтверждения пользователя!');
 			return false;
 		}
 
@@ -447,7 +445,7 @@ class UserIdentificator {
 
 		if ($pass1 !== $pass2) {
 
-			$this->errGen['mismatch'] = 'Ошибка! пароли не совпадают.';
+			$this->collectErrors('mismatch', 'Ошибка! пароли не совпадают.');
 			return false;
 		}
 
@@ -455,9 +453,9 @@ class UserIdentificator {
 				->auth
 				->updateUserPassword($p['userid'], $pass1);
 
-		if(!$r) { $this->errGen['Ошибка обновления пароля!']; return false; }
+		if(!$r) { $this->collectErrors('updpasserr', 'Ошибка обновления пароля!'); return false; }
 		
-		$this->infoGen['updatepwd'] = 'Пароль обновлен!';
+		$this->collectErrors('updpassgood', 'Пароль обновлен!');
 
 		// TODO: Переправить пользователя на форму входа
 		return true;
@@ -525,11 +523,11 @@ class UserIdentificator {
 		$pass1 	= $this->filtration($pass1, $passOpt);
 		$pass2 	= $this->filtration($pass2, $passOpt);
 
-		if (count($this->errGen) > 0) { return false; }
+		if (count($this->getErrors()) > 0) { return false; }
 
 		if ($pass1 !== $pass2) {
 
-			$this->errGen['mismatch'] = 'Ошибка! пароли не совпадают.';
+			$this->collectErrors('mismatch', 'Ошибка! пароли не совпадают.');
 			return false;
 		}
 
@@ -539,7 +537,7 @@ class UserIdentificator {
 
 		if ($exist) {
 
-			$this->errGen['noprofile'] = 'Ошибка! Возможно такой пользователь уже зарегестрирован!';
+			$this->collectErrors('noprof', 'Ошибка! Возможно такой пользователь уже зарегестрирован!');
 			return false;
 		}
 
@@ -549,7 +547,8 @@ class UserIdentificator {
 
 		if (!$r) {
 
-			$this->errGen['noregistration'] = 'Ошибка! Не получилось зарегестрироваться! Проверьте еще раз ваши данные.';
+			$this->collectErrors('noregact', 'Ошибка! Не получилось зарегестрироваться! Проверьте еще раз ваши данные.');
+
 			return false;
 		}
 
@@ -557,11 +556,7 @@ class UserIdentificator {
 					->auth
 					->generateActivations($email);
 
-		if (empty($meta)) { 
-
-			debugger('meta',__METHOD__);
-			return false; 
-		}
+		if (empty($meta)) { return false; }
 
 		$link = HOST.'/?action=pwd&userid='.$meta['id'].'&confirm='.$meta['cofirm'].'&token='.$meta['token'];
 
@@ -630,7 +625,7 @@ class UserIdentificator {
 		$pass1 = $getpass('restorepwd1');
 		$pass2 = $getpass('restorepwd2');
 
-		if (count($this->errGen) > 0) { return false; }
+		if (count($this->getErrors()) > 0) { return false; }
 
 		$sp = $this
 				->auth
@@ -638,23 +633,23 @@ class UserIdentificator {
 
 		if (!$sp) {
 
-			$this->errGen['notvalid'] = 'Ошибка параметров подтверждения пользователя!';
+			$this->collectErrors('notvalid', 'Ошибка параметров подтверждения пользователя!');
 			return false;
 		}
 
 		$atatus = $this
-						->auth
-						->activateRegisteredUser($p['userid']);
+					->auth
+					->activateRegisteredUser($p['userid']);
 
 		$good = false;
 
 		if ($astatus) {
 
-			$this->infoGen['regactivated'] = 'Аккаунт активирован!';
+			$this->collectErrors('regactstatus', 'Аккаунт активирован!');
 			$good = true;
 		} else {
 
-			$this->errGen['regactivated'] = 'Ошибка активации пользователя!';
+			$this->collectErrors('regactbad', 'Ошибка активации пользователя!');
 		}
 
 		// TODO: Переправить пользователя на форму входа
@@ -664,7 +659,7 @@ class UserIdentificator {
 
 	// ----------------------------------------------
 
-	function __init_auth(string $authAction='loginAction') {
+	function runAuth(string $authAction='') {
 
 		// Переменная которвя соберает всю информацию об авторизации и аутентификации пользователя
 
@@ -678,7 +673,6 @@ class UserIdentificator {
 			}
 		}; 
 
-
 		$authMeta = array(
 			'viewLoginForm' 		=> false, // Окно входа
 			'viewRegistrationForm' 	=> false, // Форма регистрации
@@ -688,17 +682,9 @@ class UserIdentificator {
 			'viewDefaultPage'		=> true, // по умолчанию страница для вывода инфо
 		);
 
-		$this->logout(true); 
-
-
-		if ($this->authAction()) {
-
-			$auth = true;
-			$action = 'authentficated';
-		} 
+		$this->logout(true, false); 
 
 		// Действия по авторизации
-
 		// при указанном екшене который дается в pageBuilder выполняем определенные действия 
 		// и если возвращается false то выводим форму указаного действия 
 		// если true то страницу по умолчанию
@@ -706,52 +692,19 @@ class UserIdentificator {
 		switch($action) {
 
 			case'loginAction': 			
-				if(!$this->loginAction()){
-
-					$gen('viewLoginForm',true);
-				}
+				if(!$this->loginAction()){ 			$gen('viewLoginForm',true); }
 				break;
 			case'restoreAction':		
-				if(!$this->restoreAction()){
-
-					$gen('viewRestoreForm',true);
-				}	
+				if(!$this->restoreAction()){ 		$gen('viewRestoreForm',true); }	
 				break;
 			case'confRestoreAction':		
-				if(!$this->confirmRestoreAction()){
-
-					$gen('viewRestoreConfirmForm',true);
-				}	
+				if(!$this->confirmRestoreAction()){ $gen('viewRestoreConfirmForm',true);}	
 				break;
 			case'registrationAction':			
-				if(!$this->registerAction()){
-
-					$gen('viewRestoreForm',true);
-				}	
-				break;
-			default: 													
-				debugger('no func param');
+				if(!$this->registerAction()){ 		$gen('viewRestoreForm',true); }	
 				break;
 		}
-
-		$this->logout(true); 
-
-		if (!empty($authMeta['errors'])) {
-
-			$authMeta['errors'] = $this->errGen;
-		}
-
-		if (!empty($authMeta['info'])) {
-
-			$authMeta['info'] = $this->errGen;
-		}
-		
-		//---------------------------------
-
-		debugger($this->errGen,__METHOD__);
-		debugger($this->infoGen,__METHOD__);
 
 		return $authMeta;
-
 	}
 }

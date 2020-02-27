@@ -1,6 +1,6 @@
 
 
-	<form action="?action=login" method="POST">
+	<form action="/auth/login" method="POST">
 		<input type="text" name="loginmail" value="jcmaxuser@gmail.com" />
 		<br />
 		<input type="text" name="loginpasswd" value="Hesoyam12" />

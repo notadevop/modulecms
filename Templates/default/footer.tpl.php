@@ -1,4 +1,8 @@
 
-<p> <a href="?action=login">Login</a> | <a href="?action=register">Register</a> | <a href="?action=restore">Restore</a></p>
+<p> 
+	<a href="/auth/login">Вход</a> | 
+	<a href="/auth/register">Регистрация</a> | 
+	<a href="/auth/restore">Восстановить пароль</a>
+</p>
 </body>
 </html>

@@ -125,6 +125,12 @@ class Filter {
 
 		$this->strCollector[$key]['value'] = $string;
 	}
+
+
+	function fixUrlValidation(string $url) {
+
+		return preg_match('|^(http(s)?://)?[a-z0-9-]+\.(.[a-z0-9-]+)+(:[0-9]+)?(/.*)?$|i', $url);
+	}
 	
 	// Проверяем это емайл или нет
 

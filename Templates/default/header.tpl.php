@@ -13,7 +13,7 @@
 
 <?php 
 	if(defined('PROFILE') && !empty(PROFILE)) {
-		echo '<a href="?action=login&logout=1">Logout</a>';
+		echo '<a href="?logout=1">Выйти</a>';
 	}
 ?>
 

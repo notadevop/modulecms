@@ -213,8 +213,6 @@ class Auth extends Database {
 
 		if (empty($profile)) { return null; }
 
-		//$profile = $profile[0];
-
 		$dbfinger 	= $this
 						->modifier
 						->createFingerprint($profile['thash'], $profile['uagent']);
@@ -346,9 +344,6 @@ class Auth extends Database {
 
 		$sql = 'SELECT user_id, user_last_visit, user_activated FROM users';
 
-
-
-
 		// Определяем время и разницу во времени 
 		// и по ним определить кого удалить 
 	}
@@ -377,8 +372,7 @@ class Auth extends Database {
 
 		$this->preAction($sql, $binder);
 
-		if(!$this->doAction()) 
-			{ return false; }
+		if(!$this->doAction()) { return false; }
 
 		$activator = $this
 						->postAction()
@@ -387,8 +381,7 @@ class Auth extends Database {
 		if ($token !== $activator['token'] || $confirm !== $activator['confirm']) 
 			{ return false; }
 
-		if (!$vertime) 
-			{ return true; }
+		if (!$vertime) { return true; }
 
 		$dateClass = $this->dateClass;
 
@@ -398,21 +391,6 @@ class Auth extends Database {
 			return false; 
 		} 
 
-		/*
-		$past 	= strtotime($activator['created']);
-		$now 	= strtotime(time());
-		$past 	= new DateTime($past);
-		$now 	= new DateTime($now);
-
-		$interval = $past->diff($now);
-		debugger('ПОЧИНИТЬ ВРЕМЯ ДЛЯ ПРОВЕРКИ АКТИВАЦИИ: '.$interval->format('%h'), __METHOD__);
-
-		if ($interval->format('%h') > REGWAITER) { 
-		
-			$this->clearActivations($userid); 
-			return false; 
-		}
-		*/
 		return true;
 	}
 
@@ -444,13 +422,14 @@ class Auth extends Database {
 			$sql = 'UPDATE users_activation SET 
 				activation_token = :actoken,
 				activation_confirm = :actconfirm,
-				activation_created = :actdate
+				activation_created = :actdate, 
+				activation_expired = :actexpire
 				WHERE activation_user_id = :actuid';
 
 		} else {
 			$sql = 'INSERT INTO users_activation 
-				(activation_user_id, activation_token, activation_confirm, activation_created) 
-				VALUES (:actuid, :actoken, :actconfirm, :actdate)';
+				(activation_user_id, activation_token, activation_confirm, activation_created, activation_expired) 
+				VALUES (:actuid, :actoken, :actconfirm, :actdate, :actexpire)';
 		}
 
 		$binder = array(
@@ -462,6 +441,7 @@ class Auth extends Database {
 						->modifier
 						->randomHash(rand(30, 50), false),
 				':actdate'		=> time(),
+				':actexpire'	=> strtotime('+'.UPDATEAUTHINTERVAL.' Days')
 		);
 
 		$this->preAction($sql, $binder);

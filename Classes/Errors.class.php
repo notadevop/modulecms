@@ -17,14 +17,13 @@ class Errors {
 		return new Errors();
 	}
 
-	public function collectErrors(string $error): void {
+	public function collectErrors(string $key, string $error): void {
 
-		$this->errors[] = $error;
+		$this->errors[$key] = $error;
 	}
 
-	public function getErrors(): ?array {
+	public function getErrors(): array {
 
 		return $this->errors;
 	}
-
 }
