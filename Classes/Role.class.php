@@ -6,13 +6,10 @@ class Role extends Database {
 	function __construct() { 
 
 		parent::__construct(true);
-
-        //$this->pdo = new Database(true);
-
 		$this->permission = array();
 	}
 
-    private $pdo;
+    //private $pdo;
 	private $permission;
 
 	// Возвращает пояснение привелегии по указанной роли 
@@ -39,8 +36,6 @@ class Role extends Database {
         
         return $role; // Возвращает права роли
     }
-
-
 
     // Проверяет, если права установленны
     public function hasPerm(string $permission): bool {

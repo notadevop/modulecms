@@ -52,11 +52,11 @@ if (isset($username)) {
     	echo "You are logged with this permission ".$userperms;
     } else {
 
-   		echo 'you are not logged in';
+   		echo 'forbidden you don\' have permission to access this webage!';
     }
 } else {
 
-	echo "Forbiden with this permission access denied!";
+	echo "You'r not authentificated!";
 }
 
 

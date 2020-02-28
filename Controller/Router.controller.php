@@ -38,7 +38,7 @@ class Router {
 
 			//if (strpos($uri, $route) !== false) { }
 
-			if (preg_match('#^'.$route.'$#', $uri) || $route === '__hidden_auth__') {
+			if (preg_match('#^'.$uri.'$#', $route) || $route === '__hidden_auth__') {
 
 				$this->executeRouteController($this->routes[$route]);
 			}

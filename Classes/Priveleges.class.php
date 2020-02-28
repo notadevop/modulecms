@@ -11,8 +11,39 @@ class Priveleges extends Database {
         $this->roles = array();
 	}
 
-    private $pdo;
+    //private $pdo;
 	private $roles;
+
+    /*
+    public static function getByUsername(string $username): ?PrivilegedUser {
+
+        // Вытаскиваем пользователя
+        $sql = "SELECT * FROM users WHERE username = :username";
+
+        $sth = $GLOBALS["DB"]->prepare($sql);
+        $sth->execute(array(":username" => $username));
+        $result = $sth->fetchAll();
+
+        if (!empty($result)) {
+
+            $privUser = new Privileges();
+            $privUser->user_id = $result[0]["user_id"];
+            $privUser->username = $username;
+            $privUser->password = $result[0]["password"];
+            $privUser->email_addr = $result[0]["email_addr"];
+            $privUser->initRoles();
+        
+            return $privUser;
+        } else {
+            return false;
+        }
+    }
+    */
+
+    public function getRoles(): array{
+
+        return $this->roles;
+    }
 
     // populate roles with their associated permissions
     // Достаем все роли которые привязанны к указанному пользователю

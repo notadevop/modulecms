@@ -1,9 +1,6 @@
 <?php 
 
 
-
-
-
 class Auth extends Database {
 	
 	private $userprofile;
@@ -62,6 +59,15 @@ class Auth extends Database {
 				->postAction()
 				->fetch();
 
+		// Получаем права пользователя, если их нет выходим 
+		// без прав нечего делать пользователю в закрытом сегменте 
+
+		//if(empty($profile)) {return null;}
+
+		$priveleges = new Priveleges();
+		$priveleges->initRoles($profile['id']);
+
+
 		return !empty($profile) ? $profile : null;
 	}
 
@@ -73,6 +79,22 @@ class Auth extends Database {
 
 		if (empty($profile['lastvisit']) || $profile['lastvisit'] == 0 || $profile['actstatus'] == 0) 
 			{return false;}
+
+		// Проверка привелегий пользователя, если их нет то пользователь не активирован
+
+		$sql = 'SELECT DISTINCT COUNT(*) as counter FROM user_role WHERE user_id IN (SELECT user_id FROM users WHERE user_email = :useremail)';
+
+		$binder = array(':useremail' => $useremail);
+
+		$this->preAction($sql, $binder);
+
+		if(!$this->doAction()) { return false; }
+
+		$prev = $this
+				->postAction()
+				->fetch()['counter'];
+
+		if ($prev == 0) { return false; }
 
 		return true;
 	}
@@ -342,6 +364,9 @@ class Auth extends Database {
 
 	public function deleteNotActivatedUsers(): bool{
 
+		$sql = 'DELETE FROM users_activation WHERE ';
+
+
 		$sql = 'SELECT user_id, user_last_visit, user_activated FROM users';
 
 		// Определяем время и разницу во времени 
@@ -378,11 +403,16 @@ class Auth extends Database {
 						->postAction()
 						->fetch();
 
-		if ($token !== $activator['token'] || $confirm !== $activator['confirm']) 
-			{ return false; }
+		if ($token !== $activator['token'] || $confirm !== $activator['confirm']) { 
+
+			return false; 
+		}
 
 		if (!$vertime) { return true; }
 
+		$this->clearActivations($userid, true); 
+
+		/*
 		$dateClass = $this->dateClass;
 
 		if ($dateClass($activator['created'],time(),'%h', UPDATEAUTHINTERVAL)) {
@@ -390,13 +420,15 @@ class Auth extends Database {
 			$this->clearActivations($userid); 
 			return false; 
 		} 
-
+		*/
 		return true;
 	}
 
 	// устанавливаем активацию для подтверждения 
 
 	public function updateActivations(int $userid): ?array{
+
+		$this->clearActivations($userid, true);
 
 		$sql = 'SELECT COUNT(*) as count 
 				FROM users_activation WHERE activation_user_id = :actuid LIMIT 1';
@@ -410,12 +442,6 @@ class Auth extends Database {
 		$counter = $this
 			->postAction()
 			->fetch()['count'];
-
-		// Тут проверка на удаление и на время 
-		// Тут проверка на удаление и на время 
-		// Тут проверка на удаление и на время 
-		// Тут проверка на удаление и на время 
-		// Тут проверка на удаление и на время 
 
 		if ($counter > 0) { 
 
@@ -456,15 +482,25 @@ class Auth extends Database {
 
 	// Удаляем активацию из базы данных
 
-	public function clearActivations(int $userid): bool{
+	public function clearActivations(int $userid, bool $cleanbytime=false): bool{
 
 		$profile = $this->getUserProfile($userid);
 
 		if (empty($profile)) { return false; }
 
-		$sql = 'DELETE FROM users_activation WHERE activation_user_id = :uid';
+		if($cleanbytime) {
 
-		$binder = array(':uid' => $userid);
+			$sql = 'DELETE FROM users_activation 
+					WHERE activation_user_id = :uid AND activation_expired < :curtime';
+
+			$binder = array(':uid' => $userid, ':curtime' => time());
+		} else {
+
+			$sql = 'DELETE FROM users_activation WHERE activation_user_id = :uid';
+
+			$binder = array(':uid' => $userid);
+
+		}
 
 		$this->preAction($sql, $binder);
 
