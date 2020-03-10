@@ -366,7 +366,6 @@ class Auth extends Database {
 
 		$sql = 'DELETE FROM users_activation WHERE ';
 
-
 		$sql = 'SELECT user_id, user_last_visit, user_activated FROM users';
 
 		// Определяем время и разницу во времени 
@@ -377,7 +376,8 @@ class Auth extends Database {
 
 	public function clearUserLogins(int $byspecuser=0): bool{
 
-		// Удаление cесии данного пользователя или всех сессий из базы данных
+		// Удаление cесии данного пользователя или всех сессий 
+		// из базы данных по token_expires и token_created
 
 		return false;
 	}

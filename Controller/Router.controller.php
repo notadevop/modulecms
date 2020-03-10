@@ -14,7 +14,6 @@ class Router {
 			
 			$this->addRoute($key, $params);
 		}
-
 	}
 
 	function addRoute(string $route, array $params):void {
@@ -24,7 +23,6 @@ class Router {
 			$this->routes[$route] = $params;
 		}
 	}
-
 
 	// Получаем список шаблонов и меняем в зависимости от исполнения контроллера 
 
@@ -44,7 +42,6 @@ class Router {
 			}
 		}
 	}
-
 
 	private function executeRouteController(array $cont):void  {
 
@@ -125,7 +122,6 @@ class Router {
 		// разделяем ее на составные 
 		// получаем ссылку которая сейчас есть 
 		// удаляем дубликаты и генерирует ту ссылку которую нужно установить
-
 
 		return '';
 	}

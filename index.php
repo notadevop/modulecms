@@ -30,16 +30,9 @@ require_once ( ROOTPATH . 'init.inc.php');
 require_once ( ROOTPATH . 'includes/routescheme.inc.php');
 
 
-
-
-
 $router = new Router(defroutes);
 
 $router->runRouter();
-
-
-
-
 
 
 // Отправить в pageBuilder

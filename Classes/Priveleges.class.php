@@ -11,8 +11,13 @@ class Priveleges extends Database {
         $this->roles = array();
 	}
 
-    //private $pdo;
 	private $roles;
+
+    public function getByusername(string $useremail) {
+
+
+        // вытаскиваем пользователя и все его данные кроме пароля 
+    }
 
     /*
     public static function getByUsername(string $username): ?PrivilegedUser {
