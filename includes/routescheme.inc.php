@@ -16,13 +16,13 @@ define('defroutes', array(
 		
 			// TODO:  как использовать методы которые нужно использовать внезависимости от пути???
 
-			'__hidden_auth__'	=> array(
+			'any0'	=> array(
 				'controller' 			=> 'UserIdentificator',
 				'action' 				=> 'authAction', 
 				'args' 					=> ''
 			),
 
-			'__hidden_logout__'	=> array(
+			'any1'	=> array(
 				'controller' 			=> 'UserIdentificator',
 				'action' 				=> 'logout', 
 				'args' 					=> array(true, false)

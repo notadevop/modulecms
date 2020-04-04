@@ -1,8 +1,21 @@
 
-<p> 
-	<a href="/auth/login">Вход</a> | 
-	<a href="/auth/register">Регистрация</a> | 
-	<a href="/auth/restore">Восстановить пароль</a>
-</p>
+<?php 
+
+$links = array(
+
+	'/' 				=> 'Главная',
+	'/auth/login' 		=> 'Войти',
+	'/auth/register' 	=> 'Регистрация',
+	'/auth/restore' 	=> 'Забыл пароль',
+	'/phpmyadmin/'		=> 'Phpmyadmin',
+	'http://phptester.net'=> 'php sandbox'
+);
+
+foreach ($links as $key => $value) {
+	
+	echo '<a href="'.$key.'">'.$value.'</a> | ';
+}
+?>
+</br>
 </body>
 </html>
