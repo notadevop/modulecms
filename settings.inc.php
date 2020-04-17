@@ -18,6 +18,10 @@ define('RESTOREALLOW',true);
 define('AllowLoginRedirect', true);
 define('LoginRedirectPath', '/profile/');
 
+
+define('TPLDEFAULTFOLDER', ROOTPATH . 'Templates'.DS);
+define('TPLDEFAULTTEMPLATE', .'default'.DS);
+
 /*
 	LOGIN 		- откуда человек пришел в пределах сайта
 	RESTORE 	- после подтверждения, отправить на главную страницу

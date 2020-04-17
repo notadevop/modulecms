@@ -30,9 +30,11 @@ require_once ( ROOTPATH . 'init.inc.php');
 require_once ( ROOTPATH . 'includes/routescheme.inc.php');
 
 
-$router = new Router(defroutes);
 
+
+$router = new Router(defroutes);
 $router->runRouter();
+
 
 
 // Отправить в pageBuilder
@@ -41,7 +43,6 @@ function loadTemplate(string $template, string $file,array $metadata=array()){
 
 	require_once ( ROOTPATH . 'Templates'.DS.$template.DS.$file.'.tpl.php');
 }
-
 
 loadTemplate('default', 'header');
 
@@ -61,8 +62,6 @@ if (preg_match('#^'.$curUri.'$#', '/auth/login')) {
 
 } else if (preg_match('#^'.$curUri.'$#', '/auth/confirmrestore')) {
 
-	debugger('confirm_restore');
-
 	loadTemplate('default', 'pwdReset');
 
 } else {
@@ -73,11 +72,9 @@ if (preg_match('#^'.$curUri.'$#', '/auth/login')) {
 loadTemplate('default', 'footer');
 
 
-
 $time 	= microtime();
 $time 	= explode(' ', $time);
 $time 	= $time[1] + $time[0];
 $finish = $time;
 $total_time = round(($finish - $start), 4);
 echo 'Страница сгенерированна через: '.$total_time.' cекунд.';
-
