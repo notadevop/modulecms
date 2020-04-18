@@ -1,0 +1,194 @@
+<?php 
+
+
+final class Routing {
+	
+	public  static $routes      = array();
+	private static $params      = array();
+	public  static $requestedUrl= '';
+
+
+	/**
+	* Добавить маршрут
+	*/
+	public static function addRoute($route, $destination=null) {
+
+		if ($destination != null && !is_array($route)) {
+
+			$route = array($route => $destination);
+		}
+		self::$routes = array_merge(self::$routes, $route);
+	}
+
+	/**
+	* Разделить переданный URL на компоненты
+	*/
+	public static function splitUrl(string $url) {
+
+		return preg_split('/\//', $url, -1, PREG_SPLIT_NO_EMPTY);
+	}
+
+	/**
+	* Текущий обработанный URL
+	*/    
+	public static function getCurrentUrl() {
+
+		return (self::$requestedUrl?:'/');
+	}
+
+	public static function cleanRoutes() {
+
+		self::$routes = array();
+	}
+
+	/**
+	* Обработка переданного URL
+	*/
+	public static function dispatch($requestedUrl = null) {
+
+		// Если URL не передан, берем его из REQUEST_URI
+		if ($requestedUrl === null) {
+
+			$cur = self::getCurrentUri();
+
+			$requestedUrl = $cur == '/' ? '/' : urldecode(rtrim($cur, '/'));
+		}
+
+		self::$requestedUrl = $requestedUrl;
+
+		// если URL и маршрут полностью совпадают
+		if (isset(self::$routes[$requestedUrl])) {
+
+			self::$params = self::splitUrl(self::$routes[$requestedUrl]);
+			return self::executeAction();
+		}
+
+		foreach (self::$routes as $route => $uri) {
+
+			// Заменяем wildcards на рег. выражения
+			if (strpos($route, ':') !== false) {
+			  
+				$route = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $route));
+			}
+
+			if (preg_match('#^'.$route.'$#', $requestedUrl)) {
+			  
+				if (strpos($uri, '$') !== false && strpos($route, '(') !== false) {
+
+					$uri = preg_replace('#^'.$route.'$#', $uri, $requestedUrl);
+				}
+
+				self::$params = self::splitUrl($uri);
+
+				break; // URL обработан!
+			}
+		} 
+		return self::executeAction();
+	} 
+
+
+	public static function getCurrentUri(){
+
+		$scriptName = $_SERVER['SCRIPT_NAME'];
+		$basepath 	= implode('/', array_slice(explode('/', $scriptName), 0, -1)) . '/';
+		$uri 		= substr($_SERVER['REQUEST_URI'], strlen($basepath));
+
+		if (strstr($uri, '?')) {
+
+			$uri = substr($uri, 0, strpos($uri, '?'));
+		}
+		
+		$uri = '/' . trim($uri, '/');
+		return strtolower($uri);
+	}
+
+	public static function getRoutes(string $extUri=''): array {
+
+		// /search/something/is/here/ -> Возвращает массив всех путей 
+		// -> ['search', 'something', 'is', 'here']
+
+		if (empty($extUri)) {  
+
+			$base_uri = $this->getCurrentUri(); 
+		}
+
+		$routeValues = array();
+		$routes = explode('/', $base_uri);
+		
+		foreach($routes as $route) {
+
+			if(trim($route) != '') {
+			
+				array_push($routeValues, $route);
+			}
+		}
+
+		/** Пример использования: 
+		$routes = $obj->getRoutes();
+		if($routes[0] == 'search') {
+			if($routes[1] == 'book') {
+				echo 'clicked';
+			}
+		}*/
+		return $routeValues;
+	}
+
+	/**
+   	* 	Запуск соответствующего действия/экшена/метода контроллера
+   	*/
+	public static function executeAction() {
+
+		$controller = isset(self::$params[0]) ? self::$params[0]: 'DefaultController';
+		$action 	= isset(self::$params[1]) ? self::$params[1]: 'default_method';
+		$params 	= array_slice(self::$params, 2);
+
+		$obj 		= new $controller();
+		$cresult 	= call_user_func_array(array($obj, $action), $params);
+		$errors  	= $obj->getErrors();
+
+		return array($cresult, $errors);
+	}
+
+
+	//  ------------------------------------ 
+	//  +          пример использования 
+	//  ------------------------------------
+
+	// маршруты (можно хранить в конфиге приложения)
+	// можно использовать wildcards (подстановки):
+	// :any - любое цифробуквенное сочетание
+	// :num - только цифры
+	// в результирующее выражение записываются как $1, $2 и т.д. по порядку
+	/*
+	$routes = array(
+	  // 'url' => 'контроллер/действие/параметр1/параметр2/параметр3'
+	  '/'               => 'MainController/index', // главная страница
+	  '/contacts'       => 'MainController/contacts', // страница контактов
+	  '/blog'           => 'BlogController/index', // список постов блога
+	  '/blog/:num'      => 'BlogController/viewPost/$1' // просмотр отдельного поста, например, /blog/123
+	  '/blog/:any/:num' => 'BlogController/$1/$2' // действия над постом, например, /blog/edit/123 или /blog/dеlete/123
+	  '/:any'           => 'MainController/anyAction' // все остальные запросы обрабатываются здесь
+	));
+
+	// добавляем все маршруты за раз
+	RouterLite::addRoute($routes);
+
+	// а можно добавлять по одному
+	RouterLite::addRoute('/about', 'MainController/about');
+
+	// непосредственно запуск обработки
+	RouterLite::dispatch();
+	*/
+
+	// ========== ДЛЯ НОРМАЛЬНОГО ИСПОЛЬЗОВАНИЯ РОУТЕРА НУЖНО ИСПОЛЬЗОВАТЬ ЭТО ======= //
+
+	// ----> добавить в .htaccess 
+
+	/* 
+		this router working only with this 
+		Options -MultiViews
+	    RewriteEngine On
+	    RewriteCond %{REQUEST_FILENAME} !-f
+	    RewriteRule ^ index.php [QSA,L]
+	*/
+}

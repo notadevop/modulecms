@@ -49,6 +49,12 @@ class UserIdentificator extends Errors {
 		$this->errors = array();
 	}
 
+
+	function testing($param) {
+
+		return array('test1', 'test2', $param);
+	}
+
 	// ----------------------------------------------
 
 	private function filtration(string $input, array $options): string {
@@ -658,7 +664,7 @@ class UserIdentificator extends Errors {
 	}
 
 	// ----------------------------------------------
-
+	/*
 	function runAuth(string $authAction='') {
 
 		// Переменная которвя соберает всю информацию об авторизации и аутентификации пользователя
@@ -707,4 +713,5 @@ class UserIdentificator extends Errors {
 
 		return $authMeta;
 	}
+	*/
 }

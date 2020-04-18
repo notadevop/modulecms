@@ -15,12 +15,13 @@ define('LOGINALLOW', true);
 define('RESTOREALLOW',true);
 
 
-define('AllowLoginRedirect', true);
-define('LoginRedirectPath', '/profile/');
+define('AllowLoginRedirect', true); // При правильной авторизации перенаправлять пользователя
+define('LoginRedirectPath', '/profile/');	
 
+// нужно для того, чтобы отдельно указывать другой путь шаблону
+define('TPLDEFAULTFOLDER', ROOTPATH . 'Templates'.DS); 
 
-define('TPLDEFAULTFOLDER', ROOTPATH . 'Templates'.DS);
-define('TPLDEFAULTTEMPLATE', .'default'.DS);
+define('TPLDEFAULTTEMPLATE', 'default'.DS);
 
 /*
 	LOGIN 		- откуда человек пришел в пределах сайта
@@ -36,8 +37,8 @@ define('TPLDEFAULTTEMPLATE', .'default'.DS);
  2. moderator/editor  	(CAN EDIT OTHER POSTS, AUTHOR OF POSTS, CAN REMOVE ALL COMMENTS)
  3. author,  			(CAN CREATE HIS POSTS, REMOVE HIS POSTS AND COMMENTS ONLY)
  4. subscriber  		(CAN LEAVE COMMENTS, AND DELETE HIS COMMENTS)
- 5. blockeduser			(EXIST IN SYSTEM, NO PRIVELEGES TEMPORARY)
- 6. deleteduser 		(EXIST IN SYSTEM NO PRIVELEGES FOREVER)
+ 5. blockeduser			(EXIST IN SYSTEM,NO LOGIN AND NO PRIVELEGES, TEMPORARY)
+ 6. deleteduser 		(EXIST IN SYSTEM AS GHOST, NO PRIVELEGES FOREVER, NO LOGIN)
  7. visitor				(NO PRIVELEGES, CAN VIEW OPEN POSTS ONLY, NOT REGISTERED)
 */
 

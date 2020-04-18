@@ -22,19 +22,33 @@ define('ROOTPATH', dirname(__FILE__).DS);
 
 // header( "refresh:1; url=index.php" ); 
 
+
+// Загрузка файлов без классов
 require_once ( ROOTPATH . 'settings.inc.php');
 require_once ( ROOTPATH . 'config.inc.php');
-/* Автозагрузчик всех классов и инклюдов */
 require_once ( ROOTPATH . 'init.inc.php');
 
-require_once ( ROOTPATH . 'includes/routescheme.inc.php');
+
+$routes = array(
+	'/'						=> 'UserIdentificator/testing/helloworld',
+	'/auth/login' 			=> 'UserIdentificator/loginAction',
+	'/auth/register' 		=> 'UserIdentificator/registerAction',
+	'/auth/restore' 		=> 'UserIdentificator/restoreAction',
+	'/auth/confirmRestore' 	=> 'UserIdentificator/confirmRestoreAction',
+	'/auth/logout' 			=> 'UserIdentificator/logout/true/false',
+);
 
 
 
 
-$router = new Router(defroutes);
-$router->runRouter();
 
+
+Routing::addRoute($routes); // Добавляем пути
+//Routing::addRoute('/about', 'MainController/about'); // Добавляем один путь
+$result = Routing::dispatch('/');  
+$result = Routing::dispatch(); 
+
+debugger($result,__FUNCTION__);
 
 
 // Отправить в pageBuilder
@@ -46,7 +60,7 @@ function loadTemplate(string $template, string $file,array $metadata=array()){
 
 loadTemplate('default', 'header');
 
-$curUri = $router->getCurrentUri();
+$curUri = Routing::getCurrentUri();
 
 if (preg_match('#^'.$curUri.'$#', '/auth/login')) {
 

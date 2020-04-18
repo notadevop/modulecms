@@ -1,8 +1,7 @@
 <?php
 
-/**
- * 
- */
+//namespace Controller\RouterController;
+
 class Router {
 	
 	private $routes = array();

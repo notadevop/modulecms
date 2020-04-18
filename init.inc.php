@@ -1,7 +1,9 @@
 <?php 
 
-if (!defined('ROOTPATH')) 
-	die('no key defined!');
+//if (!defined('ROOTPATH')) 
+//	die('no key defined!');
+
+// Обьявить пространство имен для защиты от запуска из любого класа из любой точки
 
 spl_autoload_register(function ($class_name) {
 
@@ -12,23 +14,26 @@ spl_autoload_register(function ($class_name) {
 	// Указанна папка => префикс файла
 
 	$folders = array(
-		'includes' 	 => '.inc.',
+		'Includes' 	 => '.inc.',
 		'Classes' 	 => '.class.',
-		'Controller' => '.controller.'
+		'Controller' => '.ctrl.'
 	);
 
 	try {
 		foreach ($folders as $key => $value) {
 			$path = ROOTPATH.$key.DS.$class_name.$value.'php'; 
 
+			$path = str_replace('\\', DIRECTORY_SEPARATOR, $path);
+
 			if (file_exists($path)) {
 				$flag = true; 
 				break;
 			} 
 		}
+		
 		if (!$flag) {
 			echo $class_name;
-			throw new Exception("Не найден системный класс. Выхожу...");
+			throw new Exception("Не могу продолжить, не найдет указанный класс. Выхожу...");
 		}
 
 		require_once ( $path );	
