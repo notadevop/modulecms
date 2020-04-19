@@ -41,6 +41,13 @@ CREATE TABLE `user_role` (
   `role_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `users_online` (
+        `session`   varchar(255) NOT NULL,
+        `visitime`  varchar(255) NOT NULL,
+        `userip`  varchar(255) NOT NULL,
+        `uagent`  varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `users_activation` (
   `activation_id`     int(255) NOT NULL,
   `activation_user_id`  int(255) NOT NULL,

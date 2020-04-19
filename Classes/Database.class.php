@@ -7,8 +7,7 @@ class Database extends Errors {
 
 	function __construct(bool $connect) {	
 		// Устанавливаем соединение, только если указали на подключение
-		if ($connect) 
-			$this->make_con();
+		if ($connect) { $this->make_con(); }
 	}
 
 	function __destruct() {

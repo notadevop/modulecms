@@ -29,61 +29,88 @@ require_once ( ROOTPATH . 'config.inc.php');
 require_once ( ROOTPATH . 'init.inc.php');
 
 
-$routes = array(
-	'/'						=> 'UserIdentificator/testing/helloworld',
-	'/auth/login' 			=> 'UserIdentificator/loginAction',
-	'/auth/register' 		=> 'UserIdentificator/registerAction',
-	'/auth/restore' 		=> 'UserIdentificator/restoreAction',
-	'/auth/confirmRestore' 	=> 'UserIdentificator/confirmRestoreAction',
-	'/auth/logout' 			=> 'UserIdentificator/logout/true/false',
+// --- Перманентные пути нужны для исполнения на любой странице
+
+$permRoutes = array(
+
+	'/authAction'  	=> 'UserIdentificator/authAction',
+	'/online'		=> 'Visitor/users_online'
 );
 
+$res = array();
+
+Routing::addRoute($permRoutes);
+
+foreach ($permRoutes as $key => $value) {
+	
+	$res[$key] = Routing::dispatch($key);
+	Routing::cleanRoutes($key);
+}
 
 
+echo 'Кол-во пользователей на сайте: '.$res['/online']['ctrlres'];
 
 
+// ----------------
+
+$routes = array(
+	'/'						=> 'UserIdentificator/testing/helloworld',
+	'/usersonline'			=> 'Visitor/getOnlineUsers',
+	'/login' 				=> 'UserIdentificator/loginAction',
+	'/register' 			=> 'UserIdentificator/registerAction',
+	'/restore' 				=> 'UserIdentificator/restoreAction',
+	'/confirmrestore' 		=> 'UserIdentificator/confirmRestoreAction',
+	'/confirmregistration' 	=> 'UserIdentificator/confirmRegistrationAction',
+	'/logout' 				=> 'UserIdentificator/logout/true/false',
+);
 
 Routing::addRoute($routes); // Добавляем пути
-//Routing::addRoute('/about', 'MainController/about'); // Добавляем один путь
-$result = Routing::dispatch('/');  
 $result = Routing::dispatch(); 
 
-debugger($result,__FUNCTION__);
 
+// Временное что-то типа шаблонизатора 
+$templates = array(
 
-// Отправить в pageBuilder
+	'/'						=> 'infopage.tpl.php',
+	'/login'				=> 'login.tpl.php',
+	'/usersonline'			=> 'infopage.tpl.php',
+	'/restore'				=> 'restore.tpl.php',
+	'/confirmrestore'		=> 'passform.tpl.php',
+	'/register'				=> 'register.tpl.php',
+	'/confirmregistration'	=> 'infopage.tpl.php',
+	'/logout'				=> 'infopage.tpl.php',
+);
 
-function loadTemplate(string $template, string $file,array $metadata=array()){
+function loadTemplate($metadata='', $templates) {
 
-	require_once ( ROOTPATH . 'Templates'.DS.$template.DS.$file.'.tpl.php');
+	require_once (TPLDEFAULTFOLDER.TPLDEFAULTTEMPLATE.'header.tpl.php');
+
+	$curUri = '/'.Routing::getRoutes()[0];
+
+	if(empty($curUri)) $curUri = '/';
+
+	$notemplate = true;
+
+	foreach ($templates as $key => $value) {
+		
+		if (preg_match('#^'.$curUri.'$#', $key)) {
+
+			require_once (TPLDEFAULTFOLDER.TPLDEFAULTTEMPLATE.$value);
+			$notemplate =false;
+		}
+	}
+
+	if($notemplate) {
+
+		require_once (TPLDEFAULTFOLDER.TPLDEFAULTTEMPLATE.$templates['/']);
+	}
+
+	require_once ( TPLDEFAULTFOLDER.TPLDEFAULTTEMPLATE.'footer.tpl.php');
 }
 
-loadTemplate('default', 'header');
+loadTemplate($result, $templates);
 
-$curUri = Routing::getCurrentUri();
 
-if (preg_match('#^'.$curUri.'$#', '/auth/login')) {
-
-	loadTemplate('default', 'login'); 
-
-} else if (preg_match('#^'.$curUri.'$#', '/auth/register')) {
-
-	loadTemplate('default', 'register'); 
-
-} else if (preg_match('#^'.$curUri.'$#', '/auth/restore')) {
-
-	loadTemplate('default', 'restore'); 
-
-} else if (preg_match('#^'.$curUri.'$#', '/auth/confirmrestore')) {
-
-	loadTemplate('default', 'pwdReset');
-
-} else {
-
-	loadTemplate('default', 'infopage'); 
-}
-
-loadTemplate('default', 'footer');
 
 
 $time 	= microtime();

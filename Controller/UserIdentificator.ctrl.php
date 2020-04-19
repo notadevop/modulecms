@@ -24,14 +24,10 @@ class UserIdentificator extends Errors {
 		$this->pluginExecutor = function(string $category):bool {
 
 			switch($category) {
-				case 'login': 			
-					break;
-				case 'restore': 		
-					break;
-				case 'registration': 	
-					break;
-				default: 				
-					break;
+				case 'login': 		break;
+				case 'restore': 	break;
+				case 'registration':break;
+				default: break;
 			}
 
 			// тут описать обьект который будет работать с плагинами
@@ -52,7 +48,7 @@ class UserIdentificator extends Errors {
 
 	function testing($param) {
 
-		return array('test1', 'test2', $param);
+		return 'Тестовая строка исполнятся должен везде!';
 	}
 
 	// ----------------------------------------------
@@ -213,10 +209,7 @@ class UserIdentificator extends Errors {
 
 		debugger($profile, __METHOD__);
 
-		if (!defined('PROFILE')) {
-
-			define('PROFILE', $profile);
-		}
+		if (!defined('PROFILE')) { define('PROFILE', $profile); }
 
 		return true;
 	}
@@ -224,6 +217,8 @@ class UserIdentificator extends Errors {
 	// ----------------------------------------------
 
 	function authAction():bool {
+
+		echo 'метод АУТЕНТИФИКАЦИИ запущен!</br>';
 
 		$this
 			->glob
@@ -368,7 +363,7 @@ class UserIdentificator extends Errors {
 
 		if (empty($meta)) { return false ; }
 
-		$link = HOST.'/auth/confirmRestore/?userid='.$meta['id'].'&confirm='.$meta['cofirm'].'&token='.$meta['token'];
+		$link = HOST.'/confirmrestore/?userid='.$meta['id'].'&confirm='.$meta['cofirm'].'&token='.$meta['token'];
 
 		debugger('<a href="'.$link.'" target="_blank">'.$link.'</a>', __METHOD__);
 
@@ -662,56 +657,4 @@ class UserIdentificator extends Errors {
 		return $good;
 
 	}
-
-	// ----------------------------------------------
-	/*
-	function runAuth(string $authAction='') {
-
-		// Переменная которвя соберает всю информацию об авторизации и аутентификации пользователя
-
-		$action = $authAction;
-
-		$gen = function($k, $val) use (&$authMeta) {
-
-			foreach ($authMeta as $key => $value) {
-				
-				$authMeta[$key] = ($k == $key) ? $val : !$val;
-			}
-		}; 
-
-		$authMeta = array(
-			'viewLoginForm' 		=> false, // Окно входа
-			'viewRegistrationForm' 	=> false, // Форма регистрации
-			'viewRestoreForm'		=> false, // поле восстановления
-			'viewRestoreConfirmForm'=> false, // Форма ввода новых паролей 
-			'userAuthentificated'	=> false, // Проверка на авторизованного пользователя
-			'viewDefaultPage'		=> true, // по умолчанию страница для вывода инфо
-		);
-
-		$this->logout(true, false); 
-
-		// Действия по авторизации
-		// при указанном екшене который дается в pageBuilder выполняем определенные действия 
-		// и если возвращается false то выводим форму указаного действия 
-		// если true то страницу по умолчанию
-
-		switch($action) {
-
-			case'loginAction': 			
-				if(!$this->loginAction()){ 			$gen('viewLoginForm',true); }
-				break;
-			case'restoreAction':		
-				if(!$this->restoreAction()){ 		$gen('viewRestoreForm',true); }	
-				break;
-			case'confRestoreAction':		
-				if(!$this->confirmRestoreAction()){ $gen('viewRestoreConfirmForm',true);}	
-				break;
-			case'registrationAction':			
-				if(!$this->registerAction()){ 		$gen('viewRestoreForm',true); }	
-				break;
-		}
-
-		return $authMeta;
-	}
-	*/
 }

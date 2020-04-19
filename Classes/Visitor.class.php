@@ -3,9 +3,12 @@
 /**
  * 
  */
-class Visitor {
+final class Visitor extends Database{
 	
-	function __construct() { }
+	function __construct() { 
+
+		parent::__construct(true);
+	}
 
 	private $ua;
 	private $lang;
@@ -13,7 +16,7 @@ class Visitor {
 	// TODO: Для нормальной работы статического метода использовать для 
 	// переменнных self::
 
-	public static function get_data(): array {
+	public function get_data(): array {
 
 		return array(
 			'ua' 	=> $_SERVER['HTTP_USER_AGENT'],
@@ -21,22 +24,22 @@ class Visitor {
 		);
 	}
 
-	public static function get_userspecs(): array {
+	public function get_userspecs(): array {
 
 		return array(
-			'userbrowser' 	=> self::get_browser(),
-			'useros' 		=> self::get_os(),
-			'userbrlang' 	=> self::get_lang(),
-			'userremoteip' 	=> self::get_ip(),
+			'userbrowser' 	=> $this->get_browser(),
+			'useros' 		=> $this->get_os(),
+			'userbrlang' 	=> $this->get_lang(),
+			'userremoteip' 	=> $this->get_ip()
 		);
 	}
 
-	public static function get_lang(): string {
+	public function get_lang(): string {
 
-		return substr(self::get_data()['lang'], 0, 2);
+		return substr($this->get_data()['lang'], 0, 2);
 	}
 
-	public static function get_os(): string {
+	public function get_os(): string {
 
 		$os_platform = "Unknown OS"; 
 	    $os_array = array(
@@ -56,7 +59,8 @@ class Visitor {
             '/win98/i'              =>  'Windows 98',
             '/win95/i'              =>  'Windows 95',
             '/win16/i'              =>  'Windows 3.11',
-            '/macintosh|mac os x/i' =>  'Macos X',
+            '/macintosh/i' 			=>  'Macos X',
+            '/mac os x/i'			=>  'Intel Macos X',
             '/mac_powerpc/i'        =>  'Macos PPC',
             '/iphone/i'             =>  'iOS/iPhone',
             '/ipod/i'               =>  'iOS/iPod',           
@@ -78,19 +82,24 @@ class Visitor {
             // TODO: Добавить новые операционные системы
 	    );
 
+	    $ua = $this->get_data()['ua'];
+
 	    foreach ($os_array as $regex => $value) { 
 
-	        if (preg_match($regex, self::get_data()['ua'])) {
+	        if (preg_match($regex, $ua)) {
+
 	            $os_platform = $value;
+	        	debugger($os_platform);
+	        	break;
 	        }
 	    }
 	    return $os_platform;
 	}
 
-	public static function get_ip() {
+	public function get_ip() {
 
 		// Check for shared Internet/ISP IP
-	    if (!empty($_SERVER['HTTP_CLIENT_IP']) && self::validate_ip($_SERVER['HTTP_CLIENT_IP'])) {
+	    if (!empty($_SERVER['HTTP_CLIENT_IP']) && $this->validate_ip($_SERVER['HTTP_CLIENT_IP'])) {
 
 	        return $_SERVER['HTTP_CLIENT_IP'];
 	    }
@@ -101,30 +110,30 @@ class Visitor {
 	        if (strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',') !== false) {
 	            $iplist = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
 	            foreach ($iplist as $ip) {
-	                if (self::validate_ip($ip)) {
+	                if ($this->validate_ip($ip)) {
 	                    return $ip;
 	                }
 	            }
 	        } else {
-	            if (self::validate_ip($_SERVER['HTTP_X_FORWARDED_FOR']))
+	            if ($this->validate_ip($_SERVER['HTTP_X_FORWARDED_FOR']))
 	                return $_SERVER['HTTP_X_FORWARDED_FOR'];
 	        }
 	    }
 
 	    if (!empty($_SERVER['HTTP_X_FORWARDED']) 
-	    	&& self::validate_ip($_SERVER['HTTP_X_FORWARDED']))
+	    	&& $this->validate_ip($_SERVER['HTTP_X_FORWARDED']))
 	        return $_SERVER['HTTP_X_FORWARDED'];
 
 	    if (!empty($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']) 
-	    	&& self::validate_ip($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']))
+	    	&& $this->validate_ip($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']))
 	        return $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
 	    
 	    if (!empty($_SERVER['HTTP_FORWARDED_FOR']) 
-	    	&& self::validate_ip($_SERVER['HTTP_FORWARDED_FOR']))
+	    	&& $this->validate_ip($_SERVER['HTTP_FORWARDED_FOR']))
 	        return $_SERVER['HTTP_FORWARDED_FOR'];
 	    
 	    if (!empty($_SERVER['HTTP_FORWARDED']) 
-	    	&& self::validate_ip($_SERVER['HTTP_FORWARDED']))
+	    	&& $this->validate_ip($_SERVER['HTTP_FORWARDED']))
 	        return $_SERVER['HTTP_FORWARDED'];
 	    
 	    // Return unreliable IP address since all else failed
@@ -135,7 +144,7 @@ class Visitor {
 	 * Ensures an IP address is both a valid IP address and does not fall within
 	 * a private network range.
 	 */
-	static function validate_ip(string $ip): bool {
+	function validate_ip(string $ip): bool {
 
 	    if (strtolower($ip) === 'unknown')
 	        return false;
@@ -171,7 +180,7 @@ class Visitor {
 	    return true;
 	}
 
-	public static function get_browser(): string {
+	public function get_browser(): string {
 
 		$browser        = "Unknown Browser";  
 	    $browser_array  = array(
@@ -224,86 +233,92 @@ class Visitor {
 
 	    foreach ($browser_array as $regex => $value) { 
 
-	        if (preg_match($regex, self::get_data()['ua'])) {
+	        if (preg_match($regex, $this->get_data()['ua'])) {
 	            $browser = $value;
 	        }
 	    }
 	    return $browser;
 	}
 
-	
+	public function getOnlineUsers() {
+
+		// установить привелегии и по ним выдавать список посетителей
+
+		$sql = 'SELECT `session`, `visitime`, `uagent` FROM `users_online`';
+
+		$this->preAction($sql);
+
+		$this->doAction();
+
+		$r = $this
+				->postAction()
+				->fetchAll();
+
+		debugger($r,__METHOD__);
+	}
 
 	private function usersOnlineStorageMysql(): int { 
 
 		// MySQL database -----------------------------
 
-		if (session_id() == '')  
-			session_start();
-		
-		$visitor 	= new Visitor();
-		$db			= new Database();
+		if (session_id() == '') session_start();
 
 		$p = array(
-			'session' => session_id(),
-			'vistime' => time(),
-			'outtime' => (time() - 60),
-			'userip'  => $visitor->get_ip()
+			'session' 	=> session_id(),
+			'vistime' 	=> time(),
+			'outtime' 	=> (time() - 60),
+			'userip'  	=> $this->get_ip(),
+			'uagent' 	=> serialize($this->get_userspecs())
 		);
-
-		// Создаем таблицу, если не существует 
-
-		$sql = 'CREATE TABLE IF NOT EXISTS `users_online` (
-	  		`session` 	varchar(255) NOT NULL,
-	  		`visitime`  varchar(255) NOT NULL,
-	  		`userip` 	varchar(255) NOT NULL
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8;';
-
-		$db->preAction($sql);
-		$db->doAction();
 
 		// Проверяем существует ли пользователь указанный в session_id
 		$sql = 'SELECT COUNT(*) as count FROM users_online WHERE session = :session';
 
+		//$sql = 'SELECT `session` FROM `users_online` WHERE `session` = :session';
+
 		$binder = array(':session' => $p['session']);
 
-		$db->preAction($sql, $binder);
+		$this->preAction($sql, $binder);
+		$this->doAction();
 
-		$db->doAction();
-
-		$r = $db
-			->postAction()
-			->fetchColumn();
+		$r = $this
+				->postAction()
+				->fetchColumn(); // кажеться возвращает интигер без имени массива !
 
 		// Обновляем или добавляем id пользователя
 
-		if ($r['count'] > 0) 
-			$sql = 'UPDATE users_online SET visitime=:vistime, userip=:uip WHERE session = :sess';
-		else 
-			$sql = 'INSERT INTO users_online (visitime, userip, session) VALUES (:vistime, :uip, :sess)';
+		if (!$r || $r < 1) {
+
+			$sql = 'INSERT INTO users_online (visitime, userip, session, uagent) VALUES (:vistime, :uip, :sess, :uagent)';
+		} else{ 
+
+			$sql = 'UPDATE users_online SET visitime=:vistime, userip=:uip, uagent=:uagent WHERE session = :sess';
+		}
 
 		$binder = array(
 			':vistime'	=> $p['vistime'],
 			':uip'		=> $p['userip'],
-			':sess'		=> $p['session']
+			':sess'		=> $p['session'],
+			':uagent'	=> $p['uagent']
 		);
 
-		$db->preAction($sql, $binder);
-		$db->doAction();
+		$this->preAction($sql, $binder);
+		$this->doAction();
 
 		$sql = 'DELETE FROM users_online WHERE visitime < :vistime';
 
-		$binder = array(':vistime' => $p['vistime']);
+		$binder = array(':vistime' => $p['outtime']);
 
-		$db->preAction($sql, $binder);
-		$db->doAction();
+		$this->preAction($sql, $binder);
+		$this->doAction();
 
 		$sql = 'SELECT COUNT(*) as count FROM users_online';
 
-		$db->preAction();
+		$this->preAction($sql);
 
-		$db->doAction();
+		if(!$this->doAction()) return -1;
 
-		$people = $db
+		$people = $this
 					->postAction()
 					->fetch(); // fetchColumn();
 
@@ -328,8 +343,8 @@ class Visitor {
 			'session' => session_id(),
 			'vistime' => time(),
 			'outtime' => (time() - 60),
-			'userip'  => self::get_ip(),
-			'uagent'  => serialize(self::get_userspecs()),
+			'userip'  => $this->get_ip(),
+			'uagent'  => serialize($this->get_userspecs()),
 			'sqlfile' => ($workinDir.DIRECTORY_SEPARATOR.SQLITEJOB['sqlitefile'])
 		);
 
@@ -385,23 +400,8 @@ class Visitor {
 
 
 	// storage: mysql, sqlite <= для получения статистики даже когда сайт упал
-	public static function users_online(string $storage='mysql'): int {
+	public function users_online(string $storage='mysql'): int {
 
-		// TODO: переключение на sqlite, если невозможно подключиться к базе данных mysql
-
-		$onlineNow = 0;
-
-		if ($storage = 'mysql') {
-
-			$onlineNow = self::usersOnlineStorageMysql();
-		} else {
-
-			$onlineNow = self::usersOnlineStorageSqlite();
-		}
-
-
-		return $onlineNow;
+		return $storage == 'mysql' ? $this->usersOnlineStorageMysql() : $this->usersOnlineStorageSqlite();
 	}
-
-
 }

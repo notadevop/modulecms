@@ -36,9 +36,12 @@ final class Routing {
 		return (self::$requestedUrl?:'/');
 	}
 
-	public static function cleanRoutes() {
+	public static function cleanRoutes(string $arraykey) {
 
-		self::$routes = array();
+		if (array_key_exists($arraykey, self::$routes)) {
+
+			self::$routes[$arraykey] = null;
+		}
 	}
 
 	/**
@@ -56,10 +59,14 @@ final class Routing {
 
 		self::$requestedUrl = $requestedUrl;
 
-		// если URL и маршрут полностью совпадают
-		if (isset(self::$routes[$requestedUrl])) {
+		// $requestedUrl замененно на $fpath
 
-			self::$params = self::splitUrl(self::$routes[$requestedUrl]);
+		$fpath = '/'.self::getRoutes($requestedUrl)[0];
+
+		// если URL и маршрут полностью совпадают
+		if (isset(self::$routes[$fpath])) { // $requestedUrl
+
+			self::$params = self::splitUrl(self::$routes[$fpath]);  // $requestedUrl
 			return self::executeAction();
 		}
 
@@ -71,17 +78,17 @@ final class Routing {
 				$route = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $route));
 			}
 
-			if (preg_match('#^'.$route.'$#', $requestedUrl)) {
+			if (preg_match('#^'.$route.'$#', $fpath)) {  // $requestedUrl
 			  
 				if (strpos($uri, '$') !== false && strpos($route, '(') !== false) {
 
 					$uri = preg_replace('#^'.$route.'$#', $uri, $requestedUrl);
 				}
 
-				self::$params = self::splitUrl($uri);
+				self::$params = self::splitUrl($uri); // ты мы разбиваем value роута на параметры и сохраняем
 
 				break; // URL обработан!
-			}
+			} 
 		} 
 		return self::executeAction();
 	} 
@@ -93,23 +100,30 @@ final class Routing {
 		$basepath 	= implode('/', array_slice(explode('/', $scriptName), 0, -1)) . '/';
 		$uri 		= substr($_SERVER['REQUEST_URI'], strlen($basepath));
 
-		if (strstr($uri, '?')) {
-
-			$uri = substr($uri, 0, strpos($uri, '?'));
-		}
+		if (strstr($uri, '?')) { $uri = substr($uri, 0, strpos($uri, '?')); }
 		
 		$uri = '/' . trim($uri, '/');
 		return strtolower($uri);
 	}
 
+	/**
+	* // /search/something/is/here/ -> Возвращает массив всех путей 
+	* // -> ['search', 'something', 'is', 'here']
+	*  Пример использования: 
+	*	$routes = $obj->getRoutes();
+	*	if($routes[0] == 'search') {
+	*		if($routes[1] == 'book') {
+	*			echo 'clicked';
+	*		}
+	*	}
+	*/
 	public static function getRoutes(string $extUri=''): array {
-
-		// /search/something/is/here/ -> Возвращает массив всех путей 
-		// -> ['search', 'something', 'is', 'here']
 
 		if (empty($extUri)) {  
 
-			$base_uri = $this->getCurrentUri(); 
+			$base_uri = self::getCurrentUri(); 
+		} else {
+			$base_uri = $extUri;
 		}
 
 		$routeValues = array();
@@ -123,13 +137,8 @@ final class Routing {
 			}
 		}
 
-		/** Пример использования: 
-		$routes = $obj->getRoutes();
-		if($routes[0] == 'search') {
-			if($routes[1] == 'book') {
-				echo 'clicked';
-			}
-		}*/
+		if (empty($routeValues)) return array('');
+
 		return $routeValues;
 	}
 
@@ -138,16 +147,25 @@ final class Routing {
    	*/
 	public static function executeAction() {
 
-		$controller = isset(self::$params[0]) ? self::$params[0]: 'DefaultController';
-		$action 	= isset(self::$params[1]) ? self::$params[1]: 'default_method';
+		$controller = isset(self::$params[0]) ? self::$params[0]: 'MainController';
+		$action 	= isset(self::$params[1]) ? self::$params[1]: 'defaultMethod';
 		$params 	= array_slice(self::$params, 2);
 
 		$obj 		= new $controller();
 		$cresult 	= call_user_func_array(array($obj, $action), $params);
-		$errors  	= $obj->getErrors();
 
-		return array($cresult, $errors);
-	}
+		$errors = null;
+
+		if(method_exists($controller, 'getErrors')) {
+
+			$errors = $obj->getErrors();
+		}
+
+		return array(
+			'ctrlres'		=> $cresult,
+			'errors' 		=> $errors
+		);
+	} 
 
 
 	//  ------------------------------------ 

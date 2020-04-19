@@ -1,4 +1,4 @@
-	<form action="/auth/confirmRestore" method="POST">
+	<form action="/confirmRestore" method="POST">
 		<p>Новый пароль пользователя</p>
 		<input type="text" name="restorepwd1" value="" />
 		<br /><br />

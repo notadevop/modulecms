@@ -1,6 +1,6 @@
 
 
-	<form action="/auth/register" method="POST">
+	<form action="/register" method="POST">
 		<input type="text" name="userregname" value="maksim <?php echo rand(1,10000) ?>" />
 		<br /><br />
 		<input type="text" name="userregemail" value="jcmax<?php echo rand(1,10000) ?>@gmail.com" />
