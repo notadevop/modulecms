@@ -89,7 +89,6 @@ final class Visitor extends Database{
 	        if (preg_match($regex, $ua)) {
 
 	            $os_platform = $value;
-	        	debugger($os_platform);
 	        	break;
 	        }
 	    }
@@ -253,8 +252,6 @@ final class Visitor extends Database{
 		$r = $this
 				->postAction()
 				->fetchAll();
-
-		debugger($r,__METHOD__);
 	}
 
 	private function usersOnlineStorageMysql(): int { 
@@ -273,8 +270,6 @@ final class Visitor extends Database{
 
 		// Проверяем существует ли пользователь указанный в session_id
 		$sql = 'SELECT COUNT(*) as count FROM users_online WHERE session = :session';
-
-		//$sql = 'SELECT `session` FROM `users_online` WHERE `session` = :session';
 
 		$binder = array(':session' => $p['session']);
 
