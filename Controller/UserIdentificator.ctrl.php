@@ -228,36 +228,23 @@ class UserIdentificator extends Errors {
 			->glob
 			->setGlobParam('_COOKIE');
 
-		$mail = $this
-			->glob
-			->isExist('mailhash');
-		$token = $this
-			->glob
-			->isExist('tokenhash');
+		$params = array('mailhash', 'tokenhash');
 
-		if (!$mail || !$token) {return false;}
+		$p = array();
 
-		$nameOpt = array(
-			'maxSym' => 500,
-			'minSym' => 4,
-			'checkMail' => false,
-		);
+		$Opt = array(
+				'maxSym' => 500,
+				'minSym' => 4,
+				'checkMail' => false,
+			);
 
-		$passOpt = array(
-			'maxSym' => 500,
-			'minSym' => 4,
-			'checkMail' => false,
-		);
+		foreach ($params as $value) {
+			
+			if(!$this->glob->isExist($value)) { return false; }
 
-		$mail = $this
-			->glob
-			->getGlobParam('mailhash');
-		$token = $this
-			->glob
-			->getGlobParam('tokenhash');
-
-		$mail = $this->filtration($mail, $nameOpt);
-		$token = $this->filtration($token, $passOpt);
+			$p[$value] = $this->glob->getGlobParam($value);
+			$p[$value] = $this->filtration($p[$value], $Opt);
+		}
 
 		if (count($this->getErrors()) > 0) {
 
@@ -266,11 +253,11 @@ class UserIdentificator extends Errors {
 		}
 
 		$ue = $this
-			->auth
-			->userExist($mail);
+					->auth
+					->userExist($p['mailhash']);
 		$ub = $this
-			->auth
-			->userActivated($mail);
+					->auth
+					->userActivated($p['mailhash']);
 
 		if (!$ue || !$ub) {
 
@@ -279,8 +266,8 @@ class UserIdentificator extends Errors {
 		}
 
 		$profile = $this
-			->auth
-			->authUser($mail, $token);
+						->auth
+						->authUser($p['mailhash'], $p['tokenhash']);
 
 		if ($this->defineUserProfile($profile)) {
 
@@ -387,11 +374,9 @@ class UserIdentificator extends Errors {
 	*   если $verifbyid установлен в false  то нужно указать по $id 
 	*/
 
-	function updatePassword(bool $verifbyid=true): bool {
+	function updatePassword(bool $verifbyid=true, int $userid=0): bool {
 
 		if ($verifbyid) {
-
-			//$this->collectErrors('nopass', 'Ошибка! укажите пароли для обновления!');
 
 			$p = $this->verifyUserModifications();
 
@@ -402,30 +387,25 @@ class UserIdentificator extends Errors {
 			->glob
 			->setGlobParam('_POST');
 
-		$getpass = function ($param) {
+		$pass = array('newpassword1', 'newpassword2');
 
-			if (!$this
-					->glob
-					->isExist($param)) {return false;}
-
-			$Opt = array(
+		$Opt = array(
 				'maxSym' 	=> 100,
 				'minSym' 	=> 6,
 				'checkMail' => false,
 			);
 
-			$value = $this
-						->glob
-						->getGlobParam($param);
-
-			return $this->filtration($value, $Opt);
-		};
-
-		$pass = array('newpassword1', 'newpassword2');
-
 		foreach ($pass as $key => $value) {
 
-			$pass[$key] = $getpass($value);
+			if (!$this->glob->isExist($value)) {return false;}
+
+			$value = $this
+						->glob
+						->getGlobParam($value);
+
+			$pass[$key] = $this->filtration($value, $Opt);
+
+			//$pass[$key] = $getpass($value); // [0] => value
 		}
 
 		if (count($this->getErrors()) > 0) { return false;}
@@ -435,8 +415,6 @@ class UserIdentificator extends Errors {
 			$this->collectErrors('mismatch', 'Ошибка! пароли не совпадают.');
 			return false;
 		}
-
-		//var_dump($pass);
 
 		$r = $this
 				->auth
@@ -450,7 +428,6 @@ class UserIdentificator extends Errors {
 
 		$this->collectErrors('updpassgood', 'Пароль обновлен!');
 
-		// TODO: Переправить пользователя на форму входа
 		return true;
 	}
 
@@ -572,7 +549,7 @@ class UserIdentificator extends Errors {
 		// TODO: Отправка емайла пользователю для восстановления пароля
 		// TODO: сделать генерацию ссылок
 
-		return HOST . '/verifreg/?action=pwd&userid=' . $meta['id'] . '&confirm=' . $meta['cofirm'] . '&token=' . $meta['token'];
+		return HOST . '/verifreg/?userid=' . $meta['id'] . '&confirm=' . $meta['cofirm'] . '&token=' . $meta['token'];
 
 	}
 
