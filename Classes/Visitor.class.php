@@ -86,11 +86,7 @@ final class Visitor extends Database{
 
 	    foreach ($os_array as $regex => $value) { 
 
-	        if (preg_match($regex, $ua)) {
-
-	            $os_platform = $value;
-	        	break;
-	        }
+	        if (preg_match($regex, $ua)) { $os_platform = $value; break; }
 	    }
 	    return $os_platform;
 	}
@@ -246,10 +242,9 @@ final class Visitor extends Database{
 		$sql = 'SELECT `session`, `visitime`, `uagent` FROM `users_online`';
 
 		$this->preAction($sql);
-
 		$this->doAction();
 
-		$r = $this
+		return $this
 				->postAction()
 				->fetchAll();
 	}
@@ -390,7 +385,6 @@ final class Visitor extends Database{
 	    $result = $sqlite->querySingle($sql);
 
 	    return $result['count'];
-
 	}
 
 

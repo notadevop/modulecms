@@ -1,127 +1,133 @@
-<?php 
-
-
+<?php
 
 class UserIdentificator extends Errors {
 
-	private $cjob; 
+	private $cjob;
 	private $auth;
-	private $glob; 
+	private $glob;
 	private $filter;
 	private $cookies;
 	private $pluginExecutor;
 
-
 	function __construct() {
 
 		parent::__construct();
-		
+
 		$this->cjob 	= new CookieJob();
 		$this->auth 	= new Auth();
 		$this->glob 	= new GlobalParams();
-		$this->filter 	= new Filter(); 
+		$this->filter 	= new Filter();
 
-		$this->pluginExecutor = function(string $category):bool {
+		// Временно, удалить поже 
 
-			switch($category) {
-				case 'login': 		break;
-				case 'restore': 	break;
+		$this->pluginExecutor = function (string $category): bool {
+
+			switch ($category) {
+				case 'login':		break;
+				case 'restore':		break;
 				case 'registration':break;
-				default: break;
+				default:			break;
 			}
 
 			// тут описать обьект который будет работать с плагинами
-			// Обработка запросов кода из плагинов, например проверка captca 
+			// Обработка запросов кода из плагинов, например проверка captca
 			return true;
 		};
 
 		$this->AuthParams = array(
-			'future' 	=> '+2 Hours',
-			'past'		=> '-2 Hours',
-			'host'		=> '/',
-			'domain'	=> 'localhost'
+			'future' => '+2 Hours',
+			'past' => '-2 Hours',
+			'host' => '/',
+			'domain' => 'localhost',
 		);
 
 		$this->errors = array();
 	}
 
+	function test($param) {
 
-	function testing($param) {
-
-		return 'Тестовая строка исполнятся должен везде!';
+		debugger('This is result of method param: '.$param);
 	}
 
 	// ----------------------------------------------
 
-	private function filtration(string $input, array $options): string {
+	private function filtration(string $input, array $options): string{
 
 		$this
 			->filter
-			->setVariables( 
+			->setVariables(
 				array(
-				'key' => array(
-					'value' 	=> $input,
-					'maximum'  	=> $options['maxSym'],
-					'minimum'  	=> $options['minSym'] 
-					)
+					'key' => array(
+						'value' => $input,
+						'maximum' => $options['maxSym'],
+						'minimum' => $options['minSym'],
+					),
 				)
 			);
 
 		// TODO: filtration: eazy, medium, hard
 		$this
 			->filter
-			->cleanAttack('key', array('')); 
+			->cleanAttack('key', array(''));
 
 		if ($options['checkMail'] && !$this->filter->validator('key', 'email')) {
 
 			$this->collectErrors('noprofile', 'Ошибка! Укажите правильный емайл');
 		}
 
+		// конвертирует в целое число 
+		if(isset($options['getNumber']) && $options['getNumber']){
+
+			$this
+				->filter
+				->convertToNumber('key');
+		}
+
 		if (!$this->filter->isNotEmpty('key')) {
 
 			$this->collectErrors('strWrong', 'Недопустима пустая строка!');
-		
+
 		} else if (!$this->filter->isNotMore('key')) {
-			
+
 			$this->collectErrors('strLimit', 'Недопустимое кол-во символов! Большое значение.');
-		
+
 		} else if (!$this->filter->isNotLess('key')) {
 
-			$this->collectErrors('strLimit', 'Недопустимое кол-во символов! Маленькое значение.'); 
+			$this->collectErrors('strLimit', 'Недопустимое кол-во символов! Маленькое значение.');
 		}
 
 		return $this
-					->filter
-					->getKey('key');
+			->filter
+			->getKey('key');
 	}
 
 	// ----------------------------------------------
 
-	function logout(bool $redirect=false, bool $clean=false): bool{
+	function logout(bool $redirect = false, bool $clean = false): bool{
 
 		$this
 			->glob
 			->setGlobParam('_GET');
 
-		if ($this->glob->isExist('logout') || $clean) { 
+		if ($this->glob->isExist('logout') || $clean) {
 
 			$this->saveAuthAction('', '', true); // пустые емай и хеш и стираем данные
-			
-			if($redirect){ header( "refresh:2; url=".HOST ); }
+
+			if ($redirect) { header("refresh:5; url=" . HOST); }
 
 			$this->collectErrors('logout', 'Вы вышли из своего аккаунта!');
 
 			return true;
-			
+
 		}
-		// Установить сессию 
+		// Установить сессию
 
 		return false;
 	}
 
 	// ----------------------------------------------
 
-	function loginAction():bool {
+	function loginAction(): bool{
 
 		$this
 			->glob
@@ -134,65 +140,65 @@ class UserIdentificator extends Errors {
 			->glob
 			->isExist('loginpasswd');
 
-		if(!$e || !$p) { return false; } 
+		if (!$e || !$p) {return false;}
 
 		$nameOpt = array(
-			'maxSym' 	=> 30, 
-			'minSym' 	=> 4, 
-			'checkMail' => true
+			'maxSym' => 30,
+			'minSym' => 4,
+			'checkMail' => true,
 		);
-		
+
 		$passOpt = array(
-			'maxSym' 	=> 30, 
-			'minSym' 	=> 4, 
-			'checkMail' => false
+			'maxSym' => 30,
+			'minSym' => 4,
+			'checkMail' => false,
 		);
 
-		$email 	= $this
-					->glob
-					->getGlobParam('loginmail');
-		$pass 	= $this
-					->glob
-					->getGlobParam('loginpasswd');
+		$email = $this
+			->glob
+			->getGlobParam('loginmail');
+		$pass = $this
+			->glob
+			->getGlobParam('loginpasswd');
 
-		$email 	= $this->filtration($email, $nameOpt);
-		$pass 	= $this->filtration($pass, $passOpt);
+		$email = $this->filtration($email, $nameOpt);
+		$pass = $this->filtration($pass, $passOpt);
 
-		if (count($this->getErrors()) > 0) { return false; }
+		if (count($this->getErrors()) > 0) {return false;}
 
 		$ue = $this
-				->auth
-				->userExist($email);
+			->auth
+			->userExist($email);
 		$ub = $this
-				->auth
-				->userActivated($email);
-		
+			->auth
+			->userActivated($email);
+
 		if (!$ue) {
 
-			$this->collectErrors('noprof', 'Неправильные имя или пароль!');
+			$this->collectErrors('wrongpass', 'Неправильные имя или пароль!');
 			return false;
 		} else if (!$ub) {
 
-			$this->collectErrors('blockedprof', 'Ошибка! Пользователь заблокирован или не активирован.');
+			$this->collectErrors('blocked', 'Ошибка! Пользователь заблокирован или не активирован.');
 			return false;
-		} 
+		}
 
 		$profile = $this
-					->auth
-					->findUser($email, $pass);
+			->auth
+			->findUser($email, $pass);
 
 		if (!$this->defineUserProfile($profile)) {
 
-			$this->collectErrors('noprof', 'Неправильные имя или пароль!');
+			$this->collectErrors('wrongpass', 'Неправильные имя или пароль!');
 			return false;
 		}
-		
+
 		$this->saveAuthAction($email, $profile['tokenHash']);
 
-		if(REDIRECTLOGIN) {
+		if (REDIRECTLOGIN) {
 
-			//header('Location: /'); // Перебрасываем отуда, откуда пришел. 
-			debugger('Сохранил куки и перекидываю пользователя',__METHOD__);
+			//header('Location: /'); // Перебрасываем отуда, откуда пришел.
+			debugger('Сохранил куки и перекидываю пользователя', __METHOD__);
 			return true;
 		}
 
@@ -205,56 +211,54 @@ class UserIdentificator extends Errors {
 
 	private function defineUserProfile($profile): bool {
 
-		if (empty($profile)) { return false; }
+		if (empty($profile)) {return false;}
 
-		debugger($profile, __METHOD__);
+		// Добавить определение привелегий пользователя 
 
-		if (!defined('PROFILE')) { define('PROFILE', $profile); }
+		if (!defined('PROFILE')) {define('PROFILE', $profile);}
 
 		return true;
 	}
 
 	// ----------------------------------------------
 
-	function authAction():bool {
-
-		echo 'метод АУТЕНТИФИКАЦИИ запущен!</br>';
+	function authAction(): bool {
 
 		$this
 			->glob
 			->setGlobParam('_COOKIE');
 
 		$mail = $this
-					->glob
-					->isExist('mailhash');
-		$token= $this
-					->glob
-					->isExist('tokenhash');
+			->glob
+			->isExist('mailhash');
+		$token = $this
+			->glob
+			->isExist('tokenhash');
 
-		if (!$mail || !$token) { return false; }
+		if (!$mail || !$token) {return false;}
 
 		$nameOpt = array(
-			'maxSym' 	=> 500, 
-			'minSym' 	=> 4, 
-			'checkMail' => false
+			'maxSym' => 500,
+			'minSym' => 4,
+			'checkMail' => false,
 		);
-		
+
 		$passOpt = array(
-			'maxSym' 	=> 500, 
-			'minSym' 	=> 4, 
-			'checkMail' => false
+			'maxSym' => 500,
+			'minSym' => 4,
+			'checkMail' => false,
 		);
 
-		$mail 	= $this
-						->glob
-						->getGlobParam('mailhash');
-		$token 	= $this
-						->glob
-						->getGlobParam('tokenhash');
+		$mail = $this
+			->glob
+			->getGlobParam('mailhash');
+		$token = $this
+			->glob
+			->getGlobParam('tokenhash');
 
-		$mail 	= $this->filtration($mail, $nameOpt);
-		$token 	= $this->filtration($token, $passOpt);
-		
+		$mail = $this->filtration($mail, $nameOpt);
+		$token = $this->filtration($token, $passOpt);
+
 		if (count($this->getErrors()) > 0) {
 
 			$this->logout(false, true);
@@ -272,11 +276,11 @@ class UserIdentificator extends Errors {
 
 			$this->logout(false, true);
 			return false;
-		} 
-		
+		}
+
 		$profile = $this
-						->auth
-						->authUser($mail, $token);
+			->auth
+			->authUser($mail, $token);
 
 		if ($this->defineUserProfile($profile)) {
 
@@ -284,28 +288,28 @@ class UserIdentificator extends Errors {
 			return true;
 		}
 
-		$this->logout(false, true);	
-		return false;	
+		$this->logout(false, true);
+		return false;
 	}
 
 	// Устанавливаем куки и сессию или удаляем их в зависимости от переменной $gopast
-	
-	private function saveAuthAction(string $email='',string $hash='', bool $gopast=false): void{
+
+	private function saveAuthAction(string $email = '', string $hash = '', bool $gopast = false): void{
 
 		$time = !$gopast ? $this->AuthParams['future'] : $this->AuthParams['past'];
 
 		$authParams = array(
-					'mailhash' 	=> $email, 
-					'tokenhash' => $hash
-				);
+			'mailhash' => $email,
+			'tokenhash' => $hash,
+		);
 		$this
 			->cjob
 			->setCookies($authParams);
 
 		foreach ($authParams as $key => $value) {
-			
+
 			$this
-				->cjob 
+				->cjob
 				->setCookieTime($key, $time);
 			$this
 				->cjob
@@ -316,9 +320,17 @@ class UserIdentificator extends Errors {
 		}
 	}
 
+
+	// Временно !!!
+
+	function build_query(array $params): string {
+
+		return http_build_query($params);
+	}
+
 	// ----------------------------------------------
 
-	function restoreAction():bool {
+	function resAction(): ?string{
 
 		$this
 			->glob
@@ -328,333 +340,265 @@ class UserIdentificator extends Errors {
 					->glob
 					->isExist('restoremail');
 
-		if(!$email) { return false; }
+		if (!$email) {return null;}
 
 		$emailOpt = array(
-			'maxSym' 	=> 100, 
-			'minSym' 	=> 4, 
-			'checkMail' => true
+			'maxSym' => 100,
+			'minSym' => 4,
+			'checkMail' => true,
 		);
 
-		$email 	= $this
-				->glob
-				->getGlobParam('restoremail');
+		$email = $this
+			->glob
+			->getGlobParam('restoremail');
 
-		$email 	= $this->filtration($email, $emailOpt);
+		$email = $this->filtration($email, $emailOpt);
 
-		if (count($this->getErrors()) > 0) { return false; }
+		if (count($this->getErrors()) > 0) {return null;}
 
 		$mr = $this
-				->auth
-				->userExist($email);
+			->auth
+			->userExist($email);
 		$ms = $this
-				->auth
-				->userActivated($email);		
+			->auth
+			->userActivated($email);
 
 		if (!$mr || !$ms) {
 
-			$this->collectErrors('noprof', 'Ошибка! Возможно пользователь: заблокирован, удален или не существует!');
-			return false;
-		} 
+			$this->collectErrors('banned', 'Ошибка! Возможно пользователь: заблокирован, удален или не существует!');
+			return null;
+		}
 
 		$meta = $this
-					->auth
-					->generateActivations($email);
+			->auth
+			->generateActivations($email);
 
-		if (empty($meta)) { return false ; }
-
-		$link = HOST.'/confirmrestore/?userid='.$meta['id'].'&confirm='.$meta['cofirm'].'&token='.$meta['token'];
-
-		debugger('<a href="'.$link.'" target="_blank">'.$link.'</a>', __METHOD__);
+		if (empty($meta)) {return null;}
 
 		// TODO: Отправка емайла пользователю для восстановления пароля
+		// TODO: сделать генерацию ссылок
 
-		return true;
+		return HOST . '/verifres/?userid=' . $meta['id'] . '&confirm=' . $meta['cofirm'] . '&token=' . $meta['token'];
 	}
 
-	// ----------------------------------------------
+	/**
+	*	Метод обновления пароля при условии, если все параметры правильные  
 
-	function confirmRestoreAction(): bool {
+	*   если $verifbyid установлен в false  то нужно указать по $id 
+	*/
+
+	function updatePassword(bool $verifbyid=true): bool {
+
+		if ($verifbyid) {
+
+			//$this->collectErrors('nopass', 'Ошибка! укажите пароли для обновления!');
+
+			$p = $this->verifyUserModifications();
+
+			if (!$p || empty($p)) {return false;}
+		}
 
 		$this
 			->glob
-			->setGlobParam('_GET');
+			->setGlobParam('_POST');
 
-		$params = array('userid','confirm', 'token');
-
-		foreach ($params as $key => $value) {
-			
-			$Opt = array(
-				'maxSym' 	=> 50, 
-				'minSym' 	=> $value == 'userid' ? 1 : 30, 
-				'checkMail' => false
-			);
-
-			$param = $this
-					->glob
-					->isExist($value);
-
-			if(!$param) { return false; }
-
-			$p[$value] = $this
-						->glob
-						->getGlobParam($value);
-
-			$p[$value] = $this->filtration($p[$value], $Opt);
-		}
-
-		$getpass = function($param) {
-
-			$this
-				->glob
-				->setGlobParam('_POST');
+		$getpass = function ($param) {
 
 			if (!$this
 					->glob
-					->isExist($param)) { return; }
+					->isExist($param)) {return false;}
 
 			$Opt = array(
-				'maxSym' 	=> 100, 
-				'minSym' 	=> 6, 
-				'checkMail' => false
+				'maxSym' 	=> 100,
+				'minSym' 	=> 6,
+				'checkMail' => false,
 			);
 
-			$pass1 	= $this
+			$value = $this
 						->glob
 						->getGlobParam($param);
 
-			return $this->filtration($pass1, $Opt);
+			return $this->filtration($value, $Opt);
 		};
 
-		$pass1 = $getpass('restorepwd1');
-		$pass2 = $getpass('restorepwd2');
+		$pass = array('newpassword1', 'newpassword2');
 
-		if (count($this->getErrors()) > 0) { return false; }
+		foreach ($pass as $key => $value) {
 
-		$sp = $this
-				->auth
-				->verifyActivations($p['userid'],$p['token'], $p['confirm']);
-
-		if (!$sp) {
-
-			$this->collectErrors('notvalid', 'Ошибка параметров подтверждения пользователя!');
-			return false;
+			$pass[$key] = $getpass($value);
 		}
 
-		// Возвращаем для вывода окна паролей
-		if (empty($pass1) || empty($pass2)) { return true; }
+		if (count($this->getErrors()) > 0) { return false;}
 
-		if ($pass1 !== $pass2) {
+		if ($pass[0] !== $pass[1]) {
 
 			$this->collectErrors('mismatch', 'Ошибка! пароли не совпадают.');
 			return false;
 		}
 
+		//var_dump($pass);
+
 		$r = $this
 				->auth
-				->updateUserPassword($p['userid'], $pass1);
+				->updateUserPassword($p['userid'], $pass[0]);
 
-		if(!$r) { $this->collectErrors('updpasserr', 'Ошибка обновления пароля!'); return false; }
-		
+		if (!$r) {
+
+			$this->collectErrors('updpasserr', 'Ошибка обновления пароля!');
+			return false;
+		}
+
 		$this->collectErrors('updpassgood', 'Пароль обновлен!');
 
 		// TODO: Переправить пользователя на форму входа
 		return true;
 	}
 
-	// добавляет нового пользователя в базу данных 
+
 	// ----------------------------------------------
 
-	function registerAction(): bool {
-
-		$this
-			->glob
-			->setGlobParam('_POST');
-
-		$email = $this
-			->glob
-			->isExist('userregemail');
-		$name = $this
-			->glob
-			->isExist('userregname');
-
-		$pass1 = $this
-			->glob
-			->isExist('userregpassword1');
-
-		$pass2 = $this
-			->glob
-			->isExist('userregpassword2');
-
-		if(!$email || !$name || !$pass1 || !$pass2) { return false; } 
-
-		$email 	= $this
-					->glob
-					->getGlobParam('userregemail');
-		$name 	= $this
-					->glob
-					->getGlobParam('userregname');
-		$pass1 	= $this
-					->glob
-					->getGlobParam('userregpassword1');
-		$pass2 	= $this
-					->glob
-					->getGlobParam('userregpassword2');
-
-		$emailOpt = array(
-			'maxSym' 	=> 40, 
-			'minSym' 	=> 6, 
-			'checkMail' => true
-		);
-
-		$nameOpt = array(
-			'maxSym' 	=> 30, 
-			'minSym' 	=> 4, 
-			'checkMail' => false
-		);
-
-		$passOpt = array(
-			'maxSym' 	=> 35, 
-			'minSym' 	=> 6, 
-			'checkMail' => false
-		);
-
-		$email 	= $this->filtration($email, $emailOpt);
-		$name 	= $this->filtration($name, $nameOpt);
-		$pass1 	= $this->filtration($pass1, $passOpt);
-		$pass2 	= $this->filtration($pass2, $passOpt);
-
-		if (count($this->getErrors()) > 0) { return false; }
-
-		if ($pass1 !== $pass2) {
-
-			$this->collectErrors('mismatch', 'Ошибка! пароли не совпадают.');
-			return false;
-		}
-
-		$exist = $this
-					->auth
-					->userExist($email);
-
-		if ($exist) {
-
-			$this->collectErrors('noprof', 'Ошибка! Возможно такой пользователь уже зарегестрирован!');
-			return false;
-		}
-
-		$r = $this
-				->auth
-				->insertNewUser($email, $pass1, $name);
-
-		if (!$r) {
-
-			$this->collectErrors('noregact', 'Ошибка! Не получилось зарегестрироваться! Проверьте еще раз ваши данные.');
-
-			return false;
-		}
-
-		$meta = $this
-					->auth
-					->generateActivations($email);
-
-		if (empty($meta)) { return false; }
-
-		$link = HOST.'/?action=pwd&userid='.$meta['id'].'&confirm='.$meta['cofirm'].'&token='.$meta['token'];
-
-		debugger('<a href="'.$link.'" target="_blank">'.$link.'</a>', __METHOD__);
-
-		return true;
-	}
-
-	// проверяет уже посланные данные для активации пользователя
-	// ----------------------------------------------
-
-	function confirmRegisterAction(): bool {
-
-		// Добавляем последний визит, привелегии пользователю
+	function verifyUserModifications(): ?array{
 
 		$this
 			->glob
 			->setGlobParam('_GET');
 
-		$params = array('userid','confirm', 'token');
+		$params = array('userid', 'confirm', 'token');
+
+		$p = array();
 
 		foreach ($params as $key => $value) {
-			
+
 			$Opt = array(
-				'maxSym' 	=> 50, 
-				'minSym' 	=> $value == 'userid' ? 1 : 30, 
-				'checkMail' => false
+				'maxSym' 	=> 50,
+				'minSym' 	=> ($value == 'userid' ? 1 : 30),
+				'checkMail' => false,
+				'getNumber'	=> ($value == 'userid' ? true : false),
 			);
 
-			$param = $this
-					->glob
-					->isExist($value);
-
-			if(!$param) { return false; }
+			if(!$this->glob->isExist($value)) { return null; }
 
 			$p[$value] = $this
-						->glob
-						->getGlobParam($value);
+							->glob
+							->getGlobParam($value);
 
 			$p[$value] = $this->filtration($p[$value], $Opt);
 		}
 
-		$getpass = function($param) {
+		if (count($this->getErrors()) > 0) {
 
-			$this
-				->glob
-				->setGlobParam('_POST');
-
-			if (!$this
-					->glob
-					->isExist($param)) { return; }
-
-			$Opt = array(
-				'maxSym' 	=> 100, 
-				'minSym' 	=> 6, 
-				'checkMail' => false
-			);
-
-			$pass1 	= $this
-						->glob
-						->getGlobParam($param);
-
-			return $this->filtration($pass1, $Opt);
-		};
-
-		$pass1 = $getpass('restorepwd1');
-		$pass2 = $getpass('restorepwd2');
-
-		if (count($this->getErrors()) > 0) { return false; }
+			$this->collectErrors('strLimit', 'Ошибка параметров подтверждения пользователя!');
+			return null;
+		}
 
 		$sp = $this
 				->auth
-				->verifyActivations($p['userid'],$p['token'], $p['confirm']);
+				->verifyActivations($p['userid'], $p['token'], $p['confirm']);
 
 		if (!$sp) {
 
 			$this->collectErrors('notvalid', 'Ошибка параметров подтверждения пользователя!');
+			return null;
+		}
+
+		return $p;
+
+		// TODO: Переправить пользователя на форму входа
+	}
+
+	// добавляет нового пользователя в базу данных
+	// ----------------------------------------------
+
+	function regAction():  ? string{
+
+		$this
+			->glob
+			->setGlobParam('_POST');
+
+		$params = array(
+
+			'userregemail',
+			'userregname',
+			'userregpassword1',
+			'userregpassword2'
+		);
+
+		$p = array();
+
+		foreach ($params as $value) {
+			
+			$paramOpt = array(
+
+				'maxSym' 	=> 30,
+				'minSym' 	=> ('userregname' == $value ? 4 : 6),
+				'checkMail' => ('userregemail' == $value ? true : false)
+			);
+
+			if(!$this->glob->isExist($value)) { return null; }
+
+			$p[$value] = $this
+							->glob
+							->getGlobParam($value);
+
+			$p[$value] = $this->filtration($p[$value], $paramOpt);
+		}
+
+		if (count($this->getErrors()) > 0) {return null;}
+
+		if ($p['userregpassword1'] !== $p['userregpassword2']) {
+
+			$this->collectErrors('mismatch', 'Ошибка! пароли не совпадают.');
 			return false;
 		}
 
-		$atatus = $this
-					->auth
-					->activateRegisteredUser($p['userid']);
+		if ($this->auth->userExist($p['userregemail'])) {
 
-		$good = false;
+			$this->collectErrors('profilexist', 'Ошибка! Возможно такой пользователь уже зарегестрирован!');
+			return null;
+		}
+
+		if (!$this->auth->insertNewUser($p['userregemail'], $p['userregpassword1'], $p['userregname'])) {
+
+			$this->collectErrors('noregact', 'Ошибка! Не получилось зарегестрироваться! Проверьте еще раз ваши данные.При повторной ошибке обратитесь к администратору!');
+			return null;
+		}
+
+		$meta = $this
+			->auth
+			->generateActivations($p['userregemail']);
+
+		if (empty($meta)) {return false;}
+
+		// TODO: Отправка емайла пользователю для восстановления пароля
+		// TODO: сделать генерацию ссылок
+
+		return HOST . '/verifreg/?action=pwd&userid=' . $meta['id'] . '&confirm=' . $meta['cofirm'] . '&token=' . $meta['token'];
+
+	}
+
+	function verifyRegistration() : bool{
+
+		// Добавляем последний визит, привелегии пользователю
+		// -------
+
+		$p = $this->verifyUserModifications();
+
+		if (!$p || empty($p)) {return false;}
+
+		$astatus = $this
+						->auth
+						->activateRegisteredUser($p['userid']);
 
 		if ($astatus) {
 
 			$this->collectErrors('regactstatus', 'Аккаунт активирован!');
-			$good = true;
-		} else {
+			return true;
+		} 
 
-			$this->collectErrors('regactbad', 'Ошибка активации пользователя!');
-		}
+		$this->collectErrors('regactbad', 'Ошибка активации пользователя!');
 
 		// TODO: Переправить пользователя на форму входа
-		return $good;
+		return false;
 
 	}
 }

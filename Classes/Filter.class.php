@@ -110,6 +110,17 @@ class Filter {
 		return true;
 	}
 
+	public function convertToNumber(string $key): bool {
+
+		if (!$this->keyExist($key)) return false; 
+
+		$value = $this->strCollector[$key]['value'];
+
+		$this->strCollector[$key]['value'] = intval($value);
+
+		return true;
+	}
+
 	// Обрезаем стринговое значение 
 	
 	public function cutString(stirng $key): void {

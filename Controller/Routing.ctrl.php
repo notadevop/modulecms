@@ -1,17 +1,15 @@
-<?php 
-
+<?php
 
 final class Routing {
-	
-	public  static $routes      = array();
-	private static $params      = array();
-	public  static $requestedUrl= '';
 
+	public static $routes = array();
+	private static $params = array();
+	public static $requestedUrl = '';
 
 	/**
-	* Добавить маршрут
-	*/
-	public static function addRoute($route, $destination=null) {
+	 * Добавить маршрут
+	 */
+	public static function addRoute($route, $destination = null) {
 
 		if ($destination != null && !is_array($route)) {
 
@@ -20,53 +18,53 @@ final class Routing {
 		self::$routes = array_merge(self::$routes, $route);
 	}
 
+	public static function showRoutes() {
+
+		debugger(self::$routes, __METHOD__);
+	}
+
 	/**
-	* Разделить переданный URL на компоненты
-	*/
+	 * Разделить переданный URL на компоненты
+	 */
 	public static function splitUrl(string $url) {
 
 		return preg_split('/\//', $url, -1, PREG_SPLIT_NO_EMPTY);
 	}
 
 	/**
-	* Текущий обработанный URL
-	*/    
+	 * Текущий обработанный URL
+	 */
 	public static function getCurrentUrl() {
 
-		return (self::$requestedUrl?:'/');
+		return (self::$requestedUrl ?: '/');
 	}
 
 	public static function cleanRoutes(string $arraykey) {
 
 		if (array_key_exists($arraykey, self::$routes)) {
 
-			self::$routes[$arraykey] = null;
+			unset(self::$routes[$arraykey]);
 		}
 	}
 
 	/**
-	* Обработка переданного URL
-	*/
+	 * Обработка переданного URL
+	 */
 	public static function dispatch($requestedUrl = null) {
 
 		// Если URL не передан, берем его из REQUEST_URI
 		if ($requestedUrl === null) {
 
 			$cur = self::getCurrentUri();
-
 			$requestedUrl = $cur == '/' ? '/' : urldecode(rtrim($cur, '/'));
 		}
 
 		self::$requestedUrl = $requestedUrl;
 
-		// $requestedUrl замененно на $fpath
-
-		$fpath = '/'.self::getRoutes($requestedUrl)[0];
-
 		// если URL и маршрут полностью совпадают
-		if (isset(self::$routes[$fpath])) { // $requestedUrl
+		if (isset(self::$routes[$requestedUrl])) {
 
-			self::$params = self::splitUrl(self::$routes[$fpath]);  // $requestedUrl
+			self::$params = self::splitUrl(self::$routes[$requestedUrl]); // $requestedUrl
 			return self::executeAction();
 		}
 
@@ -74,102 +72,92 @@ final class Routing {
 
 			// Заменяем wildcards на рег. выражения
 			if (strpos($route, ':') !== false) {
-			  
+
 				$route = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $route));
 			}
 
-			if (preg_match('#^'.$route.'$#', $fpath)) {  // $requestedUrl
-			  
+			if (preg_match('#^' . $route . '$#', $requestedUrl)) { // $requestedUrl
+				
 				if (strpos($uri, '$') !== false && strpos($route, '(') !== false) {
 
-					$uri = preg_replace('#^'.$route.'$#', $uri, $requestedUrl);
+					$uri = preg_replace('#^' . $route . '$#', $uri, $requestedUrl);
 				}
 
 				self::$params = self::splitUrl($uri); // ты мы разбиваем value роута на параметры и сохраняем
-
 				break; // URL обработан!
-			} 
-		} 
+			}
+		}
+
 		return self::executeAction();
-	} 
+	}
 
-
-	public static function getCurrentUri(){
+	public static function getCurrentUri() {
 
 		$scriptName = $_SERVER['SCRIPT_NAME'];
 		$basepath 	= implode('/', array_slice(explode('/', $scriptName), 0, -1)) . '/';
 		$uri 		= substr($_SERVER['REQUEST_URI'], strlen($basepath));
 
-		if (strstr($uri, '?')) { $uri = substr($uri, 0, strpos($uri, '?')); }
-		
-		$uri = '/' . trim($uri, '/');
-		return strtolower($uri);
+		if (strstr($uri, '?')) {$uri = substr($uri, 0, strpos($uri, '?'));}
+
+		return strtolower('/' . trim($uri, '/'));
 	}
 
 	/**
-	* // /search/something/is/here/ -> Возвращает массив всех путей 
-	* // -> ['search', 'something', 'is', 'here']
-	*  Пример использования: 
-	*	$routes = $obj->getRoutes();
-	*	if($routes[0] == 'search') {
-	*		if($routes[1] == 'book') {
-	*			echo 'clicked';
-	*		}
-	*	}
-	*/
-	public static function getRoutes(string $extUri=''): array {
+	 * // /search/something/is/here/ -> Возвращает массив всех путей
+	 * // -> ['search', 'something', 'is', 'here']
+	 *  Пример использования:
+	 *	$routes = $obj->getRoutes();
+	 *	if($routes[0] == 'search') {
+	 *		if($routes[1] == 'book') {
+	 *			echo 'clicked';
+	 *		}
+	 *	}
+	 */
+	public static function getRoutes(string $extUri = ''): array{
 
-		if (empty($extUri)) {  
-
-			$base_uri = self::getCurrentUri(); 
-		} else {
-			$base_uri = $extUri;
-		}
+		$base_uri = empty($extUri) ? self::getCurrentUri() : $extUri;
 
 		$routeValues = array();
 		$routes = explode('/', $base_uri);
-		
-		foreach($routes as $route) {
 
-			if(trim($route) != '') {
-			
+		foreach ($routes as $route) {
+
+			if (trim($route) != '') {
+
 				array_push($routeValues, $route);
 			}
 		}
 
-		if (empty($routeValues)) return array('');
-
-		return $routeValues;
+		return empty($routeValues) ? array('') : $routeValues;
 	}
 
 	/**
-   	* 	Запуск соответствующего действия/экшена/метода контроллера
-   	*/
+	 * 	Запуск соответствующего действия/экшена/метода контроллера
+	 */
 	public static function executeAction() {
 
-		$controller = isset(self::$params[0]) ? self::$params[0]: 'MainController';
-		$action 	= isset(self::$params[1]) ? self::$params[1]: 'defaultMethod';
-		$params 	= array_slice(self::$params, 2);
+		$controller = isset(self::$params[0]) ? self::$params[0] : 'MainController';
+		$action = isset(self::$params[1]) ? self::$params[1] : 'defaultMethod';
+		$params = array_slice(self::$params, 2);
 
-		$obj 		= new $controller();
-		$cresult 	= call_user_func_array(array($obj, $action), $params);
-
+		$obj = new $controller();
+		$cresult = call_user_func_array(array($obj, $action), $params);
 		$errors = null;
 
-		if(method_exists($controller, 'getErrors')) {
+		if (method_exists($controller, 'getErrors')) {
 
 			$errors = $obj->getErrors();
+			// array_filter();
 		}
 
 		return array(
-			'ctrlres'		=> $cresult,
-			'errors' 		=> $errors
+			'result' => $cresult,
+			'errors' => $errors,
 		);
-	} 
+	}
 
-
-	//  ------------------------------------ 
-	//  +          пример использования 
+	//  ------------------------------------
+	//  +          пример использования
 	//  ------------------------------------
 
 	// маршруты (можно хранить в конфиге приложения)
@@ -200,13 +188,13 @@ final class Routing {
 
 	// ========== ДЛЯ НОРМАЛЬНОГО ИСПОЛЬЗОВАНИЯ РОУТЕРА НУЖНО ИСПОЛЬЗОВАТЬ ЭТО ======= //
 
-	// ----> добавить в .htaccess 
+	// ----> добавить в .htaccess
 
-	/* 
-		this router working only with this 
-		Options -MultiViews
-	    RewriteEngine On
-	    RewriteCond %{REQUEST_FILENAME} !-f
-	    RewriteRule ^ index.php [QSA,L]
+	/*
+			this router working only with this
+			Options -MultiViews
+		    RewriteEngine On
+		    RewriteCond %{REQUEST_FILENAME} !-f
+		    RewriteRule ^ index.php [QSA,L]
 	*/
 }

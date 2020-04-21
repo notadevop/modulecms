@@ -101,7 +101,7 @@ ALTER TABLE `users_activation`
   ADD CONSTRAINT `user_activations_ibfk_1` FOREIGN KEY (`activation_user_id`) REFERENCES `users` (`user_id`);
 
 INSERT INTO `users` (`user_id`, `user_name`, `user_email`, `user_password`, `user_registration_date`) VALUES
-(3, 'jcmax', 'jcmaxuser@gmail.com', 'sdfkakjsfhwe92398sdf34bc8932lsdlf238sdf', '2019-12-16 00:00:00.000000');
+(3, 'jcmax', 'jcmaxuser@gmail.com', '81b177a2704f8beaa40efe62cedb9600d1c14ef916c939647b0e629d378d571df8b5edcd98310662e695f7299543a134e87a79bc2e2016571b676697ac089d91', '9234984584839as');
 
 INSERT INTO `roles` (`role_id`, `role_name`) VALUES
 (1, 'Administrator'),

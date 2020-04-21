@@ -160,7 +160,7 @@ class Auth extends Database {
 				':uagent' 			=> serialize($this->visitor->get_data()),
 				':thash'			=> $updateHash,
 				':tcreated'			=> time(),
-				':texpires' 		=> strtotime('+'.UPDATEAUTHINTERVAL.' Days')
+				':texpires' 		=> strtotime('+'.UPDATEAUTHINTERVAL.' Days') // time() +3600*24
 			);
 
 		$this->preAction($sql, $binder);
@@ -175,7 +175,6 @@ class Auth extends Database {
 		);
 
 		$this->preAction($sql, $binder);
-
 		$this->doAction();
 
 		return $updateHash;
@@ -229,9 +228,11 @@ class Auth extends Database {
 
 		$profile = $this
 			->postAction()
-			->fetchAll()[0];	
+			->fetchAll();	
 
-		if (empty($profile)) { return null; }
+		if (empty($profile[0])) { return null; }
+
+		$profile = $profile[0];
 
 		$dbfinger 	= $this
 						->modifier
@@ -301,7 +302,7 @@ class Auth extends Database {
 
 		$this->preAction($sql, $binder);
 
-		return !$this->doAction() ? false : true;
+		return !$this->doAction() ? false : $this->clearActivations($userid);
 	}
 
 	// Активирует или деактивирует указанного пользователя
@@ -377,6 +378,10 @@ class Auth extends Database {
 
 	public function verifyActivations(int $userid, string $token, string $confirm, bool $vertime=false): bool{
 
+		$profile = $this->getUserProfile($userid);
+
+		if (empty($profile)) { return false; }
+
 		$sql = 'SELECT 
 					activation_token as token, 
 					activation_confirm as confirm, 
@@ -394,14 +399,25 @@ class Auth extends Database {
 						->postAction()
 						->fetch();
 
-		if ($token !== $activator['token'] || $confirm !== $activator['confirm']) { 
+		if(!$activator) {return false;}
 
-			return false; 
-		}
+		if ($token !== $activator['token'] || $confirm !== $activator['confirm']) { return false; }
 
-		if (!$vertime) { return true; }
+		$sql = 'UPDATE users SET user_activated = :act, user_last_visit = :lastv WHERE user_id = :uid';
 
-		$this->clearActivations($userid, true); 
+		$binder = array(
+			':act' 	=> 1,
+			':uid'	=>$userid,
+			':lastv'=>time()
+		);		
+
+		$this->preAction($sql, $binder);
+
+		return !$this->doAction() ? false : true;
+
+		// Этот код нужно использовать в крон действии!!! каждые 24-48 часов (указать так, чтобы спамеры не загружали и пользователь мог повторить активацию)
+
+		//$this->clearActivations($userid, $vertime); 
 
 		/*
 		$dateClass = $this->dateClass;
@@ -412,7 +428,6 @@ class Auth extends Database {
 			return false; 
 		} 
 		*/
-		return true;
 	}
 
 	// устанавливаем активацию для подтверждения 
@@ -493,9 +508,8 @@ class Auth extends Database {
 		}
 
 		$this->preAction($sql, $binder);
-		if(!$this->doAction()) { return false; }
 
-		return true;
+		return !$this->doAction() ? false : true;
 	}
 
 	// Генерируем активацию 
@@ -505,11 +519,12 @@ class Auth extends Database {
 		$id = $this->getUserProfile($useremail);
 
 		if (empty($id['id'])) { return null; }
-		$t = $this->updateActivations($id);
+
+		$t = $this->updateActivations($id['id']);
 
 		if (!empty($t)) { 
 
-			$t['id'] = $id;
+			$t['id'] = $id['id'];
 			return $t; 
 		}
 

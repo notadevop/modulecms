@@ -5,22 +5,25 @@
 	<link rel="stylesheet" href="/Templates/default/css/bootstrap.min.css">
 	<script src="/Templates/default/js/jquery-3.4.1.slim.min.js"></script>
 	<script src="/Templates/default/js/popper.min.js"></script>
-	<script src="/Templates/default//js/bootstrap.min.js"></script>
+	<script src="/Templates/default/js/bootstrap.min.js"></script>
 </head>
 <body style="margin: 50px;">
 
-<a href="/usersonline">Онлайн пользователи</a>
-
 <?php 
 	if(defined('PROFILE') && !empty(PROFILE)) {
-		echo '<a href="?logout=1">Выйти</a>';
+		echo '<pre>----------------------------------';
+		debugger(PROFILE, 'Профиль пользователя');
+		echo '<p><a href="/logout">Выйти</a></p>';
+		echo '----------------------------------</pre>'; 
 	}
+
+	echo '<a href="/usersonline">Кол-во пользователей на сайте: '.$res['/online']['result'].'</a>';
 
 	if(!empty($metadata)) {
 
 		foreach ($metadata as $key => $value) {
 			
-			echo '<p>'.debugger($value).'</p>';
+			debugger($value, 'Параметры из запущенного контроллера!');
 		}
 	}
 

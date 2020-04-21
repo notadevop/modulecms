@@ -21,8 +21,8 @@ spl_autoload_register(function ($class_name) {
 
 	try {
 		foreach ($folders as $key => $value) {
-			$path = ROOTPATH.$key.DS.$class_name.$value.'php'; 
 
+			$path = ROOTPATH.$key.DS.$class_name.$value.'php'; 
 			$path = str_replace('\\', DIRECTORY_SEPARATOR, $path);
 
 			if (file_exists($path)) {
@@ -32,7 +32,6 @@ spl_autoload_register(function ($class_name) {
 		}
 		
 		if (!$flag) {
-			echo $class_name;
 			throw new Exception("Не могу продолжить, не найдет указанный класс. Выхожу...");
 		}
 
@@ -41,7 +40,6 @@ spl_autoload_register(function ($class_name) {
 	} catch (Exception $e) {
 
 		$msg = $e->getMessage();
-
 		die(debugger($msg));
 	}
 }); 
@@ -70,18 +68,26 @@ function debugger($input, string $funcname = '', bool $debug = false): void {
 				if (is_array($value)) {
 					$clos($value);
 				} else {
-					$string .= gettype($value).': ['.$key.'] => '.$value.'<br />';
+					$in[$key] = gettype($value).' => '.$value.'<br />';
 				}
 			}
 		} else {
-			$string = $in;	
+
+			$in = gettype($in).' => '.$in;
 		}
 
 		// TOODO: проверка на обьект is_object($string)
 
-		$string = '<i>Откуда инфо:</i> <b>'.$funcname.' </b></br>'.$string;
+		echo '<i>Откуда запущенно:</i> <b>'.$funcname.' </b></br>';
 
-		$debug ? var_dump($string) : print_r($string);
+		if (empty($in) || !$in) {
+
+			var_dump($in);
+		} else {
+			print_r($in);
+		}
+
+		//$debug ? var_dump($in) : print_r($in);
 
 		/*
 		$filename = "./debugfile.txt";

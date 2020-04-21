@@ -61,43 +61,6 @@ class CookieJob {
 		$this->cookie[$cookieName]['ctime'] = strtotime($time);
 
 		//if (preg_match('+ '.[0-9].'[Years][Days]'., subject))
-
-
-		/*	
-
-		echo 'После: '. $time;
-
-		$cont = $gotopast ? '-' : '+';
-
-		$ctime = 0;
-
-		if (preg_match('/Years/i', $time)) {
-
-			$ctime = strtotime($cont.' '.$time.' Years');
-
-		} else if (preg_match('/Months/i', $time)) {
-
-			$ctime = strtotime($cont.' '.$time.' Months');
-
-		} else if (preg_match('/Days/i', $time)) {
-
-			$ctime = strtotime($cont.' '.$time.' Days');
-
-		} else if (preg_match('/Hours/i', $time)) {
-
-			$ctime = strtotime($cont.' '.$time.' Hours');
-						
-		} else if (preg_match('/Seconds/i', $time)) {
-
-			$ctime = strtotime($cont.' '.$time.' Seconds');
-						
-		} else {
-
-			$ctime = strtotime($cont.' '.$time.' Minutes');	
-		}
-
-		$this->cookie[$cookieName]['ctime'] = $ctime;
-		*/
 	}
 
 	function setPathDomenCookie(string $cookieName, string $path = '/', string $domen = 'localhost'): void {
@@ -105,9 +68,7 @@ class CookieJob {
 		if(!$this->existPrepCookie($cookieName)) { return; }	
 
 		$this->cookie[$cookieName]['cpath'] = $path;
-
 		$this->cookie[$cookieName]['cdomen'] = $domen;
-
 	}
 
 	// Debug: func
@@ -115,7 +76,6 @@ class CookieJob {
 	function viewCookie(array $cookieName): void{
 
 		$glob = new GlobalParams();
-
 		$glob->setGlobParam('_COOKIE');
 
 		foreach ($cookieName as $key => $value) {
@@ -123,7 +83,6 @@ class CookieJob {
 			if ($glob->isExist($value)) {
 
 				$cookieValue = $glob->getGlobParam($value);
-
 				debugger('cookie: <b>'.$value.'</b> his param: <b>'.$cookieValue.'</b>', __METHOD__);
 			} else {
 
@@ -137,7 +96,6 @@ class CookieJob {
 		$saveAll = false;
 
 		if(empty($cookieName)) { $saveAll = true; }
-
 		if(empty($this->cookie)) { return; }
 
 		$csaver = function($name, $values) {
@@ -162,11 +120,7 @@ class CookieJob {
 
 				foreach ($this->cookie as $key => $value) {
 					
-					if(!$this->existPrepCookie($key)) { 
-						
-						echo 'bypassing cookie';
-						continue;
-					}
+					if(!$this->existPrepCookie($key)) { continue; }
 
 					$t = $csaver($key, $value);
 				}
@@ -186,7 +140,7 @@ class CookieJob {
 
 		if(!$this->existPrepCookie($cookieName)) { return; }
 
-		return ;	
+		//return ;	
 
 		setcookie($cookie['name'], $cookie['value'], $cookie['time'], $cookie['path'], $cookie['domain']);
 	}
