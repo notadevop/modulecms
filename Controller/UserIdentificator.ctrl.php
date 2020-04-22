@@ -133,45 +133,34 @@ class UserIdentificator extends Errors {
 			->glob
 			->setGlobParam('_POST');
 
-		$e = $this
-			->glob
-			->isExist('loginmail');
-		$p = $this
-			->glob
-			->isExist('loginpasswd');
+		$params = array('loginmail', 'loginpasswd');
+		$p = array();
 
-		if (!$e || !$p) {return false;}
+		foreach ($params as $key => $value) {
+			
+			if(!$this->glob->isExist($value)) { return false; }
 
-		$nameOpt = array(
-			'maxSym' => 30,
-			'minSym' => 4,
-			'checkMail' => true,
-		);
+			$Opt = array(
+					'maxSym' => 30,
+					'minSym' => 4,
+					'checkMail' => $value == $params[0] ? true : false,
+			);
 
-		$passOpt = array(
-			'maxSym' => 30,
-			'minSym' => 4,
-			'checkMail' => false,
-		);
+			$p[$value] = $this
+							->glob
+							->getGlobParam($value);
 
-		$email = $this
-			->glob
-			->getGlobParam('loginmail');
-		$pass = $this
-			->glob
-			->getGlobParam('loginpasswd');
-
-		$email = $this->filtration($email, $nameOpt);
-		$pass = $this->filtration($pass, $passOpt);
+			$p[$value] = $this->filtration($p[$value], $Opt);
+		}
 
 		if (count($this->getErrors()) > 0) {return false;}
 
 		$ue = $this
 			->auth
-			->userExist($email);
+			->userExist($p['loginmail']);
 		$ub = $this
 			->auth
-			->userActivated($email);
+			->userActivated($p['loginmail']);
 
 		if (!$ue) {
 
@@ -184,8 +173,8 @@ class UserIdentificator extends Errors {
 		}
 
 		$profile = $this
-			->auth
-			->findUser($email, $pass);
+						->auth
+						->findUser($p['loginmail'], $p['loginpasswd']);
 
 		if (!$this->defineUserProfile($profile)) {
 
@@ -193,7 +182,7 @@ class UserIdentificator extends Errors {
 			return false;
 		}
 
-		$this->saveAuthAction($email, $profile['tokenHash']);
+		$this->saveAuthAction($p['loginmail'], $profile['tokenHash']);
 
 		if (REDIRECTLOGIN) {
 
@@ -306,15 +295,7 @@ class UserIdentificator extends Errors {
 				->saveCookie($key);
 		}
 	}
-
-
-	// Временно !!!
-
-	function build_query(array $params): string {
-
-		return http_build_query($params);
-	}
-
+	
 	// ----------------------------------------------
 
 	function resAction(): ?string{
@@ -404,8 +385,6 @@ class UserIdentificator extends Errors {
 						->getGlobParam($value);
 
 			$pass[$key] = $this->filtration($value, $Opt);
-
-			//$pass[$key] = $getpass($value); // [0] => value
 		}
 
 		if (count($this->getErrors()) > 0) { return false;}

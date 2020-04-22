@@ -12,8 +12,9 @@
 <?php 
 	if(defined('PROFILE') && !empty(PROFILE)) {
 		echo '<pre>----------------------------------';
+		echo '<p>Вы вошли на сайт как: <a href="/profile">'.PROFILE['username'].' </a>('.PROFILE['useremail'].')</p>';
 		debugger(PROFILE, 'Профиль пользователя');
-		echo '<p><a href="/logout">Выйти</a></p>';
+		echo '<p><a href="/logout">Хотите выйти?</a></p>';
 		echo '----------------------------------</pre>'; 
 	}
 
@@ -21,9 +22,7 @@
 
 	if(!empty($metadata)) {
 
-		foreach ($metadata as $key => $value) {
-			
-			debugger($value, 'Параметры из запущенного контроллера!');
-		}
+		debugger($metadata, 'Это Шаблон загаловка!');
+
 	}
 

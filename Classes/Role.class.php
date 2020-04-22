@@ -9,25 +9,23 @@ class Role extends Database {
 		$this->permission = array();
 	}
 
-    //private $pdo;
 	private $permission;
 
-	// Возвращает пояснение привелегии по указанной роли 
+	// Возвращает обьект ролей Role();
 
     public function getRolePerms(int $role_id): ?Role {
 
         $role = new Role();
 
         $sql = "SELECT t2.perm_desc 
-        FROM role_perm as t1 JOIN permissions as t2 ON t1.perm_id = t2.perm_id 
+        FROM role_perm as t1 
+        JOIN permissions as t2 ON t1.perm_id = t2.perm_id 
         WHERE t1.role_id = :role_id";
 
         $binder = array(":role_id" => $role_id);
 
         $this->preAction($sql, $binder);
-
-        if (!$this->doAction()) 
-            return $this->resetAction() && $role;
+        if (!$this->doAction()) {return null;}
      
         while($row = $this->postAction()->fetch()) {
 
@@ -73,8 +71,8 @@ class Role extends Database {
         return $this->doAction();
     }
 
-    // insert array of roles for specified user id добавляем массив ролей для указанного user_id
-    public function insertUserRoles(int $user_id, string $roles): bool {
+    // insert  role for specified user id добавляем массив ролей для указанного user_id
+    public function insertUserRoles(int $user_id, string $role_id): bool {
 
         $sql = "INSERT INTO user_role (user_id, role_id) VALUES (:user_id, :role_id)";
         

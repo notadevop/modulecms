@@ -56,16 +56,13 @@ class Auth extends Database {
 		if(!$this->doAction()) { return null; }
 
 		$profile = $this
-				->postAction()
-				->fetch();
+						->postAction()
+						->fetch();
 
 		// Получаем права пользователя, если их нет выходим 
 		// без прав нечего делать пользователю в закрытом сегменте 
 
 		if(empty($profile)) {return null;}
-
-		$priveleges = new Priveleges();
-		$priveleges->initRoles($profile['id']);
 
 		return !empty($profile) ? $profile : null;
 	}

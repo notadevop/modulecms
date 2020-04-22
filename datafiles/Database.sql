@@ -103,23 +103,24 @@ ALTER TABLE `users_activation`
 INSERT INTO `users` (`user_id`, `user_name`, `user_email`, `user_password`, `user_registration_date`) VALUES
 (3, 'jcmax', 'jcmaxuser@gmail.com', '81b177a2704f8beaa40efe62cedb9600d1c14ef916c939647b0e629d378d571df8b5edcd98310662e695f7299543a134e87a79bc2e2016571b676697ac089d91', '9234984584839as');
 
+
 INSERT INTO `roles` (`role_id`, `role_name`) VALUES
+(1, 'Администратор, главный на сайте, имеет все привелегии'),
+(2, 'Модератор, может удалять, редактировать посты и коментарии свои и чужие'),
+(3, 'Автор, имеет права только на свои коментарии, посты и все действия связанные с собой'),
+(4, 'Подписчик, имеет права только на свои коментарии и возможность подписываться на других авторов. '),
+(5, 'Заблокированный пользователь, временно запрещен доступ к не авторизированным страницам'),
+(6, 'Удаленный пользователь, пользователь который больше не может авторизироваться на постоянной основе. но остается в системе.'),
+(7, 'Неавторизированный пользователь, имеет доступ только к открытым данным');
+
+INSERT INTO `permissions` (`perm_id`, `perm_desc`) VALUES
 (1, 'Administrator'),
 (2, 'Moderator'),
 (3, 'Author'),
 (4, 'Subscriber'),
-(5, 'BlockedUser'),
-(6, 'DeletedUser'),
-(7, 'Visitor');
-
-INSERT INTO `permissions` (`perm_id`, `perm_desc`) VALUES
-(1, 'Administrator main on the website.'),
-(2, 'Moderator can do deletes, edit posts, comment of all users.'),
-(3, 'Author is contain all it own priveleges, edit it posts, comments.'),
-(4, 'Subscriber can comments only.'),
-(5, 'Blocked cannot temporary login.'),
-(6, 'Deleted deactivated accaunt permanently. no login, keep data, to prevent new registration.'),
-(7, 'Guest no accaunt, anonymous user.');
+(5, 'Blocked'),
+(6, 'Deleted'),
+(7, 'Guest');
 
 INSERT INTO `user_role` (`user_id`, `role_id`) VALUES
 (3, 1);

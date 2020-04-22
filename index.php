@@ -46,6 +46,11 @@ $pathRoutes = array(
 	'/confpass'		=> 'UserIdentificator/updatePassword',
 	'/verifreg' 	=> 'UserIdentificator/verifyRegistration',
 	'/logout' 		=> 'UserIdentificator/logout/true/false',
+
+
+
+	'/profile' 		=> 'ProfileController/getListOfUsers',
+	//'/profile' 		=> 'ProfileController/'
 );
 
 

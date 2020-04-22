@@ -45,18 +45,9 @@ spl_autoload_register(function ($class_name) {
 }); 
 
 
-function debugger($input, string $funcname = '', bool $debug = false): void {
+ // Для определения метода или функции __METHOD__, __FUNCTION__
 
-	/*
-	if(empty($input)) { 
-
-		print_r('Пройденно....'.$funcname);
-	}
-	*/
-	// Для определения откуда запускается дебаггер вставляем в funcname = __FUNCTION__
-	// Либо если метод нужен с полным путем то __METHOD__
-
-	// try catch для методов или функций
+function debugger($input, string $funcname = ''): void {
 
 	$clos = function($in) use (&$clos, &$debug, &$funcname) {
 
@@ -64,10 +55,14 @@ function debugger($input, string $funcname = '', bool $debug = false): void {
 		$string = '';
 
 		if(is_array($in)) {
+
 			foreach ($in as $key => $value) {
+
 				if (is_array($value)) {
 					$clos($value);
+					echo '+<br/>';
 				} else {
+
 					$in[$key] = gettype($value).' => '.$value.'<br />';
 				}
 			}
@@ -76,18 +71,9 @@ function debugger($input, string $funcname = '', bool $debug = false): void {
 			$in = gettype($in).' => '.$in;
 		}
 
-		// TOODO: проверка на обьект is_object($string)
+		echo '<i>Запущенно из: ==> </i> <b>'.$funcname.' </b></br>';
 
-		echo '<i>Откуда запущенно:</i> <b>'.$funcname.' </b></br>';
-
-		if (empty($in) || !$in) {
-
-			var_dump($in);
-		} else {
-			print_r($in);
-		}
-
-		//$debug ? var_dump($in) : print_r($in);
+		(empty($in) || !$in) ? var_dump($in) : print_r($in);
 
 		/*
 		$filename = "./debugfile.txt";
@@ -99,11 +85,6 @@ function debugger($input, string $funcname = '', bool $debug = false): void {
 	};
 
 	echo '<pre>';
-	if (!empty($input)) {
-
-		$clos($input); 
-	} else {
-		//echo 'Дан пустой параметр, тип переменной => <b>'. gettype($input).'</b>';
-	}
+	$clos($input); 
 	echo '</pre>';
 }

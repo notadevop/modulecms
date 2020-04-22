@@ -13,45 +13,28 @@ class Priveleges extends Database {
 
 	private $roles;
 
-    public function getByusername(string $useremail) {
-
-
-        // вытаскиваем пользователя и все его данные кроме пароля 
-    }
-
-    /*
-    public static function getByUsername(string $username): ?PrivilegedUser {
-
-        // Вытаскиваем пользователя
-        $sql = "SELECT * FROM users WHERE username = :username";
-
-        $sth = $GLOBALS["DB"]->prepare($sql);
-        $sth->execute(array(":username" => $username));
-        $result = $sth->fetchAll();
-
-        if (!empty($result)) {
-
-            $privUser = new Privileges();
-            $privUser->user_id = $result[0]["user_id"];
-            $privUser->username = $username;
-            $privUser->password = $result[0]["password"];
-            $privUser->email_addr = $result[0]["email_addr"];
-            $privUser->initRoles();
-        
-            return $privUser;
-        } else {
-            return false;
-        }
-    }
-    */
-
     public function getRoles(): array{
 
         return $this->roles;
     }
 
+
+    function getPerms(): ?array{
+
+        $sql = 'SELECT `perm_id`, `perm_desc` FROM `permissions`';
+
+        $this->preAction($sql);
+
+        if(!$this->doAction()) {return null;}
+
+        $row = $this->postAction()->fetchAll(PDO::FETCH_ASSOC);
+        
+        return $row;
+    }
+    
+
     // populate roles with their associated permissions
-    // Достаем все роли которые привязанны к указанному пользователю
+
     public function initRoles(int $user_id): void {
 
         $sql = "SELECT t1.role_id, t2.role_name 
@@ -61,7 +44,8 @@ class Priveleges extends Database {
         $binder = array(":user_id" => $user_id);
 
         $this->preAction($sql, $binder);
-        $this->doAction();
+        
+        if(!$this->doAction()) {return; }
 
         $role = new Role();
 
@@ -76,6 +60,7 @@ class Priveleges extends Database {
     public function hasPrivilege(string $perm): bool {
 
         foreach ($this->roles as $role) {
+
             if ($role->hasPerm($perm)) {
                 return true;
             }
