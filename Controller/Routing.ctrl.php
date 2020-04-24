@@ -150,6 +150,9 @@ final class Routing {
 			// array_filter();
 		}
 
+		//unset($obj); // Нужно для использования __destruct();
+		//unset($controller);
+
 		return array(
 			'result' => $cresult,
 			'errors' => $errors,

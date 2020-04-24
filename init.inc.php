@@ -47,44 +47,24 @@ spl_autoload_register(function ($class_name) {
 
  // Для определения метода или функции __METHOD__, __FUNCTION__
 
-function debugger($input, string $funcname = ''): void {
-
-	$clos = function($in) use (&$clos, &$debug, &$funcname) {
-
-		$array = false;
-		$string = '';
-
-		if(is_array($in)) {
-
-			foreach ($in as $key => $value) {
-
-				if (is_array($value)) {
-					$clos($value);
-					echo '+<br/>';
-				} else {
-
-					$in[$key] = gettype($value).' => '.$value.'<br />';
-				}
-			}
-		} else {
-
-			$in = gettype($in).' => '.$in;
-		}
-
-		echo '<i>Запущенно из: ==> </i> <b>'.$funcname.' </b></br>';
-
-		(empty($in) || !$in) ? var_dump($in) : print_r($in);
-
-		/*
-		$filename = "./debugfile.txt";
-		$fh = fopen($filename, "a");
-		fwrite($fh, 'function: '.$funcname.' => '.$string."\n");
-		fclose($fh);
-		*/
-		//file_put_contents('./debugfile.txt', $string, FILE_APPEND | LOCK_EX);
-	};
+function debugger($input, $param=__FUNCTION__, $vardump=false): void {
 
 	echo '<pre>';
-	$clos($input); 
+	echo '</br>Дебаггер запущен из =>'.$param ;	
+
+	if ($vardump) {
+
+		echo '<br/>';
+		var_dump($input);
+	}
+
+	echo '<br/>';
+	print_r($input);
+
 	echo '</pre>';
 }
+
+// 
+function console($input, $param='', $doAction) { }
+
+

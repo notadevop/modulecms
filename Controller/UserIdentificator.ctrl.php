@@ -9,6 +9,9 @@ class UserIdentificator extends Errors {
 	private $cookies;
 	private $pluginExecutor;
 
+	private $users;
+	private $granter;
+
 	function __construct() {
 
 		parent::__construct();
@@ -17,6 +20,8 @@ class UserIdentificator extends Errors {
 		$this->auth 	= new Auth();
 		$this->glob 	= new GlobalParams();
 		$this->filter 	= new Filter();
+		$this->users 	= new Users();
+		$this->granter 	= new PrivelegesController();
 
 		// Временно, удалить поже 
 
@@ -42,11 +47,6 @@ class UserIdentificator extends Errors {
 		);
 
 		$this->errors = array();
-	}
-
-	function test($param) {
-
-		debugger('This is result of method param: '.$param);
 	}
 
 	// ----------------------------------------------
@@ -176,6 +176,8 @@ class UserIdentificator extends Errors {
 						->auth
 						->findUser($p['loginmail'], $p['loginpasswd']);
 
+		// TODO: Обновить хеш пользователя ТУТ!!!!!!
+
 		if (!$this->defineUserProfile($profile)) {
 
 			$this->collectErrors('wrongpass', 'Неправильные имя или пароль!');
@@ -186,8 +188,8 @@ class UserIdentificator extends Errors {
 
 		if (REDIRECTLOGIN) {
 
-			//header('Location: /'); // Перебрасываем отуда, откуда пришел.
-			debugger('Сохранил куки и перекидываю пользователя', __METHOD__);
+			header('Location: /'); // Перебрасываем отуда, откуда пришел.
+			//debugger('Сохранил куки и перекидываю пользователя', __METHOD__);
 			return true;
 		}
 
@@ -198,13 +200,38 @@ class UserIdentificator extends Errors {
 
 	// ----------------------------------------------
 
-	private function defineUserProfile($profile): bool {
+	// Данный метод использовать для вывода во View данных пользователя
+	private function defineUserProfile($profile=''): bool {
 
-		if (empty($profile)) {return false;}
+		$temp = array(
 
-		// Добавить определение привелегий пользователя 
+		    'userid' 		=> 0,
+            'username' 		=> 'Анонимный пользователь!',
+            'userroles'		=> 'Гость/Guest',
+		);
 
-		if (!defined('PROFILE')) {define('PROFILE', $profile);}
+		if(empty($profile)) {
+
+			if(!defined('PROFILE')){ define('PROFILE',$temp); }
+
+			return false;
+		}
+
+		foreach ($profile as $key => $value) {
+			
+			$temp[$key] = $value;
+		}
+
+		$perms = $this
+					->granter
+					->getAllPerms($profile['userid']);
+
+
+
+		$temp['userroles'] = implode(", ", array('admin','moderator'));
+
+
+		if(!defined('PROFILE')){ define('PROFILE',$temp); }
 
 		return true;
 	}
@@ -231,7 +258,9 @@ class UserIdentificator extends Errors {
 			
 			if(!$this->glob->isExist($value)) { return false; }
 
-			$p[$value] = $this->glob->getGlobParam($value);
+			$p[$value] = $this
+							->glob
+							->getGlobParam($value);
 			$p[$value] = $this->filtration($p[$value], $Opt);
 		}
 
@@ -396,14 +425,18 @@ class UserIdentificator extends Errors {
 		}
 
 		$r = $this
-				->auth
-				->updateUserPassword($p['userid'], $pass[0]);
+				->users
+				->updateUserPassword($p['userid'], $pass[0], true);
 
 		if (!$r) {
 
 			$this->collectErrors('updpasserr', 'Ошибка обновления пароля!');
 			return false;
 		}
+
+		$this
+			->auth
+			->clearActivations($p['userid']);
 
 		$this->collectErrors('updpassgood', 'Пароль обновлен!');
 
@@ -432,7 +465,10 @@ class UserIdentificator extends Errors {
 				'getNumber'	=> ($value == 'userid' ? true : false),
 			);
 
-			if(!$this->glob->isExist($value)) { return null; }
+			if(!$this->glob->isExist($value)) { 
+
+				$this->collectErrors('paramerr', 'Ошибка! параметров подтверждения');
+				return null; }
 
 			$p[$value] = $this
 							->glob
@@ -513,15 +549,15 @@ class UserIdentificator extends Errors {
 			return null;
 		}
 
-		if (!$this->auth->insertNewUser($p['userregemail'], $p['userregpassword1'], $p['userregname'])) {
+		if (!$this->users->insertNewUser($p['userregemail'], $p['userregpassword1'], $p['userregname'])) {
 
 			$this->collectErrors('noregact', 'Ошибка! Не получилось зарегестрироваться! Проверьте еще раз ваши данные.При повторной ошибке обратитесь к администратору!');
 			return null;
 		}
 
 		$meta = $this
-			->auth
-			->generateActivations($p['userregemail']);
+					->auth
+					->generateActivations($p['userregemail']);
 
 		if (empty($meta)) {return false;}
 
@@ -545,16 +581,19 @@ class UserIdentificator extends Errors {
 						->auth
 						->activateRegisteredUser($p['userid']);
 
-		if ($astatus) {
+		if (!$astatus) {
 
-			$this->collectErrors('regactstatus', 'Аккаунт активирован!');
-			return true;
-		} 
+			$this->collectErrors('regactbad', 'Ошибка активации пользователя!');
 
-		$this->collectErrors('regactbad', 'Ошибка активации пользователя!');
+			// TODO: Переправить пользователя на форму входа
+			return false;
+		}
 
-		// TODO: Переправить пользователя на форму входа
-		return false;
+		$this
+			->auth
+			->clearActivations($userid);
 
+		$this->collectErrors('regok', 'Аккаунт активирован!');
+		return true;
 	}
 }

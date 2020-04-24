@@ -28,7 +28,7 @@ class Priveleges extends Database {
         if(!$this->doAction()) {return null;}
 
         $row = $this->postAction()->fetchAll(PDO::FETCH_ASSOC);
-        
+
         return $row;
     }
     
@@ -61,9 +61,7 @@ class Priveleges extends Database {
 
         foreach ($this->roles as $role) {
 
-            if ($role->hasPerm($perm)) {
-                return true;
-            }
+            if ($role->hasPerm($perm)) {return true;}
         }
         return false;
     }

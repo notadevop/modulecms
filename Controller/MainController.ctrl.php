@@ -11,8 +11,14 @@ class MainController extends Errors{
 		parent::__construct();
 	}
 
+	function test($param) {
+
+
+		return 'это параметр который указан в URI =>'.$param;
+	}
+
 	function defaultMethod() {
 
-		debugger('Незнаю, что открывать!', __METHOD__);
+		return array('Метод по умолчанию', 'Тут никаких действий!');
 	}
 }

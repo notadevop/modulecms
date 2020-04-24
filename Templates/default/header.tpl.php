@@ -10,19 +10,23 @@
 <body style="margin: 50px;">
 
 <?php 
-	if(defined('PROFILE') && !empty(PROFILE)) {
-		echo '<pre>----------------------------------';
-		echo '<p>Вы вошли на сайт как: <a href="/profile">'.PROFILE['username'].' </a>('.PROFILE['useremail'].')</p>';
-		debugger(PROFILE, 'Профиль пользователя');
+
+	echo '<p>Вы вошли на сайт как: ';
+
+	if(defined('PROFILE') && !empty(PROFILE['useremail'])) {
+
+		echo '<a href="/profile">('.PROFILE['username'].')</a> '.PROFILE['useremail'].'</p>';
 		echo '<p><a href="/logout">Хотите выйти?</a></p>';
-		echo '----------------------------------</pre>'; 
+	} else {
+		echo '(Гость)</p>';
 	}
 
-	echo '<a href="/usersonline">Кол-во пользователей на сайте: '.$res['/online']['result'].'</a>';
+	//debugger(PROFILE);
+
+	echo '<a href="/usersonline">Пользователей: ['.$res['online']['result'].']</a>';
 
 	if(!empty($metadata)) {
 
 		debugger($metadata, 'Это Шаблон загаловка!');
-
 	}
 

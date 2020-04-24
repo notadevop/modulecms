@@ -8,11 +8,16 @@ class Auth extends Database {
 	private $dateClass;
 	private $visitor;
 
+	private $users;
+
 	function __construct(){
 
 		parent::__construct(true);
 		$this->modifier = new Modifier();
 		$this->visitor 	= new Visitor();
+
+
+		$this->users = new Users();
 
 		// Временно!!!!! проверяем по времени разницу будет заменен на класс
 
@@ -32,46 +37,13 @@ class Auth extends Database {
 		}; 
 	}
 
-	// Получаем профиль пользователя
-
-	private function getUserProfile($idoremail): ?array {
-
-		$sql = 'SELECT 
-			`user_id` as id,`user_name` as name,`user_email` as email,`user_password` as password, 
-			`user_registration_date` as regdate,`user_last_visit` as lastvisit,`user_activated` as actstatus
-			FROM `users`';
-
-		if(is_int($idoremail) || is_numeric($idoremail)) {
-
-			$sql 	.= ' WHERE user_id = :userid LIMIT 1';
-			$binder = array(':userid' => intval($idoremail));
-		} else {
-
-			$sql 	.= ' WHERE user_email = :useremail LIMIT 1';
-			$binder = array(':useremail' => $idoremail);
-		}
-
-		$this->preAction($sql, $binder);
-
-		if(!$this->doAction()) { return null; }
-
-		$profile = $this
-						->postAction()
-						->fetch();
-
-		// Получаем права пользователя, если их нет выходим 
-		// без прав нечего делать пользователю в закрытом сегменте 
-
-		if(empty($profile)) {return null;}
-
-		return !empty($profile) ? $profile : null;
-	}
-
 	// Проверяем активирован пользователь или нет
 
 	public function userActivated(string $useremail): bool{
 
-		$profile = $this->getUserProfile($useremail);
+		$profile = $this
+					->users
+					->getUserProfile($useremail);
 
 		if (empty($profile['lastvisit']) || $profile['lastvisit'] == 0 || $profile['actstatus'] == 0) 
 			{return false;}
@@ -87,17 +59,19 @@ class Auth extends Database {
 		if(!$this->doAction()) { return false; }
 
 		$prev = $this
-				->postAction()
-				->fetch()['counter'];
+					->postAction()
+					->fetch()['counter'];
 
 		return $prev == 0 ? false : true;
 	}
 
 	// Проверяем существует пользователь или нет 
 
-	public function userExist($emailorid): bool{
+	public function userExist($id): bool{
 
-		return !empty($this->getUserProfile($emailorid)['id']) ? true : false;
+		return !empty($this
+					->users
+					->getUserProfile($id)['id']) ? true : false; 
 	}
 
 	// Устанавливаем или обновляем хеш пользователя и возвр. для сохранения
@@ -141,11 +115,15 @@ class Auth extends Database {
 			token_expires = :texpires 
 			WHERE token_user_id = :userid';
 
+			// Тут обновляем хеш когда время истекло
+
 			$dateClass = $this->dateClass;
 
 			if ($dateClass($result['tcreated'],$result['texpires'],'%d', UPDATEAUTHINTERVAL)) {
 
 				# $updateHash = $newHash;
+
+				debugger('Время истекло нужно обновлять хеш!');
 			} 
 
 			# $updateHash = $result['token'];
@@ -181,7 +159,9 @@ class Auth extends Database {
 
 	public function findUser(string $useremail, string $userpass): ?array{
 
-		$profile = $this->getUserProfile($useremail);
+		$profile = $this
+						->users
+						->getUserProfile($useremail);
 
 		if (empty($profile)) { return null; }
 
@@ -224,8 +204,8 @@ class Auth extends Database {
 		if(!$this->doAction()) { return null; }
 
 		$profile = $this
-			->postAction()
-			->fetchAll();	
+						->postAction()
+						->fetchAll();	
 
 		if (empty($profile[0])) { return null; }
 
@@ -252,38 +232,16 @@ class Auth extends Database {
 		);
 	}
 
-	// Вставляем нового пользователя в базу без активации !
-
-	public function insertNewUser(string $useremail, string $userpass, string $username): bool{
-
-		$profile = $this->getUserProfile($useremail);
-
-		if (!empty($profile['id'])) { return false; }
-
-		$sql = 'INSERT INTO users (user_name, user_email, user_password, user_registration_date, user_last_visit, user_activated) 
-		VALUES (:username, :usermail, :userpass, :userregdate, :userlastv, :useractiv)';
-
-		$binder = array(
-					':usermail' 	=> $useremail,
-					':userpass'		=> $this->modifier->strToHash($userpass),
-					':username'		=> $username,
-					':userregdate' 	=> time(),
-					':userlastv'	=> 0,
-					':useractiv'	=> 0
-		);
-
-		$this->preAction($sql, $binder);
-
-		return !$this->doAction() ? false : true;	
-	}
 
 	// Активируем нового пользователя для возможности авторизации
 
 	public function activateRegisteredUser(string $userid): bool{
 
-		$uid = $this->getUserProfile($userid);
+		$profile = $this
+						->users
+						->getUserProfile($userid);
 
-		if (empty($uid['id'])) { return false; }
+		if (empty($profile['id'])) { return false; }
 
 		// Тут устанавливаем привелегии только зарегестрированного пользователя 
 		// в настройках системы можно установить какие привелегии пользователь получает
@@ -299,14 +257,18 @@ class Auth extends Database {
 
 		$this->preAction($sql, $binder);
 
-		return !$this->doAction() ? false : $this->clearActivations($userid);
+		return !$this->doAction() ? false : true;
 	}
+
+
 
 	// Активирует или деактивирует указанного пользователя
 
 	public function activateOrBlockUser(int $userid, bool $block=false): bool{
 
-		$profile = $this->getUserProfile($userid);
+		$profile = $this
+						->users
+						->getUserProfile($userid);
 
 		if (empty($profile['id'])) { return false; }
 
@@ -326,10 +288,12 @@ class Auth extends Database {
 	}
 
 	// Обновляем пароль пользователя по указанному id 
-
+	/*
 	public function updateUserPassword(int $userid, string $userpass): bool{
 
-		$profile = $this->getUserProfile($userid);
+		$profile = $this
+						->users
+						->getUserProfile($userid);
 
 		if (empty($profile)) { return false; }
 		
@@ -348,10 +312,14 @@ class Auth extends Database {
 
 		return !$this->doAction() ? false : $this->clearActivations($userid);
 	}
+	*/
 
-	// Удаляем всех пользователей которые не активировали свои аккаунты в течении указанного времени
+	// Удаляем всех пользователей которые не активировали свои аккаунты в течении указанного времени 
+	// TODO: нужно для CRON 
 
 	public function deleteNotActivatedUsers(): bool{
+
+		// TODO: использовать INNER JOIN для DELETE и условия в SQL для чистого удаления
 
 		//$sql = 'DELETE FROM users_activation WHERE ';
 
@@ -375,14 +343,16 @@ class Auth extends Database {
 
 	public function verifyActivations(int $userid, string $token, string $confirm, bool $vertime=false): bool{
 
-		$profile = $this->getUserProfile($userid);
+		$profile = $this
+						->users
+						->getUserProfile($userid);
 
 		if (empty($profile)) { return false; }
 
 		$sql = 'SELECT 
-					activation_token as token, 
-					activation_confirm as confirm, 
-					activation_created as created 
+				activation_token as token, 
+				activation_confirm as confirm, 
+				activation_created as created 
 				FROM users_activation 
 				WHERE activation_user_id = :actuid LIMIT 1';
 
@@ -431,7 +401,7 @@ class Auth extends Database {
 
 	public function updateActivations(int $userid): ?array{
 
-		$this->clearActivations($userid, true);
+		$this->clearActivations($userid, true); // Тут удаляем все просроченные активации, 
 
 		$sql = 'SELECT COUNT(*) as count 
 				FROM users_activation WHERE activation_user_id = :actuid LIMIT 1';
@@ -488,7 +458,9 @@ class Auth extends Database {
 
 	public function clearActivations(int $userid, bool $cleanbytime=false): bool{
 
-		$profile = $this->getUserProfile($userid);
+		$profile = $this
+						->users
+						->getUserProfile($userid);
 
 		if (empty($profile)) { return false; }
 
@@ -513,15 +485,17 @@ class Auth extends Database {
 
 	public function generateActivations(string $useremail): ?array{
 
-		$id = $this->getUserProfile($useremail);
+		$profile = $this
+						->users
+						->getUserProfile($useremail);
 
-		if (empty($id['id'])) { return null; }
+		if (empty($profile['id'])) { return null; }
 
-		$t = $this->updateActivations($id['id']);
+		$t = $this->updateActivations($profile['id']);
 
 		if (!empty($t)) { 
 
-			$t['id'] = $id['id'];
+			$t['id'] = $profile['id'];
 			return $t; 
 		}
 

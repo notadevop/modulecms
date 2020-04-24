@@ -1,17 +1,24 @@
 <?php 
 
 
-class ProfileController {
+class ProfileController extends Errors{
 
     function __construct() {
 
     	$this->granter = new PrivelegesController();
+    	$this->users = new Users();
     }
 
     private $granter;
+    private $users;
 
-    function getListOfUsers()  {
+    // Получаем доступ только к указанному пользователю
+    // если пользователь не указан или такого нету 
+    // Выводи сообщение, что нет такого пользователя 
 
+    function getUserProfile($userid=0)  {
+
+    	// Привелегии которые разрещенны пользователю для посещения этой страницы 
     	$perms = array(
 
     		$this
@@ -22,13 +29,17 @@ class ProfileController {
     			->getAllPerms()[1]['perm_desc'],
     	);
 
-	    if (!$this->granter->verifyRest($perms)) {
+    	$checkPerm = $this
+    					->granter
+    					->verifyRest($perms);
+
+	    if (!$checkPerm) {
 	    	
-	    	echo '<p><b>forbidden! you dont have permission to access this webage!</b></p>';
-	    	
-	    	return false;
+	    	$this->collectErrors('noaccess', '<b>Доступ Запрещен! Недостаточно привелегий.</b>');
+
+	    	return '';
 	    } 
 
-	    echo "<p><b>You are logged with this permission!</p></b>";
+	    return array('access' => PROFILE);
 	 }
 }

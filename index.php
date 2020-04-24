@@ -28,16 +28,17 @@ require_once ROOTPATH . 'config.inc.php';
 require_once ROOTPATH . 'init.inc.php';
 
 
+// Код который нужно запустить независимо от пути
+$execRoutes = array(
 
-$permRoutes = array(
-
-	'/authAction' 	=> 'UserIdentificator/authAction',
-	'/online' 		=> 'Visitor/users_online',
+	'auth' 			=> 'UserIdentificator/authAction',
+	'online' 		=> 'Visitor/users_online',
 );
 
+// Код который запускается в зависимости от пути
 $pathRoutes = array(
-	'/' 			=> 'UserIdentificator/test/helloworld',
-	'/posts/:any' 	=> 'UserIdentificator/test/$1', // Использовать для постов
+	'/' 			=> 'MainController/defaultMethod',
+	'/posts/:any' 	=> 'MainController/test/$1', // Использовать для постов
 	'/usersonline' 	=> 'Visitor/getOnlineUsers',
 	'/login' 		=> 'UserIdentificator/loginAction',
 	'/register' 	=> 'UserIdentificator/regAction',
@@ -48,17 +49,15 @@ $pathRoutes = array(
 	'/logout' 		=> 'UserIdentificator/logout/true/false',
 
 
-
-	'/profile' 		=> 'ProfileController/getListOfUsers',
-	//'/profile' 		=> 'ProfileController/'
+	'/profile' 		=> 'ProfileController/getUserProfile',
 );
 
 
 $res = array(); // Собираем все данные с контроллеров которые запущенны перманентно!
 
-Routing::addRoute($permRoutes);
+Routing::addRoute($execRoutes);
 
-foreach ($permRoutes as $key => $value) {
+foreach ($execRoutes as $key => $value) {
 
 	$res[$key] = Routing::dispatch($key);
 	Routing::cleanRoutes($key);
@@ -106,7 +105,6 @@ function loadTemplate($metadata = '', $templates, $res) {
 
 loadTemplate($result, $templates, $res);
 
-//debugger($_SERVER);
 
 $time = microtime();
 $time = explode(' ', $time);

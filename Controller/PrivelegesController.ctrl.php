@@ -4,24 +4,31 @@
 
 // а так же определения првелегий для определенных страниц
 
-class PrivelegesController {
+class PrivelegesController extends Errors{
 
 	private $priv;
     private $perms = array();
+    private $userid;
 
     function __construct() {
     
-    	$userid = defined('PROFILE') ? PROFILE['userid'] : 0;
-
+    	$this->userid = defined('PROFILE') ? PROFILE['userid'] : 0;
     	$this->priv = new Priveleges();
-		$this
-			->priv
-			->initRoles($userid);
+	}
 
-    }
+	function initUser($userid): void {
 
+		$this->userid = $userid;
+	}
+   
     function getAllPerms() {
 
+    	// Инцилизирует пользователя 
+    	$this
+			->priv
+			->initRoles($this->userid);
+
+		// Возвращает все привелегии пользователя
     	return $this
     				->priv
     				->getPerms();
@@ -38,8 +45,6 @@ class PrivelegesController {
 		}
 		
 		return false;
-    }
-
-
+    } 
 
 }
