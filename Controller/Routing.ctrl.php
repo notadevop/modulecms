@@ -142,20 +142,21 @@ final class Routing {
 
 		$obj = new $controller();
 		$cresult = call_user_func_array(array($obj, $action), $params);
-		$errors = null;
 
-		if (method_exists($controller, 'getErrors')) {
+		$params = array('errors' => 'getErrors', 'notifs' => 'getNotif');
 
-			$errors = $obj->getErrors();
-			// array_filter();
+		foreach ($params as $key => $value) {
+			
+			if(method_exists($controller, $value)) {
+
+				$params[$key] = call_user_func(array($obj, $value));
+			}
 		}
-
-		//unset($obj); // Нужно для использования __destruct();
-		//unset($controller);
 
 		return array(
 			'result' => $cresult,
-			'errors' => $errors,
+			'errors' => $params['errors'],
+			'notifs' => $params['notifs']	
 		);
 	}
 

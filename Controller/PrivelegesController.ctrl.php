@@ -12,27 +12,35 @@ class PrivelegesController extends Errors{
 
     function __construct() {
     
-    	$this->userid = defined('PROFILE') ? PROFILE['userid'] : 0;
     	$this->priv = new Priveleges();
 	}
 
-	function initUser($userid): void {
+	function initUser($userid=0): void {
 
-		$this->userid = $userid;
-	}
-   
-    function getAllPerms() {
+        $this->userid = ($userid != 0) ? $userid : PROFILE['userid'];
 
-    	// Инцилизирует пользователя 
+		// Инцилизирует пользователя 
     	$this
 			->priv
 			->initRoles($this->userid);
+	}
+   
+    function getAllPerms() {
 
 		// Возвращает все привелегии пользователя
     	return $this
     				->priv
     				->getPerms();
     }
+
+    function getPermsOfUser(): ?array {
+
+    	$allPerms = $this->getAllPerms();
+
+    	return array('права не установленны');
+    }
+
+    // При условии, что есть хоть одна привелегия возвращаем true
 
     function verifyRest(array $perms) {
 

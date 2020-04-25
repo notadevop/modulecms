@@ -28,6 +28,18 @@ foreach ($links as $key => $value) {
 
 	$i++;
 }
+
+$links = array(
+
+	'/profile/edit' => 'Редактировать Профиль',
+);
+
+foreach ($links as $key => $value) {
+
+	echo '<p><a href="'.$key.'">'.$value.'</a></p>';	
+}
+
+
 ?>
 </br>
 </body>

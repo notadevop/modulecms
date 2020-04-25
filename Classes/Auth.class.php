@@ -65,18 +65,9 @@ class Auth extends Database {
 		return $prev == 0 ? false : true;
 	}
 
-	// Проверяем существует пользователь или нет 
-
-	public function userExist($id): bool{
-
-		return !empty($this
-					->users
-					->getUserProfile($id)['id']) ? true : false; 
-	}
-
 	// Устанавливаем или обновляем хеш пользователя и возвр. для сохранения
 
-	private function updateUserhash(int $userid, bool $newLogin=false): ?string{
+	public final function updateUserhash(int $userid, bool $newLogin=false): ?string{
 
 		$sql = 'SELECT `token_hash` as token, `token_created` as tcreated, 
 				`token_expires` as texpires FROM `user_tokens` 
@@ -178,7 +169,6 @@ class Auth extends Database {
 			'username' 	=> $profile['name'],
 			'useremail' => $profile['email'],
 			'userregd' 	=> $profile['regdate'],
-			'tokenHash'=> $this->updateUserHash($profile['id'], false)
 		);
 	}
 
@@ -228,7 +218,7 @@ class Auth extends Database {
 			'username' 	=> $profile['name'],
 			'useremail' => $useremail,
 			'userregd' 	=> $profile['regdate'],
-			'tokenHash'	=> $this->updateUserHash($profile['id'])
+			//'tokenHash'	=> $this->updateUserHash($profile['id'])
 		);
 	}
 
@@ -243,7 +233,6 @@ class Auth extends Database {
 
 		if (empty($profile['id'])) { return false; }
 
-		// Тут устанавливаем привелегии только зарегестрированного пользователя 
 		// в настройках системы можно установить какие привелегии пользователь получает
 
 		$defPerms = 4; // <== Вытаскиваем из настроек указанные для регистрации привелегии
@@ -286,33 +275,6 @@ class Auth extends Database {
 		return !$this->doAction() ? false : true;
 
 	}
-
-	// Обновляем пароль пользователя по указанному id 
-	/*
-	public function updateUserPassword(int $userid, string $userpass): bool{
-
-		$profile = $this
-						->users
-						->getUserProfile($userid);
-
-		if (empty($profile)) { return false; }
-		
-		$userpass = $this
-						->modifier
-						->strToHash($userpass);
-
-		$sql = 'UPDATE users SET user_password = :userpass WHERE user_id = :uid';
-
-		$binder = array(
-			':uid'		=> $userid,
-			':userpass' => $userpass
-		);
-
-		$this->preAction($sql, $binder);
-
-		return !$this->doAction() ? false : $this->clearActivations($userid);
-	}
-	*/
 
 	// Удаляем всех пользователей которые не активировали свои аккаунты в течении указанного времени 
 	// TODO: нужно для CRON 

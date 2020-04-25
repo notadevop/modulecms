@@ -29,14 +29,17 @@ class ProfileController extends Errors{
     			->getAllPerms()[1]['perm_desc'],
     	);
 
+    	$this
+    		->granter
+    		->initUser();
+
     	$checkPerm = $this
     					->granter
     					->verifyRest($perms);
 
 	    if (!$checkPerm) {
-	    	
-	    	$this->collectErrors('noaccess', '<b>Доступ Запрещен! Недостаточно привелегий.</b>');
 
+	    	$this->collectErrors('noaccess', '<b>Пользователь не указан.</b>');
 	    	return '';
 	    } 
 

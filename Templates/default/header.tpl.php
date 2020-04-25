@@ -15,15 +15,12 @@
 
 	if(defined('PROFILE') && !empty(PROFILE['useremail'])) {
 
-		echo '<a href="/profile">('.PROFILE['username'].')</a> '.PROFILE['useremail'].'</p>';
-		echo '<p><a href="/logout">Хотите выйти?</a></p>';
+		echo '<a href="/profile">('.PROFILE['username'].')</a>  <a href="/logout">Выйти?</a></p>';
 	} else {
 		echo '(Гость)</p>';
 	}
 
-	//debugger(PROFILE);
-
-	echo '<a href="/usersonline">Пользователей: ['.$res['online']['result'].']</a>';
+	echo 'Пользователей: <a href="/usersonline">('.$res['online']['result'].')</a>';
 
 	if(!empty($metadata)) {
 

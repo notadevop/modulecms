@@ -14,7 +14,32 @@ class Users extends Database {
       }
 
    	// Получаем список всех пользователей зарегестрированных на сайте
-   	function getListUsers(): ?array {}
+   	function getListUsers(): ?array {
+
+         $sql = 'SELECT 
+         `user_id`, `user_name`, `user_email`, `user_password`, `user_last_visit`, `user_registration_date`, `user_activated` FROM `users` 
+         WHERE `user_last_visit` != :lastv AND `user_activated` = :uact';
+
+         $binder = array(
+            ':lastv' => 0,
+            ':uact'  => 1
+         );
+
+         $this->preAction($sql, $binder);         
+
+         if(!$this->doAction()) { return null; }
+
+         $users = $this
+                     ->postAction()
+                     ->fetch();
+
+         return !empty($users) ? $users : null;
+      }
+
+      function userExist($uid): bool {
+
+         return !empty($this->getUserProfile($uid)['id']) ? true : false;
+      }
 
    	// Получаем один профиль указанного пользователя 
    	function getUserProfile($uid): ?array {
@@ -57,7 +82,7 @@ class Users extends Database {
          $profile = $this->getUserProfile($userid);
 
          if (empty($profile)) { return false; }
-         
+
          $userpass = $this
                      ->modifier
                      ->strToHash($userpass);
@@ -74,9 +99,6 @@ class Users extends Database {
          return !$this->doAction() ? false : true;
 
       }
-
-      // Обновляем существующую информацию пользователя 
-      function updateUserProfile(int $userid, array $userparams): bool {return false;}
 
       function insertNewUser(string $useremail, string $userpass, string $username): bool {
 
@@ -101,4 +123,7 @@ class Users extends Database {
 
          return !$this->doAction() ? false : true;
       }
+
+      // Обновляем существующую информацию пользователя 
+      function updateUserProfile(int $userid, array $userparams): bool {return false;}
 }

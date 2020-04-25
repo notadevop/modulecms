@@ -47,8 +47,6 @@ $pathRoutes = array(
 	'/confpass'		=> 'UserIdentificator/updatePassword',
 	'/verifreg' 	=> 'UserIdentificator/verifyRegistration',
 	'/logout' 		=> 'UserIdentificator/logout/true/false',
-
-
 	'/profile' 		=> 'ProfileController/getUserProfile',
 );
 
@@ -66,17 +64,31 @@ foreach ($execRoutes as $key => $value) {
 Routing::addRoute($pathRoutes); // Добавляем пути
 $result = Routing::dispatch();
 
+
+
+
+
+
+
+$count = empty($result['notifs']) ? 0 : count($result['notifs']);
+
+if(!empty($res['auth']['notifs'])) { $count = 1; }
+
 // Временное что-то типа шаблонизатора
 $templates = array(
 
 	'/' 			=> 'infopage.tpl.php',
-	'/login' 		=> 'login.tpl.php', 
+	'/login' 		=> ($count > 0 ? 'infopage.tpl.php':'login.tpl.php'), 
 	'/usersonline' 	=> 'infopage.tpl.php',
-	'/restore' 		=> 'restore.tpl.php',
-	'/verifres' 	=> ($result['result'] ? 'passform.tpl.php' : 'infopage.tpl.php'),
-	'/register' 	=> 'register.tpl.php',
+	'/restore' 		=> ($count > 0 ? 'infopage.tpl.php':'restore.tpl.php'),
+	'/verifres' 	=> ($count > 0 ? 'infopage.tpl.php':'passform.tpl.php'),
+	'/register' 	=> ($count > 0 ? 'infopage.tpl.php':'register.tpl.php'),
 	'/verifreg' 	=> 'infopage.tpl.php',
 	'/logout' 		=> 'infopage.tpl.php',
+
+
+	'/profile'		=> 'profile.tpl.php'
+
 );
 
 function loadTemplate($metadata = '', $templates, $res) {

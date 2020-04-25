@@ -7,25 +7,43 @@ class Errors {
 	
 	function __construct() { 
 
-		$this->errors = array();
+		$this->errors 			= array();
+		$this->notifications 	= array();
 	} 
 
 	private $errors;
+	private $notifications;
 
-	// Собираем все ошибки
+	// ----------- Напоминания, предупреждения и т.д.
+
+	public function collectNotif(string $key, string $notif): void {
+
+		$this->notifications[$key] = $notif;
+	}
+
+	public function notifKeyExist(string $key, string $notif): bool {
+
+		return array_key_exists($key, $this->notifications);
+	}
+
+	public function getNotif(): ?array{
+
+		return $this->notifications;
+	}
+
+	// ----------- Ошибки и т.д.
+
 	public function collectErrors(string $key, string $error): void {
 
 		$this->errors[$key] = $error;
 	}
 
-	// Нужен для изменения выводимых ошибок 
 	public function errorKeyExist(string $key): bool {
 
 		return array_key_exists($key, $this->errors);
 	}
 
-	// Возвращаем все собранные ошибки
-	public function getErrors() {
+	public function getErrors(): ?array{
 
 		return $this->errors;
 	}

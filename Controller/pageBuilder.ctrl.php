@@ -9,7 +9,6 @@ class pageBuilder {
 
 
 	function posts() {}
-
 	function authpage() {}
 
 	
