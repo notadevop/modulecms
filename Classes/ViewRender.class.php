@@ -1,12 +1,12 @@
-<?php 
+<?php
 
 
 /**
- * 
+ *
  */
 class ViewRender {
-	
-	function __construct() { 
+
+	function __construct() {
 
 		$templates = array(
 			'header' => $this->tplDir.'header.tpl.php',
@@ -28,7 +28,7 @@ class ViewRender {
 	function addView(array $templates): void {
 
 		foreach ($templates as $key => $value) {
-			
+
 			$this->tplDir[$key] = $value;
 		}
 	}
@@ -37,7 +37,7 @@ class ViewRender {
 
 	function generatePreviewMap(array $url): void {
 
-		// TODO: получаем созданый дизайнере xml файл где раставленны как и какой шаблон должны идти 
+		// TODO: получаем созданый дизайнере xml файл где раставленны как и какой шаблон должны идти
 
 
 		// тут указываем, что показывать и засовываем данные
@@ -47,8 +47,7 @@ class ViewRender {
 
 	function renderView(): void {
 
-		// максхема как выводить все шаблоны 
-
+		// максхема как выводить все шаблоны
 	 	require_once ($this->tplDir['header']);
 	 	require_once ($this->tplDir['header']);
 	 	require_once ($this->tplDir['header']);

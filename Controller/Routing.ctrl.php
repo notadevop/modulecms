@@ -102,6 +102,15 @@ final class Routing {
 		return strtolower('/' . trim($uri, '/'));
 	}
 
+	// Получаем адрес пути
+
+	public static function getRouterPathName(): String {
+
+
+
+
+	}
+
 	/**
 	 * // /search/something/is/here/ -> Возвращает массив всех путей
 	 * // -> ['search', 'something', 'is', 'here']

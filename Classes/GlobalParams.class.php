@@ -25,6 +25,8 @@ class GlobalParams {
 		}
 	}
 
+	// Проверяем существует ли параметр
+
 	public function isExist(string $key): bool {
 
 		if(empty($this->globtype)) { return false; } 
@@ -32,9 +34,11 @@ class GlobalParams {
 		return array_key_exists($key, $this->globtype);
 	}
 
+	// получаем 
+
 	public function getGlobParam(string $key): ?string {
-		
-		return $this->globtype[$key];
+
+		return $this->isExist($key) ? $this->globtype[$key] : null;
 	}
 }
 

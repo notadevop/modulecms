@@ -21,7 +21,7 @@ class Auth extends Database {
 
 		// Временно!!!!! проверяем по времени разницу будет заменен на класс
 
-		$this->dateClass = function($time1, $time2, $timetype='%d', $interval): bool {
+		$this->dateClass = function(int $time1,int $time2,string $timetype='%d',int $interval): bool {
 
 			$current 	= strtotime($time1);
 			$tomorrow 	= strtotime($time2);
@@ -169,6 +169,7 @@ class Auth extends Database {
 			'username' 	=> $profile['name'],
 			'useremail' => $profile['email'],
 			'userregd' 	=> $profile['regdate'],
+			'userlastv'	=> $profile['user_last_visit']
 		);
 	}
 
@@ -180,6 +181,7 @@ class Auth extends Database {
 				t1.user_id as id, 
 				t1.user_name as name,  
 				t1.user_registration_date as regdate,
+				t1.user_last_visit as userlastv,
 				t2.token_user_agent as uagent, 
 				t2.token_hash as thash, 
 				t2.token_created as tcreated, 
@@ -218,7 +220,7 @@ class Auth extends Database {
 			'username' 	=> $profile['name'],
 			'useremail' => $useremail,
 			'userregd' 	=> $profile['regdate'],
-			//'tokenHash'	=> $this->updateUserHash($profile['id'])
+			'userlastv'	=> $profile['userlastv']
 		);
 	}
 

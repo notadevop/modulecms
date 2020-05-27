@@ -22,6 +22,8 @@ CREATE TABLE `users` (
   `user_name` varchar(255) NOT NULL,
   `user_email` varchar(255) NOT NULL,
   `user_password` varchar(255) NOT NULL,
+  `user_about`    text(255) NOT NULL,
+  `user_picture` varchar(255) NOT NULL,
   `user_last_visit` int(15) NOT NULL,
   `user_registration_date` int(15) NOT NULL,
   `user_activated` int(1) NOT NULL

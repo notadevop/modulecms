@@ -1,10 +1,10 @@
-<?php 
+<?php
 
 /**
- * 
+ *
  */
 class Priveleges extends Database {
-	
+
 	function __construct() {
 
         parent::__construct(true);
@@ -31,20 +31,22 @@ class Priveleges extends Database {
 
         return $row;
     }
-    
+
 
     // populate roles with their associated permissions
 
     public function initRoles(int $user_id): void {
 
-        $sql = "SELECT t1.role_id, t2.role_name 
-        FROM user_role as t1 JOIN roles as t2 ON t1.role_id = t2.role_id 
+        $sql = "SELECT t1.role_id, t2.role_name
+        FROM user_role as t1
+				JOIN roles as t2
+				ON t1.role_id = t2.role_id
         WHERE t1.user_id = :user_id";
 
         $binder = array(":user_id" => $user_id);
 
         $this->preAction($sql, $binder);
-        
+
         if(!$this->doAction()) {return; }
 
         $role = new Role();
@@ -73,28 +75,26 @@ class Priveleges extends Database {
     }
 
     // insert a new role permission association
-    public static function insertPerm(int $role_id, int $perm_id): bool {
+    public function insertPerm(int $role_id, int $perm_id): bool {
 
         $sql = 'INSERT INTO role_perm (role_id, perm_id) VALUES (:role_id, :perm_id)';
 
         $binder = array(
-                ':role_id' => $role_id, 
+                ':role_id' => $role_id,
                 ':perm_id' => $perm_id
             );
 
         $this->preAction($sql, $binder);
 
         return $this->doAction();
-    }   
+    }
 
     // delete ALL role permissions
-    public static function deletePerms(): bool  {
-        
+    public function deletePerms(): bool  {
+
         $sql = 'TRUNCATE role_perm';
-        $sth = $this
-            ->get_con()
-            ->prepare($sql);
-        
-        return $sth->execute();
+
+				$this->preAction($sql);
+				return $this->doAction();
     }
 }

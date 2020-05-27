@@ -1,38 +1,34 @@
-<?php 
+<?php
 
 
 /**
- * 		Простой пример шифрования XOR: 
+ * 		Простой пример шифрования XOR:
  * 		Взято с: https://denik.od.ua/xor_text_encoding
  */
 class Modifier {
-	
+
 	function __construct() {}
 
-	// Возвращает хеш стрингового значения 
+	// Возвращает хеш стрингового значения
 	function strToHash(string $input): string {
 
 		// TODO: сделать нормальный хеш
-
 		// Если сменить в корне настроек убивает все сохраненные хеши
-
-		$solt 		= SOLT; 
+		$solt 		= SOLT;
 		$privkey 	= PRIVATEKEY;
 
 		//return hash('sha512', $input.$solt.$privkey);
 		return hash('sha512', $input.$solt);
 	}
 
-	// TODO: Временная заглушка для аутентификации, нужно переделать 
+	// TODO: Временная заглушка для аутентификации, нужно переделать
 
-	// Нужен для аутентефикации пользователя, не используеться без токена 
+	// Нужен для аутентефикации пользователя, не используеться без токена
 	public function createFingerprint(string $input, string $subinput): string {
 
 		$finger = $this->strToHash($input.$subinput);
-
 		$finger = $this->encode($finger, PUBLICKEY); // ?????
-
-		return $finger; 
+		return $finger;
 	}
 
 	// Возвращает случайный набор символов при указанном количестве символов
@@ -42,7 +38,7 @@ class Modifier {
 		// Генерируем произвольный код для случайного значения
 	    $chars 	= '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPRQSTUVWXYZ';
 
-	    if($specsym) 
+	    if($specsym)
 	    	$chars .= '!@#$%^&*()_+=-';
 
 	    $code 	= '';
@@ -50,7 +46,7 @@ class Modifier {
 
 	    while (strlen($code) < $length) {
 
-	    	$code .= $chars[mt_rand(0,$slen)]; 
+	    	$code .= $chars[mt_rand(0,$slen)];
 		}
 	    return $code;
 	}
@@ -59,12 +55,12 @@ class Modifier {
 
 	private function cryptor(string $str, string $passw=''): string {
 
-	   	$salt 	= SOLT; 
+	   	$salt 	= SOLT;
 	   	$len 	= strlen($str);
-	   	$gamma 	= ''; 
-		$gamma .= sha1($passw . $gamma);
+	   	$gamma 	= '';
+			$gamma .= sha1($passw . $gamma);
 	   	$n 		= $len > 100 ? 8 : 2;
-	   	
+
 	   	while( strlen($gamma) < $len ) {
 
 	    	$gamma .= substr(pack('H*', sha1($passw.$gamma.$salt)), 0, $n);
@@ -72,7 +68,7 @@ class Modifier {
 	   	return $str^$gamma;
 	}
 
-	// base_64 
+	// base_64
 
 	public function encode(string $input, string $passwd): string {
 
