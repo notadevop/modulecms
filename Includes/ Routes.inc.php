@@ -11,6 +11,4 @@ $routes = array(
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'permanent' => false,
 	),
-
-
 );

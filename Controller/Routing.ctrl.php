@@ -39,6 +39,9 @@ final class Routing {
 		return (self::$requestedUrl ?: '/');
 	}
 
+	/**
+	*	Очищаем пути 
+	*/
 	public static function cleanRoutes(string $arraykey) {
 
 		if (array_key_exists($arraykey, self::$routes)) {
@@ -106,9 +109,7 @@ final class Routing {
 
 	public static function getRouterPathName(): String {
 
-
-
-
+		return self::$requestedUrl;
 	}
 
 	/**
