@@ -11,19 +11,18 @@
 
 <?php 
 
-	echo '<p>Вы вошли на сайт как: ';
-
 	if(defined('PROFILE') && !empty(PROFILE['useremail'])) {
 
-		echo '<a href="/profile">('.PROFILE['username'].')</a>  <a href="/logout">Выйти?</a></p>';
+		$name 	= '<a href="/profile">'.PROFILE['username'].'</a>';
+		$logout = '<a href="/logout">Выйти?</a>';
+		$online = '<a href="/usersonline">('.$permRes['online']['result'].')</a>';
 	} else {
-		echo '(Гость)</p>';
+		$name = 'Гость';
+		$logout = '';
+		$online = '('.$permRes['online']['result'].')';
 	}
+?>
 
-	echo 'Пользователей: <a href="/usersonline">('.$res['online']['result'].')</a>';
+	<p>Вы вошли на сайт как:(<?=$name; ?>), <?=$logout;?>
 
-	if(!empty($metadata)) {
-
-		debugger($metadata, 'Это Шаблон загаловка!');
-	}
-
+	Онлайн: <?=$online;?></p>

@@ -17,10 +17,8 @@ define("US", URL_SEPARATOR);
 define("RELATIVE_PATH_ROOT", '');
 define("LOCAL_PATH_ROOT", $_SERVER["DOCUMENT_ROOT"]);
 define("HTTP_PATH_ROOT",
-        isset($_SERVER["HTTP_HOST"]) ?
-        $_SERVER["HTTP_HOST"] : (
-        isset($_SERVER["SERVER_NAME"]) ?
-        $_SERVER["SERVER_NAME"] : '_UNKNOWN_'));
+        isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : (
+        isset($_SERVER["SERVER_NAME"]) ? $_SERVER["SERVER_NAME"] : '_UNKNOWN_'));
 
 // -----------------------------------------------------------------------
 // DEFINE RELATIVE PATHS

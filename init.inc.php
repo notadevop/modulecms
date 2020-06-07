@@ -50,17 +50,20 @@ spl_autoload_register(function ($class_name) {
 function debugger($input, $param=__FUNCTION__, $vardump=false): void {
 
 	echo '<pre>';
-	echo '</br>Дебаггер запущен из =>'.$param ;	
+
+	if ($param != false)
+		echo '</br>Дебаггер запущен из =>'.$param ;	
 
 	if ($vardump) {
 
 		echo '<br/>';
 		var_dump($input);
+		echo '</pre>';
+		return;
 	}
 
 	echo '<br/>';
 	print_r($input);
-
 	echo '</pre>';
 }
 

@@ -26,96 +26,55 @@ define('ROOTPATH', dirname(__FILE__) . DS);
 require_once ROOTPATH . 'settings.inc.php';
 require_once ROOTPATH . 'config.inc.php';
 require_once ROOTPATH . 'init.inc.php';
+require_once ROOTPATH . 'Includes/Routes.inc.php';
 
+$uriRoutes = array();
+$permResult = array(); // Тут мы сохраняем результат того, что приходит из метода контроллера
 
-// Код который нужно запустить независимо от пути
-$execRoutes = array(
+foreach ($routes as $key => $value) {
 
-	'auth' 			=> 'UserIdentificator/authAction',
-	'online' 		=> 'Visitor/users_online',
-);
+	$actUri = array($key => $value['action']); 
 
-// Код который запускается в зависимости от пути
-$pathRoutes = array(
-	'/' 			=> 'MainController/defaultMethod',
-	'/posts/:any' 	=> 'MainController/test/$1', // Использовать для постов
-	'/usersonline' 	=> 'Visitor/getOnlineUsers',
-	'/login' 		=> 'UserIdentificator/loginAction',
-	'/register' 	=> 'UserIdentificator/regAction',
-	'/restore' 		=> 'UserIdentificator/resAction',
-	'/verifres' 	=> 'UserIdentificator/verifyUserModifications',
-	'/confpass'		=> 'UserIdentificator/updatePassword',
-	'/verifreg' 	=> 'UserIdentificator/verifyRegistration',
-	'/logout' 		=> 'UserIdentificator/logout/true/false',
-	'/profile' 		=> 'ProfileController/getUserProfile',
-);
-
-
-$res = array(); // Собираем все данные с контроллеров которые запущенны перманентно!
-
-Routing::addRoute($execRoutes);
-
-foreach ($execRoutes as $key => $value) {
-
-	$res[$key] = Routing::dispatch($key);
-	Routing::cleanRoutes($key);
+	if ($value['skipUri']) {
+		Routing::addRoute($actUri);
+		$permResult[$key] = Routing::dispatch($key);
+		Routing::cleanRoutes($key);
+	} else {
+		$uriRoutes[$key] = $value['action'];
+	}
 }
 
-Routing::addRoute($pathRoutes); // Добавляем пути
-$result = Routing::dispatch();
+
+Routing::addRoute($uriRoutes); // Добавляем пути
+$tplRes = Routing::dispatch();
 
 
+// TODO: 123 <== Временно, написать класс ViewRender.class.php => pageBuilder.ctrl.php
 
+function loadTemplate($params, $permRes, $tplRes) {
 
+	$route = Routing::getRoutes()[0];
+	$route = empty($route) ? '/' : '/' . $route;
 
+	if ( !isset($params[$route]) ) {
 
-
-$count = empty($result['notifs']) ? 0 : count($result['notifs']);
-
-if(!empty($res['auth']['notifs'])) { $count = 1; }
-
-// Временное что-то типа шаблонизатора
-$templates = array(
-
-	'/' 			=> 'infopage.tpl.php',
-	'/login' 		=> ($count > 0 ? 'infopage.tpl.php':'login.tpl.php'), 
-	'/usersonline' 	=> 'infopage.tpl.php',
-	'/restore' 		=> ($count > 0 ? 'infopage.tpl.php':'restore.tpl.php'),
-	'/verifres' 	=> ($count > 0 ? 'infopage.tpl.php':'passform.tpl.php'),
-	'/register' 	=> ($count > 0 ? 'infopage.tpl.php':'register.tpl.php'),
-	'/verifreg' 	=> 'infopage.tpl.php',
-	'/logout' 		=> 'infopage.tpl.php',
-
-
-	'/profile'		=> 'profile.tpl.php'
-
-);
-
-function loadTemplate($metadata = '', $templates, $res) {
-
-	$curUri = Routing::getRoutes()[0];
-
-	if (empty($curUri)) { $curUri = '/'; } else { $curUri = '/'.$curUri; }
-
-	$notemplate = false;
-
-	foreach ($templates as $key => $value) {
-
-		if (preg_match('#^' . $curUri . '$#', $key)) {
-			$notemplate = $value;
-		} 
+		$route = '/';
 	}
 
-	if (!$notemplate) {
-		$notemplate = $templates['/'];
-	}
+	$defTpl 	= $params[$route]['template'];
+	$ifRegOk 	= $params[$route]['ifRegOk'];
+
+	$renderTpl = (defined('PROFILE') && !empty(PROFILE['useremail'])) ? $ifRegOk : $defTpl;
+
+
+	// TODO: перенести в класс рендеринга и там загружать настройки шаблона и по нему выводить страницы 
 
 	require_once TPLDEFAULTFOLDER . TPLDEFAULTTEMPLATE . 'header.tpl.php';
-	require_once TPLDEFAULTFOLDER . TPLDEFAULTTEMPLATE . $notemplate;
+	require_once TPLDEFAULTFOLDER . TPLDEFAULTTEMPLATE . $renderTpl;
 	require_once TPLDEFAULTFOLDER . TPLDEFAULTTEMPLATE . 'footer.tpl.php';
 }
 
-loadTemplate($result, $templates, $res);
+loadTemplate($routes, $permResult, $tplRes);
 
 
 $time = microtime();

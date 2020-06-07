@@ -1,4 +1,7 @@
+<?php 
 
+	debugger($tplRes, 'Восстановление');
+?>
 
 	<form action="/restore" method="POST">
 		<input type="text" name="restoremail" value="jcmaxuser@gmail.com" />

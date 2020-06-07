@@ -1,5 +1,7 @@
+<?php 
 
-
+	debugger($tplRes,'ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ!');
+?>
 
 <p>
 	<form action="" method="POST">

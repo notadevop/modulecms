@@ -1,4 +1,7 @@
+<?php 
 
+	debugger($tplRes, 'Регистрация');
+?>
 
 	<form action="/register" method="POST">
 		<input type="text" name="userregname" value="maksim <?php echo rand(1,10000) ?>" />

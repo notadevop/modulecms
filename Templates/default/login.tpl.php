@@ -1,4 +1,6 @@
-
+<?php 
+	debugger($tplRes, 'Окно входа');
+?>
 
 	<form action="/login" method="POST">
 		<input type="text" name="loginmail" value="jcmaxuser@gmail.com" />

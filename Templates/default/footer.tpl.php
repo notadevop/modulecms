@@ -1,44 +1,27 @@
 
 <?php 
 
-$links = array(
-
-	'/' 					=> 'Главная',
-	'/login' 				=> 'Войти',
-	'/register' 			=> 'Регистрация',
-	'/restore' 				=> 'Забыл пароль',
-	'/phpmyadmin/'			=> 'Phpmyadmin',
-	'http://phptester.net'	=> 'php sandbox',
-	'/users'				=> 'Зарегестрированные пользователи'
-);
-
-
-
-
-$i = 0;
-
-foreach ($links as $key => $value) {
+foreach ($params as $key => $value) {
 	
-	if($i >= 5) { 
-		$i = 0;
-		echo '<br/>';
+	if (!$value['skipUri'] && $value['priority'] == 4) {
+
+		echo '<a href="'.$key.'">'.$value['decript'].'</a> | ';
 	}
 
-	echo '<a href="'.$key.'">'.$value.'</a> | ';
-
-	$i++;
 }
 
-$links = array(
+$extUrls = array(
 
-	'/profile/edit' => 'Редактировать Профиль',
+		'/phpmyadmin/' 			=> 'PHPMYADMIN',
+		'http://phptester.net' 	=> 'PHPTESTER.NET'
 );
 
-foreach ($links as $key => $value) {
+echo '<br/>';
 
-	echo '<p><a href="'.$key.'">'.$value.'</a></p>';	
+foreach ($extUrls as $key => $value) {
+	
+	echo '<a href="'.$key.'">'.$value.'</a> | ';
 }
-
 
 ?>
 </br>
