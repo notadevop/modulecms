@@ -28,8 +28,18 @@ require_once ROOTPATH . 'config.inc.php';
 require_once ROOTPATH . 'init.inc.php';
 require_once ROOTPATH . 'Includes/Routes.inc.php';
 
-$uriRoutes = array();
+/*
+	Класс пагинации Pagination (break to pages)
+	Класс манипуляции с Даты 
+	Класс Отправки емайлов
+	Метод хуков????
+*/
+
+
+$uriRoutes 	= array();
 $permResult = array(); // Тут мы сохраняем результат того, что приходит из метода контроллера
+$param 		= array();
+
 
 foreach ($routes as $key => $value) {
 
@@ -40,30 +50,54 @@ foreach ($routes as $key => $value) {
 		$permResult[$key] = Routing::dispatch($key);
 		Routing::cleanRoutes($key);
 	} else {
-		$uriRoutes[$key] = $value['action'];
+		//$uriRoutes[$key] = $value['action'];
+		Routing::addRoute($key, $value['action']);
 	}
 }
 
-
-Routing::addRoute($uriRoutes); // Добавляем пути
+//Routing::addRoute($uriRoutes); // Добавляем пути
 $tplRes = Routing::dispatch();
 
 
 // TODO: 123 <== Временно, написать класс ViewRender.class.php => pageBuilder.ctrl.php
 
-function loadTemplate($params, $permRes, $tplRes) {
+function loadTemplate($params, $permRes, $tplRes):void {
 
-	$route = Routing::getRoutes()[0];
+
+	global $routes;
+
+	$curRoute = Routing::getNameOfRoute($routes);
+
+
+	//debugger($curRoute);
+
+	if ( !$curRoute ) {
+
+		$defTpl 	= $routes['/404page']['template'];
+		$ifRegOk 	= $routes['/404page']['ifRegOk'];
+	} else {
+
+		$defTpl 	= $curRoute['params']['template'];
+		$ifRegOk 	= $curRoute['params']['ifRegOk'];
+	}
+
+
+
+
+	/*
+	$route = Routing::getRoutes(); // Возрвщает uri от пользователя в массиве
+	//$route = Routing::getCurrentUrl(); // Возрвщает uri от пользователя стринговое значение
+	$route = $route[0];
 	$route = empty($route) ? '/' : '/' . $route;
 
 	if ( !isset($params[$route]) ) {
 
-		$route = '/';
+		$route = '/404page';
 	}
 
 	$defTpl 	= $params[$route]['template'];
 	$ifRegOk 	= $params[$route]['ifRegOk'];
-
+	*/
 	$renderTpl = (defined('PROFILE') && !empty(PROFILE['useremail'])) ? $ifRegOk : $defTpl;
 
 

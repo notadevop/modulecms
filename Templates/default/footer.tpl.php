@@ -20,7 +20,7 @@ echo '<br/>';
 
 foreach ($extUrls as $key => $value) {
 	
-	echo '<a href="'.$key.'">'.$value.'</a> | ';
+	echo '<a href="'.$key.'" target="_blank">'.$value.'</a> | ';
 }
 
 ?>

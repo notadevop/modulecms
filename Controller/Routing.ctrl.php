@@ -31,9 +31,7 @@ final class Routing {
 		return preg_split('/\//', $url, -1, PREG_SPLIT_NO_EMPTY);
 	}
 
-	/**
-	 * Текущий обработанный URL
-	 */
+	//  ВОЗВРАЩАЕТ ПОЛНЫЙ ОБРЕЗАННЫЙ URI не URL 
 	public static function getCurrentUrl() {
 
 		return (self::$requestedUrl ?: '/');
@@ -48,6 +46,20 @@ final class Routing {
 
 			unset(self::$routes[$arraykey]);
 		}
+	}
+
+	public static function getNameOfRoute($routes) {
+
+		foreach($routes as $regex => $controller) {
+
+			$regex = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $regex));
+
+			if ( preg_match('#^' .$regex. '$#', self::getCurrentUrl()) ) {
+		    	
+		    	return array('uri' => $regex, 'params' => $controller);
+		  	}
+		}
+		return false;
 	}
 
 	/**
