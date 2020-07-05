@@ -18,6 +18,26 @@ final class Routing {
 		self::$routes = array_merge(self::$routes, $route);
 	}
 
+	/**
+	*	Загружает все дефольтные роуты из папки Routes
+	*/
+	public static function initDefRoutes(): ?array {
+
+		$routesFolder = 'Includes';
+
+		$fm = new Filemanipulator();
+		$fm->setDirName( ROOTPATH . $routesFolder . DS);
+		$files = $fm->listFolder();
+
+
+		$routes = array();
+	
+		// отсортировать нужные файлы
+
+		return $files;
+	}
+
+
 	public static function showRoutes() {
 
 		debugger(self::$routes, __METHOD__);

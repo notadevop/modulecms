@@ -40,6 +40,25 @@ $uriRoutes 	= array();
 $permResult = array(); // Тут мы сохраняем результат того, что приходит из метода контроллера
 $param 		= array();
 
+/*
+function loadRoutes() {
+
+	$AllRoutes = array();
+
+	$routePath = ROOTPATH . 'Includes/'
+
+	foreach (glob($routePath."*.route.php") as $filename) {
+	    
+		//$content = require_once . $filename;
+		//echo "$filename размер " . filesize($filename) . "\n";
+		require_once . $filename;
+	    $allRoutes = array_merge($routes,$allRoutes);
+	}
+
+	return $allRoutes;
+}
+*/
+
 
 foreach ($routes as $key => $value) {
 
@@ -58,18 +77,16 @@ foreach ($routes as $key => $value) {
 //Routing::addRoute($uriRoutes); // Добавляем пути
 $tplRes = Routing::dispatch();
 
+Routing::initDefRoutes();
+
 
 // TODO: 123 <== Временно, написать класс ViewRender.class.php => pageBuilder.ctrl.php
 
 function loadTemplate($params, $permRes, $tplRes):void {
 
-
 	global $routes;
 
 	$curRoute = Routing::getNameOfRoute($routes);
-
-
-	//debugger($curRoute);
 
 	if ( !$curRoute ) {
 
@@ -81,25 +98,7 @@ function loadTemplate($params, $permRes, $tplRes):void {
 		$ifRegOk 	= $curRoute['params']['ifRegOk'];
 	}
 
-
-
-
-	/*
-	$route = Routing::getRoutes(); // Возрвщает uri от пользователя в массиве
-	//$route = Routing::getCurrentUrl(); // Возрвщает uri от пользователя стринговое значение
-	$route = $route[0];
-	$route = empty($route) ? '/' : '/' . $route;
-
-	if ( !isset($params[$route]) ) {
-
-		$route = '/404page';
-	}
-
-	$defTpl 	= $params[$route]['template'];
-	$ifRegOk 	= $params[$route]['ifRegOk'];
-	*/
 	$renderTpl = (defined('PROFILE') && !empty(PROFILE['useremail'])) ? $ifRegOk : $defTpl;
-
 
 	// TODO: перенести в класс рендеринга и там загружать настройки шаблона и по нему выводить страницы 
 
@@ -107,6 +106,8 @@ function loadTemplate($params, $permRes, $tplRes):void {
 	require_once TPLDEFAULTFOLDER . TPLDEFAULTTEMPLATE . $renderTpl;
 	require_once TPLDEFAULTFOLDER . TPLDEFAULTTEMPLATE . 'footer.tpl.php';
 }
+
+// $page_content = renderTemplate('main.php', ['items' => $items_list]); 
 
 loadTemplate($routes, $permResult, $tplRes);
 

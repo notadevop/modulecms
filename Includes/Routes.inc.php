@@ -42,7 +42,7 @@ $routes = array(
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Cтраница постов',
-			'priority'	=> 4
+			'priority'	=> 2
 	),
 	'online' 		=> array(
 			'action' 	=> 'Visitor/users_online',

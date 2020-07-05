@@ -12,19 +12,21 @@ class Filemanipulator {
 	private $fuploaded = array();
 	private $max_file_size = 10;
 
-	public function set_upload_folder(string $filedir): void {
+	public function setUploadFolder(string $filedir): void {
 
 		$this->upload_dir = $filedir;
 	}
 
-	public function set_dir_name(string $dir): void {
+	public function setDirName(string $dir): void {
 
 		$this->pdir = $dir;
 	}
 
 	private $pdir; 
 
-	public function create_dir(): void {
+	// Создает папку с указанным именем
+
+	public function createDir(string $dirname): void {
 
 		if (!is_dir($this->pdir)) {
 
@@ -34,12 +36,12 @@ class Filemanipulator {
 		unset($this->pdir);
 	}
 
-	public function set_allowed_mimetypes(array $mtypes= array()): void {
+	public function setAllowedMimetypes(array $mtypes= array()): void {
 
-		$this->mimetype_list($mtypes);  
+		$this->mimetypeList($mtypes);  
 	}
 
-	private function get_filesize(int $filesize): string {
+	private function convertFilesize(int $filesize): string {
 
 		if(is_numeric($filesize)) {
 
@@ -58,7 +60,8 @@ class Filemanipulator {
 	    }
 	}
 
-	protected function upload_file(): void {
+
+	protected function uploadFiles(string $fileName): void {
 
 		$myFile = $_FILES[$fileName];
 		$folder = $this->upload_dir;
@@ -69,14 +72,14 @@ class Filemanipulator {
 
     	try {
 
-			if (count($this->mimetypes_allowed) < 1) 
-			{
+			if (count($this->mimetypes_allowed) < 1) {
+
 				throw new RuntimeException('Critical, no allowed mimetypes!');
 			}
 		    // Undefined | Multiple Files | $_FILES Corruption Attack
 		    // If this request falls under any of them, treat it invalid.
-		    if (!isset($myFile['error']) || is_array($myFile['error'])) 
-		    {
+		    if (!isset($myFile['error']) || is_array($myFile['error'])) {
+
 		        throw new RuntimeException('Invalid parameters');
 		    } 
 
@@ -95,8 +98,8 @@ class Filemanipulator {
 		    }
 
 		    // You should also check filesize here. 
-		    if ($myFile['size'] > $this->max_file_size) 
-		    {
+		    if ($myFile['size'] > $this->max_file_size) {
+
 		        throw new RuntimeException('Exceeded filesize limit');
 		    }
 
@@ -107,30 +110,33 @@ class Filemanipulator {
 		    $ext = array_search($mimetype, $this->mimetypes_allowed, true);
 
 		    if ($ext === false) {
+
 		        throw new RuntimeException('Invalid file format');
 		    }
 
 		    $i = 0;
 		    $parts = pathinfo($myFile['name']);
 
-		    while (file_exists($folder . $myFile['name'])) 
-		    {
+		    while (file_exists($folder . $myFile['name'])) {
+
 		    	$i++;
 		    	$myFile['name'] = $parts["filename"] . "-" . $i . "." . $parts["extension"];
 		    }
 		    // You should name it uniquely.
 		    // DO NOT USE $_FILES['upfile']['name'] WITHOUT ANY VALIDATION !!
 		    // On this example, obtain safe unique name from its binary data.
-		    if (!move_uploaded_file($myFile['tmp_name'], $this->working_folder . $myFile['name'])) 
-		    {
+		    if (!move_uploaded_file($myFile['tmp_name'], $this->working_folder . $myFile['name'])) {
+
 		        throw new RuntimeException('Failed to move uploaded file');
-		    } 
-		    else 
-		    {
+		    
+		    } else {
+		    	
 		    	chmod($folder . $myFile['name'], 0644);
 		    }
 		    echo 'File is uploaded successfully';
+
 		} catch (RuntimeException $e) {
+
 		    echo $e->getMessage();
 		}
 		$this->fuploaded['file_name'] = $myFile['name'];
@@ -138,28 +144,30 @@ class Filemanipulator {
 		$this->fuploaded['file_type'] = $mimetype;
 	}
 
-	private function get_mimetype(): string {
+	private function getMimetype(): string {
 
 		$ext = strtolower(array_pop(explode('.',$filename)));
 
-        if (array_key_exists($ext, $mime_types)) 
-        {
+        if (array_key_exists($ext, $mime_types)) {
+
             return $mime_types[$ext];
-        } 
-        elseif (function_exists('finfo_open')) 
-        {
+        
+        } elseif (function_exists('finfo_open')) {
+
             $finfo = finfo_open(FILEINFO_MIME);
             $mimetype = finfo_file($finfo, $filename);
             finfo_close($finfo);
             $r = $mimetype;
+
         } else {
+            
             $r = 'application/octet-stream';
         }
         
         return $r;
 	}
 
-	private function mimetype_list(array $allowedmim = array()): void {
+	private function mimetypeList(array $allowedmim = array()): void {
 
 		$r_mime = array();
 
@@ -224,19 +232,20 @@ class Filemanipulator {
         $this->mimetypes_allowed = $r_mime;
 	}
 
-	private function list_folder(bool $recursion=false): array  {
+	final function listFolder($pathfolder=false, bool $recursion=false): ?array  {
 
-		$dir = $work_dir;
+		$dir = !$pathfolder ? $dir = $this->pdir : $dir = $pathfolder;
+
 		$result = array(); 
-	   	$cdir = scandir($dir); 
+	   	$cdir 	= scandir($dir); 
 
 	   	foreach ($cdir as $key => $value) {
 	   		
 			if (!in_array($value,array(".",".."))) {
 
-				if (is_dir($dir . DIRECTORY_SEPARATOR . $value) && $recursive) {
+				if (is_dir($dir . DS . $value) && $recursive) {
 
-					$r = $this->list_folder($dir . DIRECTORY_SEPARATOR . $value, $recursive);
+					$r = $this->listFolder($dir . DS . $value, $recursive);
 					$result[$value] = $r;
 				} else 
 				    $result[] = $value; 

@@ -49,7 +49,7 @@ spl_autoload_register(function ($class_name) {
 
 function debugger($input, $param=__FUNCTION__, $vardump=false): void {
 
-	echo '<pre>';
+	echo '<pre><hr/>';
 
 	if ($param != false)
 		echo '</br>Дебаггер запущен из =>'.$param ;	
@@ -64,7 +64,7 @@ function debugger($input, $param=__FUNCTION__, $vardump=false): void {
 
 	echo '<br/>';
 	print_r($input);
-	echo '</pre>';
+	echo '</pre><hr/>';
 }
 
 // 
