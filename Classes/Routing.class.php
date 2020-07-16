@@ -33,6 +33,9 @@ final class Routing {
 			die('Пути не найдены! Обратитесь к администратору для решения проблемы.');
 		};
 
+		// Использ. preg_grep($key, $array);
+		// Использ. array_walk()
+		// Использ. array_filter() испльз. сallback function
 
 		if (!$files || count($files) == 0) { $exiting(); }
 
@@ -45,8 +48,6 @@ final class Routing {
 		foreach ($files as $key => $value) {
 			
 			$path = ROOTPATH . DEFROUTEPATH . $value;
-
-			echo $path.'<br/>';
 
 			if (file_exists($path)) {
 
@@ -61,21 +62,7 @@ final class Routing {
 			}
 		}
 
-		debugger($loadedRoutes, __METHOD__);
-
 		return $loadedRoutes;
-
-
-		/*
-		$rest = substr("abcdef", -1);    // returns "f"
-		$rest = substr("abcdef", -2);    // returns "ef"
-		$rest = substr("abcdef", -3, 1); // returns "d"
-		*/
-
-		// Использ. preg_grep($key, $array);
-		// Использ. array_walk()
-		// Использ. array_filter() испльз. сallback function
-
 	}
 
 
@@ -113,13 +100,14 @@ final class Routing {
 
 		$routes = self::$routes;
 
-		foreach($routes as $regex => $controller) {
+		foreach($routes as $reg => $controller) {
 
-			$regex = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $regex));
+			$regex = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $reg));
 
 			if ( preg_match('#^' .$regex. '$#', self::getCurrentUrl()) ) {
-		    	
-		    	return array('uri' => $regex, 'params' => $controller);
+		    
+
+		    	return array('uri' => $reg, 'params' => $controller);
 		  	}
 		}
 		return false;

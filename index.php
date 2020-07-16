@@ -34,6 +34,7 @@ require_once ROOTPATH . 'init.inc.php';
 	Класс манипуляции с Даты 
 	Класс Отправки емайлов
 	Метод хуков????
+	url_fixer разрешает конфликты в ссылках
 */
 
 
@@ -42,8 +43,10 @@ $result = array(
 			'templContrResult' 	=> array()
 		);
 
+$routes = Routing::initDefRoutes();
+
 //
-foreach (Routing::initDefRoutes() as $key => $value) {
+foreach ($routes as $key => $value) {
 	
 	Routing::addRoute($key, $value['action']);
 
@@ -58,7 +61,14 @@ foreach (Routing::initDefRoutes() as $key => $value) {
 	}
 }
 
+ // Не показывает пути ПОчему ???
+//debugger(Routing::getNameOfRoute(),'imja route');
+
 $result['templContrResult'] = Routing::dispatch();
+
+debugger(Routing::getNameOfRoute(),'imja route');
+
+
 
 $viewRender = new ViewRender();
 $viewRender->setActiveTemplate('default');
