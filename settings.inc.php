@@ -15,6 +15,9 @@ define('LOGINALLOW', true);
 define('RESTOREALLOW',true);
 
 
+define('DEFROUTEPATH', 'Routes' . DS);
+
+
 define('AllowLoginRedirect', true); // При правильной авторизации перенаправлять пользователя
 define('LoginRedirectPath', '/profile/');	
 

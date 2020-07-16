@@ -13,6 +13,9 @@ class ViewRender {
 
 	function getCurTplParams() {
 
+		require_once $this->tplDir . $this->activateTpl . 'schema.tpl.php';
+		
+		return $scheme;
 	}
 
 	// Список всех шаблонов и выбраных шаблонов
@@ -27,11 +30,18 @@ class ViewRender {
 		$this->activateTpl = (!empty($template)) ? $template . DS : $this->activateTpl;
 	}
 
+	function getAListOfTemplates(): array {
+
+		return array();
+	}
+
 	// sidebar = array('sidebar.tpl.php', $params), posts
 
-	function activateTemplate(array $templates): void {
+	function activateTemplate(array $templates): bool{
 
 		// Используется если хотите установить активный шаблон
+		
+		return false;
 	}
 
 	// Генерируем превью для шаблонов
@@ -68,9 +78,7 @@ class ViewRender {
 
 		$tplFolder = $this->tplDir . $this->activateTpl;
 
-		require_once $tplFolder . 'schema.tpl.php';
-
-		foreach ($scheme as $value) {
+		foreach ($this->getCurTplParams() as $value) {
 
 			if ($value == 'content') {
 

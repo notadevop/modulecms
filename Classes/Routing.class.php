@@ -23,35 +23,59 @@ final class Routing {
 	*/
 	public static function initDefRoutes(): ?array {
 
-		$routesFolder = 'Includes';
-
 		$fm = new Filemanipulator();
-		$fm->setDirName( ROOTPATH . $routesFolder . DS);
+		$fm->setDirName( ROOTPATH . DEFROUTEPATH);
 
 		$files = $fm->listFolder();
 
-		if (!$files) {
+		$exiting = function () {
 
 			die('Пути не найдены! Обратитесь к администратору для решения проблемы.');
+		};
+
+
+		if (!$files || count($files) == 0) { $exiting(); }
+
+		$files = preg_grep('/.route.php/i', $files);
+
+		if (empty($files)) {  $exiting(); }
+
+		$loadedRoutes = array();
+
+		foreach ($files as $key => $value) {
+			
+			$path = ROOTPATH . DEFROUTEPATH . $value;
+
+			echo $path.'<br/>';
+
+			if (file_exists($path)) {
+
+				require_once $path;
+
+				if (isset($routes) && !empty($routes)) {
+
+					$loadedRoutes = array_merge($loadedRoutes, $routes);
+
+					unset($routes);
+				}
+			}
 		}
 
-		$verifIndex = function ($path) {
+		debugger($loadedRoutes, __METHOD__);
 
-			return $path;
-		};
+		return $loadedRoutes;
+
+
+		/*
+		$rest = substr("abcdef", -1);    // returns "f"
+		$rest = substr("abcdef", -2);    // returns "ef"
+		$rest = substr("abcdef", -3, 1); // returns "d"
+		*/
 
 		// Использ. preg_grep($key, $array);
 		// Использ. array_walk()
 		// Использ. array_filter() испльз. сallback function
 
-		if (empty($files)) {
-			debugger('Пути пустые, не определнно');
-		}
-		
-		$routes = array();
-	
-		// отсортировать нужные файлы
-		return $files;
 	}
 
 
@@ -197,7 +221,10 @@ final class Routing {
 		$obj = new $controller();
 		$cresult = call_user_func_array(array($obj, $action), $params);
 
-		$params = array('errors' => 'getErrors', 'notifs' => 'getNotif');
+		$params = array(
+			'errors' => 'getErrors', 
+			'notifs' => 'getNotif'
+		);
 
 		foreach ($params as $key => $value) {
 			

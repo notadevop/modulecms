@@ -27,9 +27,7 @@ define('ROOTPATH', dirname(__FILE__) . DS);
 require_once ROOTPATH . 'settings.inc.php';
 require_once ROOTPATH . 'config.inc.php';
 require_once ROOTPATH . 'init.inc.php';
-require_once ROOTPATH . 'Includes/Routes.inc.php';
 
-//debugger($ads, 'index.php');
 
 /*
 	Класс разделения контента на страницы Pagination (break to pages)
@@ -39,16 +37,13 @@ require_once ROOTPATH . 'Includes/Routes.inc.php';
 */
 
 
-
-//$routes = Routing::initDefRoutes();
-
 $result = array(
 			'permContrResult' 	=> array(), 
 			'templContrResult' 	=> array()
 		);
 
 //
-foreach ($routes as $key => $value) {
+foreach (Routing::initDefRoutes() as $key => $value) {
 	
 	Routing::addRoute($key, $value['action']);
 
