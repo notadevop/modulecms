@@ -1,6 +1,6 @@
 <?php 
 
-	debugger($tplRes,'ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ!');
+	debugger($result['templContrResult'],'ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ!');
 ?>
 
 <p>

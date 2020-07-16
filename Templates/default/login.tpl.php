@@ -1,5 +1,5 @@
 <?php 
-	debugger($tplRes, 'Окно входа');
+	debugger($result['templContrResult'], 'Окно входа');
 ?>
 
 	<form action="/login" method="POST">

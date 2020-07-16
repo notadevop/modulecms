@@ -13,33 +13,32 @@ class ViewRender {
 
 	function getCurTplParams() {
 
-		$sql = 'SELECT ';
-
-
 	}
 
 	// Список всех шаблонов и выбраных шаблонов
 
-	private $activateTpl = TPLDEFAULTTEMPLATE;
+	private $activateTpl 	= TPLDEFAULTTEMPLATE;
+	private $tplDir 		= TPLDEFAULTFOLDER;
 
-	private $tplDir = TPLDEFAULTFOLDER;
+	function setActiveTemplate(string $template=''): void {
 
-	function setTemplatesFolder(string $folder=''): void {
+		// TODO: Проверить существует ли данный шаблон или нет!
 
-		$this->tplDir = (!empty($folder)) ? $folder : $this->tplDir;
+		$this->activateTpl = (!empty($template)) ? $template . DS : $this->activateTpl;
 	}
 
 	// sidebar = array('sidebar.tpl.php', $params), posts
 
-	function addView(array $templates): void {
+	function activateTemplate(array $templates): void {
 
+		// Используется если хотите установить активный шаблон
 	}
 
 	// Генерируем превью для шаблонов
 
 	// TODO: 123 <== Временно, написать класс ViewRender.class.php => pageBuilder.ctrl.php
 
-	function genPrevMap($routes, $permRes, $tplRes, $curRoute):void {
+	function genPrevMap($routes, $result, $curRoute):void {
 
 		// TODO: получаем созданый дизайнере xml файл где раставленны как и какой шаблон должны идти
 		// тут указываем, что показывать и засовываем данные
@@ -77,7 +76,7 @@ class ViewRender {
 
 				require_once $tplFolder . $renderTpl;
 			} else {
-				
+
 				require_once $tplFolder . $value . '.tpl.php';
 			}
 		}

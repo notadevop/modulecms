@@ -1,6 +1,6 @@
 
 <?php 
-	debugger($tplRes, 'Форма пароля');
+	debugger($result['templContrResult'], 'Форма пароля');
 ?>
 
 	<!-- ПОменять потом -->

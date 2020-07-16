@@ -11,18 +11,19 @@
 
 <?php 
 
-	if(defined('PROFILE') && !empty(PROFILE['useremail'])) {
+	if($regOk) {
 
 		$name 	= '<a href="/profile">'.PROFILE['username'].'</a>';
 		$logout = '<a href="/logout">Выйти?</a>';
-		$online = '<a href="/usersonline">('.$permRes['online']['result'].')</a>';
+		$online = '<a href="/usersonline">('.$result['permContrResult']['online']['result'].')</a>';
 	} else {
 		$name = 'Гость';
 		$logout = '';
-		$online = '('.$permRes['online']['result'].')';
+		$online = '('.$result['permContrResult']['online']['result'].')';
 	}
 ?>
 
 	<p>Вы вошли на сайт как:(<?=$name; ?>), <?=$logout;?>
 
 	Онлайн: <?=$online;?></p>
+	

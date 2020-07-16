@@ -1,6 +1,6 @@
 <?php 
 
-	debugger($tplRes, 'Регистрация');
+	debugger($result['templContrResult'], 'Регистрация');
 ?>
 
 	<form action="/register" method="POST">

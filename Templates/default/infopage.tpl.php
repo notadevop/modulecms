@@ -4,4 +4,4 @@
 
 <?php 
 
-	debugger($tplRes, 'infopage _inside_');
+	debugger($result['templContrResult'], 'infopage _inside_');

@@ -58,20 +58,16 @@ foreach ($routes as $key => $value) {
 
 	if ($value['skipUri']) { 
 
-		$permResult[$key] = Routing::dispatch($key);
+		$result['permContrResult'][$key] = Routing::dispatch($key);
 		Routing::cleanRoutes($key);
 	}
 }
 
-$tplRes = Routing::dispatch();
-
-$routeName = Routing::getNameOfRoute();
-
-
+$result['templContrResult'] = Routing::dispatch();
 
 $viewRender = new ViewRender();
-
-$viewRender->genPrevMap($routes, $permResult, $tplRes, $routeName);
+$viewRender->setActiveTemplate('default');
+$viewRender->genPrevMap($routes, $result, Routing::getNameOfRoute());
 
 
 $time = microtime();

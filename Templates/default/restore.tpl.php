@@ -1,6 +1,6 @@
 <?php 
 
-	debugger($tplRes, 'Восстановление');
+	debugger($result['templContrResult'], 'Восстановление');
 ?>
 
 	<form action="/restore" method="POST">
