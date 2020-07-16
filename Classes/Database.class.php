@@ -52,8 +52,7 @@ class Database extends Errors {
 			}
 
 		} catch (Exception $e) {
-			debugger($e->getMessage(), __METHOD__);
-			die("Error! " . $e->getMessage());
+			die("Error! " . debugger($e->getMessage(), __METHOD__));
 		}
 
 		//echo 'do connected<br>';

@@ -32,15 +32,14 @@ spl_autoload_register(function ($class_name) {
 		}
 		
 		if (!$flag) {
-			throw new Exception("Не могу продолжить, не найдет указанный класс. Выхожу...");
+			throw new Exception("Не могу продолжить, Класс => <b>". $class_name ."</b> не найден. Выхожу...");
 		}
 
 		require_once ( $path );	
 	
 	} catch (Exception $e) {
 
-		$msg = $e->getMessage();
-		die(debugger($msg));
+		die(debugger($e->getMessage(), 'spl_autoload_register'));
 	}
 }); 
 
@@ -50,6 +49,8 @@ spl_autoload_register(function ($class_name) {
 function debugger($input, $param=__FUNCTION__, $vardump=false): void {
 
 	echo '<pre><hr/>';
+
+	echo '<b>' . basename( $_SERVER['PHP_SELF'] ) . '</b>';
 
 	if ($param != false)
 		echo '</br>Дебаггер запущен из =>'.$param ;	

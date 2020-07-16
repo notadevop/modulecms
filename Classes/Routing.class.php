@@ -27,13 +27,30 @@ final class Routing {
 
 		$fm = new Filemanipulator();
 		$fm->setDirName( ROOTPATH . $routesFolder . DS);
+
 		$files = $fm->listFolder();
 
+		if (!$files) {
 
+			die('Пути не найдены! Обратитесь к администратору для решения проблемы.');
+		}
+
+		$verifIndex = function ($path) {
+
+			return $path;
+		};
+
+		// Использ. preg_grep($key, $array);
+		// Использ. array_walk()
+		// Использ. array_filter() испльз. сallback function
+
+		if (empty($files)) {
+			debugger('Пути пустые, не определнно');
+		}
+		
 		$routes = array();
 	
 		// отсортировать нужные файлы
-
 		return $files;
 	}
 
@@ -68,7 +85,9 @@ final class Routing {
 		}
 	}
 
-	public static function getNameOfRoute($routes) {
+	public static function getNameOfRoute() {
+
+		$routes = self::$routes;
 
 		foreach($routes as $regex => $controller) {
 

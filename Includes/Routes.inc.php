@@ -130,6 +130,6 @@ $routes = array(
 			'ifRegOk'	=> '404page.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Страница 404',
-			'priority'	=> 3
+			'priority'	=> 2
 	),
 );
