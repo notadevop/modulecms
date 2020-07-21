@@ -5,9 +5,13 @@
 	Это файл схема для определения как выводить файлы шаблона разных превью 
 */
 
-$scheme = array(
 
-	'header',
-	'content',
-	'footer'
-);
+function layoutScheme(): array {
+
+	return array(
+
+		'header',
+		'content',
+		'footer'
+	);
+}

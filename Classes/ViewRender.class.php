@@ -15,7 +15,7 @@ class ViewRender {
 
 		require_once $this->tplDir . $this->activateTpl . 'schema.tpl.php';
 		
-		return $scheme;
+		return layoutScheme();
 	}
 
 	// Список всех шаблонов и выбраных шаблонов

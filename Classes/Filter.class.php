@@ -59,7 +59,7 @@ class Filter {
 
 	public function isNotEmpty(string $key): bool {
 
-		if (empty($this->strCollector[$key]) || !isset($this->strCollector[$key])) {
+		if (!isset($this->strCollector[$key]) || empty($this->strCollector[$key])) {
 
 			$this->err['strempty'][] = 'Переменная в массиве пустая!';
 			return false;
@@ -74,11 +74,7 @@ class Filter {
 
 		if (!$this->keyExist($key)) { return false; }
 
-		$minNum = $this->strCollector[$key]['minimum'];
-
-		// Эта строка нужна только, если хотите указать сами какое кол-во нужно
-
-		if ($minnumber > 0) { $minNum = $minnumber; }
+		$minNum = $minnumber > 0 ? $minnumber : $this->strCollector[$key]['minimum'];
 
 		if(strlen($this->strCollector[$key]['value']) < $minNum){
 

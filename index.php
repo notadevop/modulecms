@@ -61,17 +61,11 @@ foreach ($routes as $key => $value) {
 	}
 }
 
- // Не показывает пути ПОчему ???
-//debugger(Routing::getNameOfRoute(),'imja route');
 
 $result['templContrResult'] = Routing::dispatch();
 
-debugger(Routing::getNameOfRoute(),'imja route');
-
-
-
 $viewRender = new ViewRender();
-$viewRender->setActiveTemplate('default');
+$viewRender->setActiveTemplate('simplelight');
 $viewRender->genPrevMap($routes, $result, Routing::getNameOfRoute());
 
 

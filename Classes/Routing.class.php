@@ -104,9 +104,8 @@ final class Routing {
 
 			$regex = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $reg));
 
-			if ( preg_match('#^' .$regex. '$#', self::getCurrentUrl()) ) {
+			if ( preg_match('#^' .$regex. '$#', self::getCurrentUri()) ) {
 		    
-
 		    	return array('uri' => $reg, 'params' => $controller);
 		  	}
 		}

@@ -11,7 +11,7 @@ $routes = array(
 			'decript'	=> 'Логин',
 			'priority'	=> 4
 	),
-		'auth' 			=> array(
+	'auth' 			=> array(
 			'action' 	=> 'UserIdentificator/authAction',
 			'template'	=> 'infopage.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
