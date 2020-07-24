@@ -107,7 +107,9 @@ class UserIdentificator extends Errors {
 
 		if ($options['checkMail'] && !$this->filter->validator('key', 'email')) {
 
-			$this->collectErrors('noprofile', 'Ошибка! Укажите правильный емайл');
+			//$this->collectErrors('noprofile', 'Ошибка! Укажите правильный емайл');
+
+			Logger::collectAlert('warnings', 'Ошибка! Укажите правильный емайл');
 		}
 
 		// конвертирует в целое число 
@@ -120,15 +122,19 @@ class UserIdentificator extends Errors {
 
 		if (!$this->filter->isNotEmpty('key')) {
 
-			$this->collectErrors('strWrong', 'Недопустима пустая строка!');
+			//$this->collectErrors('strWrong', 'Недопустима пустая строка!');
+			Logger::collectAlert('warnings', 'Недопустима пустая строка!');
+
 
 		} else if (!$this->filter->isNotMore('key')) {
 
-			$this->collectErrors('strLimit', 'Недопустимое кол-во символов! Большое значение.');
+			//$this->collectErrors('strLimit', 'Недопустимое кол-во символов! Большое значение.');
+			Logger::collectAlert('warnings', 'Недопустимое кол-во символов! Большое значение.');
 
 		} else if (!$this->filter->isNotLess('key')) {
 
-			$this->collectErrors('strLimit', 'Недопустимое кол-во символов! Маленькое значение.');
+			//$this->collectErrors('strLimit', 'Недопустимое кол-во символов! Маленькое значение.');
+			Logger::collectAlert('warnings', 'Недопустимое кол-во символов! Маленькое значение.');
 		}
 
 		return $this
@@ -148,11 +154,11 @@ class UserIdentificator extends Errors {
 
 			$this->saveAuthAction('', '', true); // пустые емай и хеш и стираем данные
 
-			if ($redirect) { header("refresh:5; url=" . HOST); }
+			if ($redirect) { header("refresh:3; url=" . HOST); }
 
-			//$this->collectErrors('logout', 'Вы вышли из своего аккаунта!');
+			//$this->collectNotif('logout', 'Вы вышли из своего аккаунта!');
 
-			$this->collectNotif('logout', 'Вы вышли из своего аккаунта!');
+			Logger::collectAlert('information', 'Вы вышли из своего аккаунта!');
 
 			return true;
 		}
@@ -203,13 +209,15 @@ class UserIdentificator extends Errors {
 
 		if (!$ue) {
 
-			$this->collectErrors('wrongpass', 'Неправильные имя или пароль!');
+			//$this->collectErrors('wrongpass', 'Неправильные имя или пароль!');
+			Logger::collectAlert('warnings', 'Неправильные имя или пароль!');
 			return $prof();
 		} 
 
 		if (!$ub) {
 
-			$this->collectErrors('blocked', 'Ошибка! Пользователь заблокирован или не активирован.');
+			//$this->collectErrors('blocked', 'Ошибка! Пользователь заблокирован или не активирован.');
+			Logger::collectAlert('warnings', 'Ошибка! Пользователь заблокирован или не активирован.');
 			return $prof();
 		}
 
@@ -219,7 +227,8 @@ class UserIdentificator extends Errors {
 
 		if(empty($profile)) {
 
-			$this->collectErrors('wrongpass', 'Неправильные имя или пароль!');
+			//$this->collectErrors('wrongpass', 'Неправильные имя или пароль!');
+			Logger::collectAlert('warnings', 'Неправильные имя или пароль!');
 			return $prof();
 		}
 
@@ -229,7 +238,8 @@ class UserIdentificator extends Errors {
 
 		if(empty($profile['tokenHash'])) {
 
-			$this->collectErrors('hasherr', 'Ошибка генерации хеша!');
+			//$this->collectErrors('hasherr', 'Ошибка генерации хеша!');
+			Logger::collectAlert('warnings', 'Ошибка генерации хеша!');
 			return $prof(); 
 		}
 
@@ -237,7 +247,8 @@ class UserIdentificator extends Errors {
 
 		if (REDIRECTLOGIN) { header('Location: /'); }
 
-		$this->collectNotif('loggedin', 'Вы вошли в свой аккаунт!');
+		Logger::collectAlert('success', 'Вы вошли в свой аккаунт!');
+		//$this->collectNotif('loggedin', 'Вы вошли в свой аккаунт!');
 
 		return $prof($profile);
 	}
@@ -303,7 +314,8 @@ class UserIdentificator extends Errors {
 
 			$this->saveAuthAction($profile['useremail'], $profile['tokenHash']);
 
-			$this->collectNotif('authok', 'Вы авторизированны!');
+			Logger::collectAlert('success', 'Вы авторизированны!');
+			//$this->collectNotif('authok', 'Вы авторизированны!');
 			return $prof($profile);
 		}
 
@@ -376,7 +388,8 @@ class UserIdentificator extends Errors {
 
 		if (!$mr || !$ms) {
 
-			$this->collectErrors('banned', 'Ошибка! Возможно пользователь: заблокирован, удален или не существует!');
+			Logger::collectAlert('warnings', 'Ошибка! Возможно пользователь: заблокирован, удален или не существует!');
+			//$this->collectErrors('banned', 'Ошибка! Возможно пользователь: заблокирован, удален или не существует!');
 			return null;
 		}
 
@@ -389,7 +402,11 @@ class UserIdentificator extends Errors {
 		// TODO: Отправка емайла пользователю для восстановления пароля
 		// TODO: сделать генерацию ссылок
 
-		$this->collectNotif('actlink', HOST . '/verifres/?userid=' . $meta['id'] . '&confirm=' . $meta['cofirm'] . '&token=' . $meta['token']);
+		$link = '/verifres/?userid=' . $meta['id'] . '&confirm=' . $meta['cofirm'] . '&token=' . $meta['token'];
+
+		Logger::collectAlert('information', $link);		
+
+		//$this->collectNotif('actlink', HOST . '/verifres/?userid=' . $meta['id'] . '&confirm=' . $meta['cofirm'] . '&token=' . $meta['token']);
 		return true;
 	}
 
@@ -433,7 +450,9 @@ class UserIdentificator extends Errors {
 
 		if ($pass[0] !== $pass[1]) {
 
-			$this->collectErrors('mismatch', 'Ошибка! пароли не совпадают.');
+			Logger::collectAlert('warnings', 'Ошибка! пароли не совпадают.');
+
+			//$this->collectErrors('mismatch', 'Ошибка! пароли не совпадают.');
 			return false;
 		}
 
@@ -443,7 +462,8 @@ class UserIdentificator extends Errors {
 
 		if (!$r) {
 
-			$this->collectErrors('updpasserr', 'Ошибка обновления пароля!');
+			Logger::collectAlert('warnings', 'Ошибка обновления пароля!');
+			//$this->collectErrors('updpasserr', 'Ошибка обновления пароля!');
 			return false;
 		}
 
@@ -451,7 +471,8 @@ class UserIdentificator extends Errors {
 			->auth
 			->clearActivations($p['userid']);
 
-		$this->collectNotif('updPassOk', 'Пароль обновлен!');
+		Logger::collectAlert('success', 'Пароль обновлен!');
+		//$this->collectNotif('updPassOk', 'Пароль обновлен!');
 
 		return true;
 	}
@@ -480,7 +501,8 @@ class UserIdentificator extends Errors {
 
 			if(!$this->glob->isExist($value)) { 
 
-				$this->collectErrors('paramerr', 'Ошибка! параметров подтверждения');
+				//$this->collectErrors('paramerr', 'Ошибка! параметров подтверждения');
+				Logger::collectAlert('warnings', 'Ошибка! параметров подтверждения');
 				return null; }
 
 			$p[$value] = $this
@@ -492,7 +514,8 @@ class UserIdentificator extends Errors {
 
 		if (count($this->getErrors()) > 0) {
 
-			$this->collectErrors('strLimit', 'Ошибка параметров подтверждения пользователя!');
+			Logger::collectAlert('warnings', 'Ошибка параметров подтверждения пользователя!');
+			//$this->collectErrors('strLimit', 'Ошибка параметров подтверждения пользователя!');
 			return null;
 		}
 
@@ -502,7 +525,8 @@ class UserIdentificator extends Errors {
 
 		if (!$sp) {
 
-			$this->collectErrors('notvalid', 'Ошибка параметров подтверждения пользователя!');
+			Logger::collectAlert('warnings', 'Ошибка параметров подтверждения пользователя!');
+			//$this->collectErrors('notvalid', 'Ошибка параметров подтверждения пользователя!');
 			return null;
 		}
 
@@ -550,7 +574,8 @@ class UserIdentificator extends Errors {
 
 		if ($p['userregpassword1'] !== $p['userregpassword2']) {
 
-			$this->collectErrors('mismatch', 'Ошибка! пароли не совпадают.');
+			Logger::collectAlert('warnings', 'Ошибка! пароли не совпадают.');
+			//$this->collectErrors('mismatch', 'Ошибка! пароли не совпадают.');
 			return false;
 		}
 
@@ -560,7 +585,8 @@ class UserIdentificator extends Errors {
 
 		if ($e) {
 
-			$this->collectErrors('profilexist', 'Ошибка! Возможно такой пользователь уже зарегестрирован!');
+			Logger::collectAlert('warnings', 'Ошибка! Возможно такой пользователь уже зарегестрирован!');
+			//$this->collectErrors('profilexist', 'Ошибка! Возможно такой пользователь уже зарегестрирован!');
 			return null;
 		}
 
@@ -570,7 +596,8 @@ class UserIdentificator extends Errors {
 
 		if (!$insert) {
 
-			$this->collectErrors('noregact', 'Ошибка! Не получилось зарегестрироваться! Проверьте еще раз ваши данные.При повторной ошибке обратитесь к администратору!');
+			Logger::collectAlert('warnings', 'Ошибка! Не получилось зарегестрироваться! Проверьте еще раз ваши данные.При повторной ошибке обратитесь к администратору!');
+			//$this->collectErrors('noregact', 'Ошибка! Не получилось зарегестрироваться! Проверьте еще раз ваши данные.При повторной ошибке обратитесь к администратору!');
 			return null;
 		}
 
@@ -583,7 +610,11 @@ class UserIdentificator extends Errors {
 		// TODO: Отправка емайла пользователю для восстановления пароля
 		// TODO: сделать генерацию ссылок
 
-		$this->collectNotif('regisActLink', HOST . '/verifreg/?userid=' . $meta['id'] . '&confirm=' . $meta['cofirm'] . '&token=' . $meta['token']);
+		$link = HOST . '/verifreg/?userid=' . $meta['id'] . '&confirm=' . $meta['cofirm'] . '&token=' . $meta['token'];
+
+		Logger::collectAlert('information', $link);
+
+		//$this->collectNotif('regisActLink', $link);
 
 		return true;
 	}

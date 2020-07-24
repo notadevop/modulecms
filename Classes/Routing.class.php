@@ -2,8 +2,8 @@
 
 final class Routing {
 
-	public static $routes = array();
-	private static $params = array();
+	public static $routes 		= array();
+	private static $params 		= array();
 	public static $requestedUrl = '';
 
 	/**
@@ -88,11 +88,11 @@ final class Routing {
 	/**
 	*	Очищаем пути 
 	*/
-	public static function cleanRoutes(string $arraykey) {
+	public static function cleanRoutes(string $route) {
 
-		if (array_key_exists($arraykey, self::$routes)) {
+		if (array_key_exists($route, self::$routes)) {
 
-			unset(self::$routes[$arraykey]);
+			unset(self::$routes[$route]);
 		}
 	}
 

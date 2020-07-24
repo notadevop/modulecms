@@ -19,6 +19,8 @@ class MainController extends Errors{
 
 	function defaultMethod() {
 
+		Logger::collectAlert('success', 'Метод по умолчанию');
+
 		return array('Метод по умолчанию', 'Тут никаких действий!');
 	}
 }

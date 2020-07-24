@@ -39,7 +39,8 @@ class ProfileController extends Errors{
 
 	    if (!$checkPerm) {
 
-	    	$this->collectErrors('noaccess', '<b>Пользователь не указан.</b>');
+            Logger::collectAlert('warnings', '<b>Пользователь не указан.</b>');
+	    	//$this->collectErrors('noaccess', '<b>Пользователь не указан.</b>');
 	    	return '';
 	    } 
 

@@ -1,7 +1,17 @@
 <div id="site_content">
   <div class="sidebar">
-    <p> Пользователей онлайн (0) </p>
-    <p> Вы вошли как: (Гость) </p>
+
+    <h4> Пользователей онлайн (0) </h4>
+    <h4> Вы вошли как: (Гость) </h4>
+    <ul>
+      <?php
+          // тут использовать луп for 
+      ?>
+      <li><a href="/login">Вход</a></li>
+      <li><a href="#">Регистрация</a></li>
+      <li><a href="#">Восстановление пароля</a></li>
+
+    </ul>
     <h1>Latest News</h1>
     <h4>New Website Launched</h4>
     <h5>January 1st, 2010</h5>
