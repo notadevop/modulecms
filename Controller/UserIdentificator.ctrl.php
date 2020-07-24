@@ -238,7 +238,10 @@ class UserIdentificator {
 
 		$this->saveAuthAction($p['loginmail'], $profile['tokenHash']);
 
-		if (REDIRECTLOGIN) { header('Location: /'); }
+		if (REDIRECTLOGIN) { 
+			header( "refresh: 2; url=/" );
+			//header('Location: /'); 
+		}
 
 		Logger::collectAlert('success', 'Вы вошли в свой аккаунт!');
 	
@@ -306,7 +309,7 @@ class UserIdentificator {
 
 			$this->saveAuthAction($profile['useremail'], $profile['tokenHash']);
 
-			Logger::collectAlert('success', 'Вы авторизированны!');
+			//Logger::collectAlert('success', 'Вы авторизированны!');
 			return $prof($profile);
 		}
 

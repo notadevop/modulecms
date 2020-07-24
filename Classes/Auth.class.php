@@ -169,7 +169,7 @@ class Auth extends Database {
 			'username' 	=> $profile['name'],
 			'useremail' => $profile['email'],
 			'userregd' 	=> $profile['regdate'],
-			'userlastv'	=> $profile['user_last_visit']
+			'userlastv'	=> $profile['lastvisit']
 		);
 	}
 

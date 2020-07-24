@@ -71,13 +71,7 @@ function debugger($input, $param=__FUNCTION__, $vardump=false): void {
 			<hr/>
 			<p>Файл откуда запущен: => <?=basename( $_SERVER['PHP_SELF'] ); ?></p>
 			<p>Путь Исполнения: => <b style="color: red;"> <?=$param; ?></b></p>	
-			<p>Результат Исполнения: => 
-				<?php 
-				echo '<pre>';
-				print_r($input); 
-				echo '</pre>';
-				?>
-				</p>
+			<p>Результат Исполнения: => <pre><?php print_r($input); ?></pre></p>
 			<?php // var_dump($input); // ?>
 	</h4>
 	<?php

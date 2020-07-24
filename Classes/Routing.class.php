@@ -208,11 +208,12 @@ final class Routing {
 		$obj = new $controller();
 		$cresult = call_user_func_array(array($obj, $action), $params);
 
+		/*
 		$params = array(
 			'errors' => 'getErrors', 
 			'notifs' => 'getNotif'
 		);
-
+		*/
 		foreach ($params as $key => $value) {
 			
 			if(method_exists($controller, $value)) {
@@ -223,8 +224,8 @@ final class Routing {
 
 		return array(
 			'result' => $cresult,
-			'errors' => $params['errors'],
-			'notifs' => $params['notifs']	
+			//'errors' => $params['errors'],
+			//'notifs' => $params['notifs']	
 		);
 	}
 

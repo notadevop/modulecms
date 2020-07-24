@@ -5,8 +5,7 @@
 
 // Смарт баннер выводи информации или ссылок 
 
-//debugger($result['templContrResult'], 'Окно входа');
-
+debugger($result['templContrResult'], 'Окно входа');
 
 // @params: warnings, attentions, information, success
 
