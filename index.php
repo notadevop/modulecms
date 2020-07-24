@@ -38,6 +38,7 @@ require_once ROOTPATH . 'init.inc.php';
 */
 
 
+
 $result = array(
 			'permContrResult' 	=> array(), 
 			'templContrResult' 	=> array()
@@ -67,6 +68,7 @@ $result['templContrResult'] = Routing::dispatch();
 $viewRender = new ViewRender();
 $viewRender->setActiveTemplate('simplelight');
 $viewRender->genPrevMap($routes, $result, Routing::getNameOfRoute());
+
 
 
 $time = microtime();

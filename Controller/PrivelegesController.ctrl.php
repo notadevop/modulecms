@@ -4,7 +4,7 @@
 
 // а так же определения првелегий для определенных страниц
 
-class PrivelegesController extends Errors{
+class PrivelegesController {
 
 	private $priv;
     private $perms = array();

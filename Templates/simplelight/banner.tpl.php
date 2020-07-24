@@ -33,19 +33,9 @@ $alerts = array(
 
 // TODO: Использовать эти алерты только для контроллеров
 // NB!: Системные ошибки использовать в консоли
-
+/*
 Logger::collectAlert('warnings', 'Внимание это тестовое сообщение');
-Logger::collectAlert('warnings', 'Внимание это тестовое сообщение');
-
-Logger::collectAlert('attentions', 'Внимание это тестовое сообщение');
-Logger::collectAlert('attentions', 'Внимание это тестовое сообщение');
-
-Logger::collectAlert('information', 'Внимание это тестовое сообщение');
-Logger::collectAlert('information', 'Внимание это тестовое сообщение');
-
-Logger::collectAlert('success', 'Внимание это тестовое сообщение');
-Logger::collectAlert('success', 'Внимание это тестовое сообщение');
-
+*/
 
 foreach ($alerts as $key => $value) {
 
@@ -55,12 +45,12 @@ foreach ($alerts as $key => $value) {
 		<div class="<?=$value['css_class']; ?>">
 		<span class="closebtn">&times;</span>  
 		<strong><?=$value['description']; ?></strong> 
-		<ul>
-			<?php 
-			foreach (Logger::getAlerts($key) as $k => $v) 
-				{ echo '<li>'.$v.'</li>'; }
-			?>
-		</ul>
+			<ul class="none">
+				<?php 
+				foreach (Logger::getAlerts($key) as $k => $v) 
+					{ echo '<li>'.$v.'</li>'; }
+				?>
+			</ul>
 		</div>
 		<?php 
 	} 
@@ -69,17 +59,15 @@ foreach ($alerts as $key => $value) {
 ?>
 
 <script>
-
-var close = document.getElementsByClassName("closebtn");
-var i;
-
-for (i = 0; i < close.length; i++) {
-close[i].onclick = function(){
-var div = this.parentElement;
-div.style.opacity = "0";
-setTimeout(function(){ div.style.display = "none"; }, 1000);
-}
-}
+	var close = document.getElementsByClassName("closebtn");
+	var i;
+	for (i = 0; i < close.length; i++) {
+		close[i].onclick = function() {
+			var div = this.parentElement;
+			div.style.opacity = "0";
+			setTimeout(function(){ div.style.display = "none"; }, 1000);
+		}
+	}
 </script>
 </div>
 

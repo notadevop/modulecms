@@ -83,11 +83,7 @@ class CookieJob {
 			if ($glob->isExist($value)) {
 
 				$cookieValue = $glob->getGlobParam($value);
-				debugger('cookie: <b>'.$value.'</b> his param: <b>'.$cookieValue.'</b>', __METHOD__);
-			} else {
-
-				debugger('not exist cookie: '.$value, __METHOD__);
-			}
+			} 
 		}
 	}
 

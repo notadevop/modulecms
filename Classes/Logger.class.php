@@ -63,7 +63,7 @@ final class Logger {
 
 
 
-
+/*
 class Errors {
 	
 	function __construct() { 
@@ -109,3 +109,4 @@ class Errors {
 		return $this->errors;
 	}
 }
+*/

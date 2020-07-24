@@ -3,7 +3,7 @@
 /**
  * 
  */
-final class Visitor extends Database{
+final class Visitor extends Database {
 	
 	function __construct() { 
 

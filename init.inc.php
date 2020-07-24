@@ -34,7 +34,7 @@ spl_autoload_register(function ($class_name) {
 		}
 		
 		if (!$flag) {
-			throw new Exception("Не могу продолжить, Класс => <b>". $class_name ."</b> не найден. Выхожу...");
+			throw new Exception('Класс => <b style="color: red;">'. $class_name .'</b> не найден. Невозможно продолжить, исправь это!');
 		}
 
 		require_once ( $path );	
@@ -50,24 +50,37 @@ spl_autoload_register(function ($class_name) {
 
 function debugger($input, $param=__FUNCTION__, $vardump=false): void {
 
-	echo '<pre><hr/>';
+	?>
+	<!--
+	<h2>The vertical-align Property</h2>
+	<p></p>
+	<table>
+	  <tr>
+	    <th>Firstname</th>
+	    <th>Lastname</th>
+	  </tr>
+	  <tr>
+	    <td>Peter</td>
+	    <td>Griffin</td>
+	  </tr>
+	</table>
+	-->
 
-	echo '<b>' . basename( $_SERVER['PHP_SELF'] ) . '</b>';
 
-	if ($param != false)
-		echo '</br>Дебаггер запущен из =>'.$param ;	
-
-	if ($vardump) {
-
-		echo '<br/>';
-		var_dump($input);
-		echo '</pre>';
-		return;
-	}
-
-	echo '<br/>';
-	print_r($input);
-	echo '</pre><hr/>';
+	<h4>
+			<hr/>
+			<p>Файл откуда запущен: => <?=basename( $_SERVER['PHP_SELF'] ); ?></p>
+			<p>Путь Исполнения: => <b style="color: red;"> <?=$param; ?></b></p>	
+			<p>Результат Исполнения: => 
+				<?php 
+				echo '<pre>';
+				print_r($input); 
+				echo '</pre>';
+				?>
+				</p>
+			<?php // var_dump($input); // ?>
+	</h4>
+	<?php
 }
 
 // 

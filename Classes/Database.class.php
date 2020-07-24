@@ -3,7 +3,7 @@
 /**
  * mysql database connector 
  */
-class Database extends Errors {
+class Database {
 
 	function __construct(bool $connect) {	
 		// Устанавливаем соединение, только если указали на подключение
@@ -120,7 +120,6 @@ class Database extends Errors {
 		} catch (Exception $e) {
 
 			debugger($e->getMessage());
-			//$this->collectErrors($e->getMessage());
 		}
 
 		return $r;
