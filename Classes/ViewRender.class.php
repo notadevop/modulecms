@@ -6,28 +6,34 @@
  */
 class ViewRender {
 
-	function __construct() { }
+	function __construct() { 
+
+		$this->curRouteName = Routing::getNameOfRoute();
+	}
 
 
 	// Получаем данные из базы данных, какой шаблон используется в данный момент, 
 
-	function getCurTplParams() {
+	function getTemplateSchema() {
 
-		require_once $this->tplDir . $this->activateTpl . 'schema.tpl.php';
+		require_once $this->tplDir . $this->currentTpl . 'schema.tpl.php';
 		
 		return layoutScheme();
 	}
 
 	// Список всех шаблонов и выбраных шаблонов
 
-	private $activateTpl 	= TPLDEFAULTTEMPLATE;
+	private $currentTpl 	= TPLDEFAULTTEMPLATE;
 	private $tplDir 		= TPLDEFAULTFOLDER;
+	private $htmlRenderRes	= NULL;
+
+	private $curRouteName 	= false;
 
 	function setActiveTemplate(string $template=''): void {
 
 		// TODO: Проверить существует ли данный шаблон или нет!
 
-		$this->activateTpl = (!empty($template)) ? $template . DS : $this->activateTpl;
+		$this->currentTpl = (!empty($template)) ? $template . DS : $this->currentTpl;
 	}
 
 	function getAListOfTemplates(): array {
@@ -48,7 +54,7 @@ class ViewRender {
 
 	// TODO: 123 <== Временно, написать класс ViewRender.class.php => pageBuilder.ctrl.php
 
-	function genPrevMap($routes, $result, $curRoute):void {
+	function prepareRender($routes, $result, $curRoutePath=false): void {
 
 		// TODO: получаем созданый дизайнере xml файл где раставленны как и какой шаблон должны идти
 		// тут указываем, что показывать и засовываем данные
@@ -60,25 +66,23 @@ class ViewRender {
 			$regOk = true; 
 		}
 
-		if ( !$curRoute || empty($routes[$curRoute['uri']]) ) {
+		if ( !$this->curRouteName || empty($routes[$this->curRouteName['uri']]) ) {
 
 			$defTpl 	= $routes['/404page']['template'];
 			$ifRegOk 	= $routes['/404page']['ifRegOk'];
 		} else {
 
-			$defTpl 	= $routes[$curRoute['uri']]['template'];  
-			$ifRegOk 	= $routes[$curRoute['uri']]['ifRegOk'];
+			$defTpl 	= $routes[$this->curRouteName['uri']]['template'];  
+			$ifRegOk 	= $routes[$this->curRouteName['uri']]['ifRegOk'];
 		}
 
 		$renderTpl = ($regOk) ? $ifRegOk : $defTpl;
 
-		// TODO: перенести в класс рендеринга и там загружать настройки шаблона и по нему выводить страницы 
+		$tplFolder = $this->tplDir . $this->currentTpl;
 
-		// Временно !!!!!
+		ob_start();
 
-		$tplFolder = $this->tplDir . $this->activateTpl;
-
-		foreach ($this->getCurTplParams() as $value) {
+		foreach ($this->getTemplateSchema() as $value) {
 
 			if ($value == 'content') {
 
@@ -88,12 +92,21 @@ class ViewRender {
 				require_once $tplFolder . $value . '.tpl.php';
 			}
 		}
+
+		$this->htmlRenderRes = ob_get_contents();
+		ob_end_clean();
 	}
 
 	// Выводим html шаблоны в просмотр интерфейс.
 
-	function renderView(string $templateName): void {
+	function viewRender(string $param): void {
 
-		require_once $templateName;
+		// Использовать preg_replace то, что нужно заменить 
+
+		$html = $this->htmlRenderRes;
+
+		$html = preg_replace('/%loadtime%/i', $param, $html);
+
+		echo $html;
 	}
 }

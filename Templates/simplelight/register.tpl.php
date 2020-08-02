@@ -19,6 +19,7 @@ $random = function() {
       <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="Registration" value="Зарегестрироваться" /></p>
     </div>
   </form>
+  <p><a href="/login">Войти</a> | <a href="/restore">Забыл пароль</a></p>
   <p><br /><br />NOTE: A contact form such as this would require some way of emailing the input to an email address.</p>
 </div>
 </div>

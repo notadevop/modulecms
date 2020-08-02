@@ -13,6 +13,7 @@ class Auth extends Database {
 	function __construct(){
 
 		parent::__construct(true);
+
 		$this->modifier = new Modifier();
 		$this->visitor 	= new Visitor();
 
@@ -23,6 +24,11 @@ class Auth extends Database {
 
 		$this->dateClass = function(int $time1,int $time2,string $timetype='%d',int $interval): bool {
 
+
+			return true; // Указывает, что нужно обновить хеш!!!!
+
+			// TODO: Не работает сравнение даты никак вообще 
+
 			$current 	= strtotime($time1);
 			$tomorrow 	= strtotime($time2);
 
@@ -31,9 +37,9 @@ class Auth extends Database {
 
 			$interval 	= $current->diff($tomorrow);
 
-			debugger('ПОЧИНИТЬ ВРЕМЯ ПРОВЕРКИ ХЕША БАЗЕ ДАННЫХ: '.$interval->format('%s'), 'Замыкание в dateClasse');
+			$currInterval = $interval->format($timetype);
 
-			return $interval->format($timetype) > $interval ? true : false;
+			return $currInterval > $interval ? true : false;
 		}; 
 	}
 
@@ -83,16 +89,15 @@ class Auth extends Database {
 					->postAction()
 					->fetch();
 
-		$rand 	= rand(30, 100);
 		$newHash= $this
 					->modifier
-					->randomHash($rand, false);
+					->randomHash(rand(30, 100), false);
 
-		$updateHash = '';
+		$updateHash = $newHash;
 
 		if (empty($result['token']) || $newLogin) {
 
-			$updateHash = $newHash;
+			//$updateHash = $newHash; // не обновляет, а устанавливает новый хеш !!!!
 
 			$sql = 'INSERT INTO user_tokens 
 					(token_user_id, token_user_agent, token_hash, token_created, token_expires) 
@@ -100,34 +105,33 @@ class Auth extends Database {
 		} else {
 
 			$sql = 'UPDATE user_tokens 
-			SET token_user_agent = :uagent,
-			token_hash = :thash,
-			token_created = :tcreated,
-			token_expires = :texpires 
-			WHERE token_user_id = :userid';
+			SET token_user_agent = :uagent, token_hash = :thash,
+			token_created = :tcreated, token_expires = :texpires WHERE token_user_id = :userid';
 
 			// Тут обновляем хеш когда время истекло
 
 			$dateClass = $this->dateClass;
 
+			// Проверяем даты, если просроченно больше указанного то обновляем хеш на новый 
+			// и возвращаем результат на сохранение пользователю в куки
+
 			if ($dateClass($result['tcreated'],$result['texpires'],'%d', UPDATEAUTHINTERVAL)) {
 
-				# $updateHash = $newHash;
+				$updateHash = $newHash; // устанавлваем новый хеш, старый уже просрочен
 
-				debugger('Время истекло нужно обновлять хеш!');
-			} 
+			} else {
 
-			# $updateHash = $result['token'];
-			$updateHash = $newHash;
+				$updateHash = $result['token'];
+			}
 		}	
 
 		$binder = array(
-				':userid' 			=> $userid,
-				':uagent' 			=> serialize($this->visitor->get_data()),
-				':thash'			=> $updateHash,
-				':tcreated'			=> time(),
-				':texpires' 		=> strtotime('+'.UPDATEAUTHINTERVAL.' Days') // time() +3600*24
-			);
+					':userid' 			=> $userid,
+					':uagent' 			=> serialize($this->visitor->get_data()),
+					':thash'			=> $updateHash,
+					':tcreated'			=> time(),
+					':texpires' 		=> strtotime('+'.UPDATEAUTHINTERVAL.' Days') // time() +3600*24
+		);
 
 		$this->preAction($sql, $binder);
 

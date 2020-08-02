@@ -65,7 +65,6 @@ final class Routing {
 		return $loadedRoutes;
 	}
 
-
 	public static function showRoutes() {
 
 		debugger(self::$routes, __METHOD__);

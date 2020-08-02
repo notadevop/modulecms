@@ -7,6 +7,7 @@
       <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="Restoreaction" value="Отправить" /></p>
     </div>
   </form>
+  <p><a href="/login">Войти</a> | <a href="/register">Регистрация</a></p>
   <p><br /><br />NOTE: A contact form such as this would require some way of emailing the input to an email address.</p>
 </div>
 </div>

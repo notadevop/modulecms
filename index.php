@@ -28,7 +28,6 @@ require_once ROOTPATH . 'settings.inc.php';
 require_once ROOTPATH . 'config.inc.php';
 require_once ROOTPATH . 'init.inc.php';
 
-
 /*
 	Класс разделения контента на страницы Pagination (break to pages)
 	Класс манипуляции с Даты 
@@ -62,18 +61,18 @@ foreach ($routes as $key => $value) {
 	}
 }
 
-
 $result['templContrResult'] = Routing::dispatch();
 
 $viewRender = new ViewRender();
 $viewRender->setActiveTemplate('simplelight');
-$viewRender->genPrevMap($routes, $result, Routing::getNameOfRoute());
-
-
+$viewRender->prepareRender($routes, $result, Routing::getNameOfRoute());
 
 $time = microtime();
 $time = explode(' ', $time);
 $time = $time[1] + $time[0];
 $finish = $time;
 $total_time = round(($finish - $start), 4);
-echo 'Страница сгенерированна через: ' . $total_time . ' cекунд.';
+$load = 'Страница сгенерированна через: ' . $total_time . ' cекунд.';
+
+// в конечном итоге вывидим все.
+$viewRender->viewRender($load);

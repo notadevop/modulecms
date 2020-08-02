@@ -10,7 +10,7 @@ class UserIdentificator {
 	private $pluginExecutor;
 
 	private $users;
-	private $granter;
+	private $granter; // Получаем привелегии пользователя 
 
 	private $defineUser;
 
@@ -44,6 +44,8 @@ class UserIdentificator {
 			'domain' 	=> 'localhost',
 		);
 
+		// Замыкание которое возвращает результат как профиль пользователя
+
 		$this->defineUser = function($profile=''):bool {
 
 			$temp = array(
@@ -74,6 +76,8 @@ class UserIdentificator {
 				$auth = true;
 			}
 
+			// Определяем профиль в независимости от авторизации
+
 			if(!defined('PROFILE')) {
 
 				define('PROFILE', $temp);
@@ -81,7 +85,6 @@ class UserIdentificator {
 
 			return $auth;
 		};
-
 	}
 
 	// ----------------------------------------------
@@ -136,8 +139,8 @@ class UserIdentificator {
 		}
 
 		return $this
-			->filter
-			->getKey('key');
+					->filter
+					->getKey('key');
 	}
 
 	// ----------------------------------------------
@@ -150,9 +153,10 @@ class UserIdentificator {
 
 		if ($this->glob->isExist('logout') || $clean) {
 
-			$this->saveAuthAction('', '', true); // пустые емай и хеш и стираем данные
+			// пустые емай и хеш и стираем данные
+			$this->saveAuthAction('', '', true); 
 
-			if ($redirect) { header("refresh:3; url=" . HOST); }
+			if ($redirect) { header("refresh:5; url=" . HOST); }
 
 			$this->errors++;
 			Logger::collectAlert('information', 'Вы вышли из своего аккаунта!');
@@ -195,7 +199,7 @@ class UserIdentificator {
 			$p[$value] = $this->filtration($p[$value], $Opt);
 		}
 
-		if ($this->errors > 0) {return $prof();}
+		if ($this->errors > 0) { return $prof();}
 
 		$ue = $this
 				->users
@@ -239,7 +243,7 @@ class UserIdentificator {
 		$this->saveAuthAction($p['loginmail'], $profile['tokenHash']);
 
 		if (REDIRECTLOGIN) { 
-			header( "refresh: 2; url=/" );
+			header( "refresh: 5; url=/" );
 			//header('Location: /'); 
 		}
 
@@ -249,6 +253,12 @@ class UserIdentificator {
 	}
 
 	// ----------------------------------------------
+
+	function catchAndRedirectBackUser() {
+
+		// Отловить страницу с которой пользователь пришел и отправить его туда же.
+
+	}
 
 	function authAction(): bool {
 
@@ -261,16 +271,19 @@ class UserIdentificator {
 		$p = array();
 
 		$Opt = array(
-				'maxSym' => 500,
-				'minSym' => 4,
-				'checkMail' => false,
-			);
+				'maxSym' 	=> 500,
+				'minSym' 	=> 4,
+				'checkMail' => false
+		);
 
-		$prof = $this->defineUser;
+		$prof = $this->defineUser; // Идет как замыкание
 
 		foreach ($params as $value) {
 			
-			if(!$this->glob->isExist($value)) { return $prof(); }
+			// Возвращает false обычно, заканчивая аутентификацию, так, как нету нужных параметров
+			if(!$this
+					->glob
+					->isExist($value)) return $prof(); 
 
 			$p[$value] = $this
 							->glob
@@ -278,11 +291,7 @@ class UserIdentificator {
 			$p[$value] = $this->filtration($p[$value], $Opt);
 		}
 
-		if ($this->errors > 0) {
-
-			$this->logout(false, true);
-			return $prof();
-		}
+		if ($this->errors > 0) { return $prof(); }
 
 		$ue = $this
 					->users
@@ -291,11 +300,7 @@ class UserIdentificator {
 					->auth
 					->userActivated($p['mailhash']);
 
-		if (!$ue || !$ub) {
-
-			$this->logout(false, true);
-			return $prof();
-		}
+		if (!$ue || !$ub) { return $prof(); }
 
 		$profile = $this
 						->auth
@@ -309,15 +314,18 @@ class UserIdentificator {
 
 			$this->saveAuthAction($profile['useremail'], $profile['tokenHash']);
 
-			//Logger::collectAlert('success', 'Вы авторизированны!');
 			return $prof($profile);
+		} else {
+			// Стираем данные кук
+			$this->saveAuthAction(false, false, true);
 		}
 
-		$this->logout(false, true);
 		return $prof();
 	}
 
 	// Устанавливаем куки и сессию или удаляем их в зависимости от переменной $gopast
+
+	// TODO: => перенести в COOKIEJOB
 
 	private function saveAuthAction(string $email = '', string $hash = '', bool $gopast = false): void{
 
@@ -558,7 +566,7 @@ class UserIdentificator {
 			$p[$value] = $this->filtration($p[$value], $paramOpt);
 		}
 
-		if ($this->errors > 0) {return null;}
+		if ($this->errors > 0) { return null; }
 
 		if ($p['userregpassword1'] !== $p['userregpassword2']) {
 

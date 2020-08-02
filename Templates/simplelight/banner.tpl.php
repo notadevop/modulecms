@@ -3,9 +3,7 @@
 <!-- <h1>Это перманентный баннер!</h1> -->
 <?php 
 
-// Смарт баннер выводи информации или ссылок 
 
-debugger($result['templContrResult'], 'Окно входа');
 
 // @params: warnings, attentions, information, success
 
@@ -70,9 +68,13 @@ foreach ($alerts as $key => $value) {
 </script>
 </div>
 
+<?php 
 
+// Смарт баннер выводи информации или ссылок 
 
+debugger($result, 'Результат отработаных контроллеров!');
 
+?>
 <!--
 <div class="alert">
 	<span class="closebtn">&times;</span>  

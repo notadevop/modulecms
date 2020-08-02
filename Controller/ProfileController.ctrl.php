@@ -1,7 +1,7 @@
 <?php 
 
 
-class ProfileController extends Errors{
+class ProfileController {
 
     function __construct() {
 

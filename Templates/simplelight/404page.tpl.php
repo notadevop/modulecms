@@ -1,13 +1,10 @@
 <div id="content">
-  <h1 style="color: red;">Ошибка 404!</h1>
-  <p>Данная страница не существует или была удалена!</p>
-  <hr />
-  <h2>Browser Compatibility</h2>
-  <p>This template has been tested in the following browsers:</p>
+  <h2>Страница не найдена!</h2>
+  <p>Проверте правильность ссылки, Возможные причины почему вы сюда попали</p>
   <ul>
-    <li>Internet Explorer 8</li>
-    <li>FireFox 3</li>
-    <li>Google Chrome 13</li>
+    <li>Публикация была удалина или не сущестовала изначально</li>
+    <li>Ссылка битая </li>
+    <li>Возможно, что-то другое</li>
   </ul>
 </div>
 </div>

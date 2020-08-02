@@ -7,20 +7,27 @@ class Filter {
 
 	function __construct() { 
 
-		$this->strCollector = array();
+		$this->stringCollection = array();
 		$this->err 			= array();
 	}
 
 	function __destruct() { }
 
 	private $err;
-	private $strCollector;
+	private $stringCollection;
 
 	// Устанавливаем переменные 
 
+	public function getFilterErrors(): ?array {
+
+		if(count($this->err) > 0) return $this->err;
+
+		return null; 
+	}
+
 	public function setVariables(array $string): void {
 
-		$this->strCollector = $string;
+		$this->stringCollection = $string;
 	}
 
 	// Удаляем переменные 
@@ -29,7 +36,7 @@ class Filter {
 
 		if ($this->keyExist($key)){
 
-			unset($this->strCollector[$key]);
+			unset($this->stringCollection[$key]);
 			return true;
 		}
 		return false;
@@ -39,7 +46,7 @@ class Filter {
 
 	public function getKey(string $key): ?string {
 
-		if ($this->keyExist($key)) { return $this->strCollector[$key]['value'];  }
+		if ($this->keyExist($key)) { return $this->stringCollection[$key]['value'];  }
 
 		return null;
 	}
@@ -48,7 +55,7 @@ class Filter {
 
 		//return function($v) { return isset(this->strCollector[$key]) > }
 
-		if (isset($this->strCollector[$key])) { return true; }
+		if (isset($this->stringCollection[$key])) { return true; }
 
 		$this->err['keyerr'][] = 'В массиве такого ключа не существует';
 
@@ -59,7 +66,7 @@ class Filter {
 
 	public function isNotEmpty(string $key): bool {
 
-		if (!isset($this->strCollector[$key]) || empty($this->strCollector[$key])) {
+		if (!isset($this->stringCollection[$key]) || empty($this->stringCollection[$key])) {
 
 			$this->err['strempty'][] = 'Переменная в массиве пустая!';
 			return false;
@@ -74,9 +81,9 @@ class Filter {
 
 		if (!$this->keyExist($key)) { return false; }
 
-		$minNum = $minnumber > 0 ? $minnumber : $this->strCollector[$key]['minimum'];
+		$minNum = $minnumber > 0 ? $minnumber : $this->stringCollection[$key]['minimum'];
 
-		if(strlen($this->strCollector[$key]['value']) < $minNum){
+		if(strlen($this->stringCollection[$key]['value']) < $minNum){
 
 			$this->err['smallerr'] = 'Слишком короткое значение!';
 			return false;
@@ -91,13 +98,13 @@ class Filter {
 
 		if (!$this->keyExist($key)) return false;
 
-		$maxNum = $this->strCollector[$key]['maximum'];
+		$maxNum = $this->stringCollection[$key]['maximum'];
 
 		// Эта строка нужна только, если хотите указать сами какое кол-во нужно
 
 		if ($maxnumber > 0) { $maxNum = $maxnumber; }
 
-		if (strlen($this->strCollector[$key]['value']) > $maxNum) {
+		if (strlen($this->stringCollection[$key]['value']) > $maxNum) {
 
 			$this->err['bigerr'] = 'Слишком большое значение!';
 			return false;
@@ -110,9 +117,9 @@ class Filter {
 
 		if (!$this->keyExist($key)) return false; 
 
-		$value = $this->strCollector[$key]['value'];
+		$value = $this->stringCollection[$key]['value'];
 
-		$this->strCollector[$key]['value'] = intval($value);
+		$this->stringCollection[$key]['value'] = intval($value);
 
 		return true;
 	}
@@ -123,18 +130,18 @@ class Filter {
 
 		if (!$this->keyExist($key)) return;
 
-		$string = $this->strCollector[$key]['value'];
+		$string = $this->stringCollection[$key]['value'];
 
 		if (isMoreThen($key, $string)) {
 
-			$string = substr($string, 0, $this->strCollector[$key]['maximum']);
+			$string = substr($string, 0, $this->stringCollection[$key]['maximum']);
 		}
 
-		$this->strCollector[$key]['value'] = $string;
+		$this->stringCollection[$key]['value'] = $string;
 	}
 
 
-	function fixUrlValidation(string $url) {
+	function urlValidation(string $url) {
 
 		return preg_match('|^(http(s)?://)?[a-z0-9-]+\.(.[a-z0-9-]+)+(:[0-9]+)?(/.*)?$|i', $url);
 	}
@@ -146,7 +153,7 @@ class Filter {
 
 		if (!$this->keyExist($key)) return false;
 
-		$string = $this->strCollector[$key]['value'];
+		$string = $this->stringCollection[$key]['value'];
 
 		if (!$this->validator($string, 'email')) {
 
@@ -201,7 +208,7 @@ class Filter {
 
 		if (!$this->keyExist($key)) { return false; }
 
-		$input = $this->strCollector[$key]['value'];
+		$input = $this->stringCollection[$key]['value'];
 
 		switch($category) {
 
@@ -222,7 +229,7 @@ class Filter {
 
 		if (!$this->keyExist($key)) { return; }
 
-		$input = $this->strCollector[$key]['value'];
+		$input = $this->stringCollection[$key]['value'];
 
 		switch($category) {
 
@@ -244,13 +251,10 @@ class Filter {
 		// Очистить все кроме букв и цифр
 		// $str = preg_replace('/[^a-zA-Z0-9\s]/', '', $mixed);
 
-		$this->strCollector[$key]['value'] = filter_var($input, $sanitizer);
+		$this->stringCollection[$key]['value'] = filter_var($input, $sanitizer);
 	}
 
 	 // TODO: Метод временный удалить потом
-
-	// Получаем все ошибки которые произошли при фильтрации 
-	public function getErrors(): ?array { return $this->err; }
 
 	// Отфильтровываем все спецсимволы
 	// antisql, antixss, antirfi, antilfi, antishell
@@ -349,9 +353,7 @@ class Filter {
 		$antishell[] = "/system/i";
 		$antishell[] = "/show_source/i";
 
-		$input = $this->strCollector[$key]['value'];
-
-		//$filter = false;
+		$input = $this->stringCollection[$key]['value'];
 
 		foreach ($catatt as $k => $v) {
 			
@@ -368,6 +370,22 @@ class Filter {
 
 		$input = htmlspecialchars($input);
 
-		$this->strCollector[$key]['value'] = $input;
+		$this->stringCollection[$key]['value'] = $input;
+	}
+
+	function filterCollection() {
+
+		return array();
 	}
 }
+
+
+
+
+
+
+
+
+
+
+

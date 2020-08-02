@@ -80,12 +80,11 @@ class CookieJob {
 
 		foreach ($cookieName as $key => $value) {
 			
-			if ($glob->isExist($value)) {
-
-				$cookieValue = $glob->getGlobParam($value);
-			} 
+			if ($glob->isExist($value)) { $cookieValue = $glob->getGlobParam($value); } 
 		}
 	}
+
+	// Сохранить куки в массиве, 1-2 или 3 сразу 
 
 	function saveCookie(string $cookieName = ''): void {
 
@@ -107,7 +106,7 @@ class CookieJob {
 
 				if(!$this->existPrepCookie($cookieName)) { 
 					
-					throw new RuntimeException('Ошибка куки отсутсвуют!');
+					throw new RuntimeException('Ошибка! куки отсутсвуют.');
 				}
 
 				$t = $csaver($cookieName, $this->cookie[$cookieName]);

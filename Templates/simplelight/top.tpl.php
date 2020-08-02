@@ -1,10 +1,9 @@
 <?php 
 $toplinks = array(
 
-    '/'       => 'Главная',
-    '/404err' => '404cтраница',
-    '/online' => 'Онлайн пользователи',
-    '/info'   => 'Чаво'
+    '/'         => 'Главная',
+    '/404page'  => '404cтраница',
+    '/online'   => 'Онлайн пользователи'
 );
 ?>
 <div id="header">
@@ -21,7 +20,7 @@ $toplinks = array(
 
       foreach ($toplinks as $key => $value) {
     
-        echo $_SERVER['PHP_SELF'] == $key ? '<li class="selected">' : '<li>';
+        echo (!empty($curRoutePath['uri']) && $curRoutePath['uri'] == $key) ? '<li class="selected">' : '<li>';
         echo '<a href="'.$key.'">'.$value.'</a></li>';
       }
 

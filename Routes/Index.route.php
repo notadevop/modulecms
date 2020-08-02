@@ -22,8 +22,8 @@ $routes = array(
 	
 	'/' 			=> array( 
 			'action' 	=> 'MainController/defaultMethod',
-			'template'	=> 'mainpage.tpl.php',
-			'ifRegOk'	=> 'mainpage.tpl.php',
+			'template'	=> 'infopage.tpl.php',
+			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Главная',  // TODO: ВРЕМЕННО, для указания ссылки, будет использоваться отдельно, в языковом пакете
 			'priority'	=> 4 // Показывать по при оритету

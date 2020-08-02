@@ -46,9 +46,29 @@ spl_autoload_register(function ($class_name) {
 }); 
 
 
+function genCallTrace(){
+
+    $e = new Exception();
+    $trace = explode("\n", $e->getTraceAsString());
+    // reverse array to make steps line up chronologically
+    $trace = array_reverse($trace);
+    array_shift($trace); // remove {main}
+    array_pop($trace); // remove call to this method
+    $length = count($trace);
+    $result = array();
+   
+    for ($i = 0; $i < $length; $i++) {
+
+        $result[] = ($i + 1)  . ')' . substr($trace[$i], strpos($trace[$i], ' ')); // replace '#someNum' with '$i)', set the right ordering
+    }
+   
+    return "\t" . implode("\n\t", $result);
+}
+
+
  // Для определения метода или функции __METHOD__, __FUNCTION__
 
-function debugger($input, $param=__FUNCTION__, $vardump=false): void {
+function debugger($input, $param=__FUNCTION__, $debug=false): void {
 
 	?>
 	<!--
@@ -65,16 +85,28 @@ function debugger($input, $param=__FUNCTION__, $vardump=false): void {
 	  </tr>
 	</table>
 	-->
-
-
 	<h4>
-			<hr/>
-			<p>Файл откуда запущен: => <?=basename( $_SERVER['PHP_SELF'] ); ?></p>
-			<p>Путь Исполнения: => <b style="color: red;"> <?=$param; ?></b></p>	
-			<p>Результат Исполнения: => <pre><?php print_r($input); ?></pre></p>
-			<?php // var_dump($input); // ?>
+		<!--<p>Файл запущен: => <?=basename( $_SERVER['PHP_SELF'] ); ?></p>-->
+		<p>Путь Исполнения: => <b style="color: red;"> <?=$param; ?></b></p>	
+		<p>Результат Исполнения: => <pre><?php print_r($input); ?></pre></p><hr/>
+		<?php // var_dump($input); // ?>
 	</h4>
+
 	<?php
+	if ($debug) {
+		ob_start();
+		echo '<pre>';
+		//debug_print_backtrace(); // выводи стек, как вариант: debug_backtrace();
+		print_r(debug_backtrace());
+		echo '</pre>';
+		$trace = ob_get_contents();
+		ob_end_clean();
+		echo '<h1> Backtrace: </h1><hr /><pre>';
+		print_r(genCallTrace());
+		//debug_print_backtrace();
+		//print_r($trace); // debug_backtrace;
+		echo '</pre>';
+	}
 }
 
 // 

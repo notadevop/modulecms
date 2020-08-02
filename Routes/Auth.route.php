@@ -11,6 +11,9 @@ $routes = array(
 			'decript'	=> 'Логин',
 			'priority'	=> 4
 	),
+
+	// ПОСТОЯННЫЕ ССЫЛКА
+
 	'auth' 			=> array(
 			'action' 	=> 'UserIdentificator/authAction',
 			'template'	=> 'infopage.tpl.php',

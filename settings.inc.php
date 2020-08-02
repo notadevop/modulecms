@@ -10,12 +10,14 @@ define('sqlitefile', 'sqlitedb.sql');
 // Разрешаем авторизацию, аутентификацию пользователя
 
 define('AUTHENTIFCATIONALLOW', true);
-define('REGISTRATIONALLOW', true);
+define('REGISTRATIONALLOW', true); // <=== 
 define('LOGINALLOW', true);
 define('RESTOREALLOW',true);
 
 
 define('DEFROUTEPATH', 'Routes' . DS);
+
+define('REDIRECTLOGIN', FALSE);
 
 
 define('AllowLoginRedirect', true); // При правильной авторизации перенаправлять пользователя
@@ -25,6 +27,40 @@ define('LoginRedirectPath', '/profile/');
 define('TPLDEFAULTFOLDER', ROOTPATH . 'Templates'.DS); 
 
 define('TPLDEFAULTTEMPLATE', 'default'.DS);
+
+define('SOLT','abcabcabc'); // сгенерирован при установке
+
+define('PRIVATEKEY', 'mycoolprivatekeytohidesomething');
+define('PUBLICKEY', 'mymorecoolpublickeytohidesomething');
+
+define('UPDATEAUTHINTERVAL', 7); // Интервал обновления хеша аутентификации 
+define('UPDATEPWDINTERVAL', 70); // Интервал обновления пароля пользователя в днях
+ 
+
+//define('DS', DIRECTORY_SEPARATOR);
+
+define('HOST', 'http://'.$_SERVER['HTTP_HOST']);
+
+
+// Время данное для подтверждение регистрации пользователя 
+define('REGWAITER', '+24 Hours');
+
+
+
+// НАСТРОЙКИ: НИЖЕ
+
+// Константа массива для работы с базой данных sqlite 
+define('SQLITEJOB', array(
+	'sqlitefolder' 	=> 'sqlitefolder',
+	'sqlitefile'	=> 'tempdb.sqlite'
+));
+
+
+define('REDIRECTORS', array(
+	'defPostLogin' 	=> 'profle',
+	'defPostReg'	=> '',
+	'defPostRest'	=> ''
+));
 
 /*
 	LOGIN 		- откуда человек пришел в пределах сайта
