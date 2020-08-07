@@ -228,7 +228,7 @@ ul#menu li a:hover
 { margin: 15px 0 0 0;}
 
 .form_settings p
-{ padding: 0 0 4px 0;}
+{ padding: 0 0 6px 0;}
 
 .form_settings span
 { float: left; 
@@ -246,10 +246,10 @@ ul#menu li a:hover
 .form_settings .submit
 { font: 100% arial; 
   border: 0; 
-  width: 99px; 
+  width: 150px; 
   margin: 0 0 0 212px; 
   height: 33px;
-  padding: 2px 0 3px 0;
+  padding: 3px 0 3px 0;
   cursor: pointer; 
   background: #3B3B3B; 
   color: #FFF;}

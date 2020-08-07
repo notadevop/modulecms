@@ -7,27 +7,30 @@ class Filter {
 
 	function __construct() { 
 
-		$this->stringCollection = array();
+		$this->collection 	= array();
 		$this->err 			= array();
+		$this->fOpt 		= array(); 
 	}
 
 	function __destruct() { }
 
 	private $err;
-	private $stringCollection;
+	private $collection;
+	private $fOpt;
 
 	// Устанавливаем переменные 
 
 	public function getFilterErrors(): ?array {
 
-		if(count($this->err) > 0) return $this->err;
-
-		return null; 
+		return count($this->err) > 0 ? $this->err : null;
 	}
+
+	// Устанавливаем сразу массив переменных и по ним фильтруем каждый как надо
 
 	public function setVariables(array $string): void {
 
-		$this->stringCollection = $string;
+		// Включает в себя ключ с массивом его свойств для фильтрации 
+		$this->collection = $string;
 	}
 
 	// Удаляем переменные 
@@ -36,7 +39,7 @@ class Filter {
 
 		if ($this->keyExist($key)){
 
-			unset($this->stringCollection[$key]);
+			unset($this->collection[$key]);
 			return true;
 		}
 		return false;
@@ -46,33 +49,19 @@ class Filter {
 
 	public function getKey(string $key): ?string {
 
-		if ($this->keyExist($key)) { return $this->stringCollection[$key]['value'];  }
-
-		return null;
+		return $this->keyExist($key) ? $this->collection[$key]['value'] : null;
 	}
 
 	public function keyExist(string $key): bool {
 
-		//return function($v) { return isset(this->strCollector[$key]) > }
-
-		if (isset($this->stringCollection[$key])) { return true; }
-
-		$this->err['keyerr'][] = 'В массиве такого ключа не существует';
-
-		return false;
+		return !isset($this->collection[$key]) ? false : true;
 	}
 
 	// Проверяем существует ли переменная или нет в массиве 
 
 	public function isNotEmpty(string $key): bool {
 
-		if (!isset($this->stringCollection[$key]) || empty($this->stringCollection[$key])) {
-
-			$this->err['strempty'][] = 'Переменная в массиве пустая!';
-			return false;
-		}
-
-		return true;
+		return (!isset($this->collection[$key]) || empty($this->collection[$key])) ? false : true;
 	}
 
 	// Проверяем меньше, чем указанно
@@ -81,15 +70,11 @@ class Filter {
 
 		if (!$this->keyExist($key)) { return false; }
 
-		$minNum = $minnumber > 0 ? $minnumber : $this->stringCollection[$key]['minimum'];
+		// Устанавливает новое значение, если из параметра метода, если оно больше 0
 
-		if(strlen($this->stringCollection[$key]['value']) < $minNum){
+		$minNum = $minnumber > 0 ? $minnumber : $this->collection[$key]['minimum'];
 
-			$this->err['smallerr'] = 'Слишком короткое значение!';
-			return false;
-		}
-
-		return true;
+		return strlen($this->collection[$key]['value']) < $minNum ? false : true;
 	} 
 
 	// Проверяем больше, чем указанно
@@ -98,28 +83,22 @@ class Filter {
 
 		if (!$this->keyExist($key)) return false;
 
-		$maxNum = $this->stringCollection[$key]['maximum'];
+		$maxNum = $this->collection[$key]['maximum'];
 
 		// Эта строка нужна только, если хотите указать сами какое кол-во нужно
 
 		if ($maxnumber > 0) { $maxNum = $maxnumber; }
 
-		if (strlen($this->stringCollection[$key]['value']) > $maxNum) {
-
-			$this->err['bigerr'] = 'Слишком большое значение!';
-			return false;
-		}
-
-		return true;
+		return strlen($this->collection[$key]['value']) > $maxNum ? false : true ;
 	}
 
-	public function convertToNumber(string $key): bool {
+	public function convToNum(string $key): bool {
 
 		if (!$this->keyExist($key)) return false; 
 
-		$value = $this->stringCollection[$key]['value'];
+		$value = $this->collection[$key]['value'];
 
-		$this->stringCollection[$key]['value'] = intval($value);
+		$this->collection[$key]['value'] = intval($value);
 
 		return true;
 	}
@@ -130,85 +109,31 @@ class Filter {
 
 		if (!$this->keyExist($key)) return;
 
-		$string = $this->stringCollection[$key]['value'];
+		$string = $this->collection[$key]['value'];
 
-		if (isMoreThen($key, $string)) {
+		if ($this->isNotMore($key, $string)) {
 
-			$string = substr($string, 0, $this->stringCollection[$key]['maximum']);
+			$string = substr($string, 0, $this->collection[$key]['maximum']);
 		}
 
-		$this->stringCollection[$key]['value'] = $string;
+		$this->collection[$key]['value'] = $string;
 	}
 
 
-	function urlValidation(string $url) {
+	function urlValidation(string $input) {
 
-		return preg_match('|^(http(s)?://)?[a-z0-9-]+\.(.[a-z0-9-]+)+(:[0-9]+)?(/.*)?$|i', $url);
+		// ЧТО ОН ВОЗВРАЩАЕТ ??????
+
+		return preg_match('|^(http(s)?://)?[a-z0-9-]+\.(.[a-z0-9-]+)+(:[0-9]+)?(/.*)?$|i', $input);
 	}
 	
-	// Проверяем это емайл или нет
 
-	/*
-	public function isItMail(string $key): bool {
 
-		if (!$this->keyExist($key)) return false;
-
-		$string = $this->stringCollection[$key]['value'];
-
-		if (!$this->validator($string, 'email')) {
-
-			$this->err['noemail'] = 'Некорректный емайл.';
-
-			return false;
-		} 
-
-		return true ;
-	}
-	*/
-
-	
-	/*
-	PHP Validations Filters
-
-	FILTER_VALIDATE_BOOLEAN		Checks for a valid Boolean value
-	FILTER_VALIDATE_EMAIL		Checks for a valid email address
-	FILTER_VALIDATE_FLOAT		Checks for a valid float value
-	FILTER_VALIDATE_INT			Checks for a valid integer value
-	FILTER_VALIDATE_IP			Checks for a valid IP address value
-	FILTER_VALIDATE_REGEXP		Checks for a valid regular expression value
-	FILTER_VALIDATE_URL			Checks for a valid URL string
-
-	PHP Sanitation Filters 
-
-	FILTER_SANITIZE_EMAIL				Removes illegal characters from an email address
-	FILTER_SANITIZE_ENCODED				Encodes special characters in the string
-	FILTER_SANITIZE_MAGIC_QUOTES 		Apply the addslashes() function
-	FILTER_SANITIZE_NUMBER_FLOAT 		Remove all characters, except digits, +, –, and E
-	FILTER_SANITIZE_NUMBER_INT			Removes all characters except digits and + or –
-	FILTER_SANITIZE_SPECIAL_CHARS		Removes any special characters in the string
-	FILTER_SANITIZE_FULL_SPECIAL_CHARS	Same as htmlspecialchars()
-	FILTER_SANITIZE_STRING				Removes HTML tags and special characters from a string
-	FILTER_SANITIZE_STRIPPED			Same as FILTER_SANITIZE_STRING
-	FILTER_SANITIZE_URL					Removes all illegal characters from a URL string
-	
-	The PHP Filter Functions
-
-	filter_has_var()		Checks if a variable of the specified type exists
-	filter_id()				Returns the filter ID of the specified filter
-	filter_input()			Retrieves a value passed by GET, POST, sessions, or cookies and filters it
-	filter_input_array()	Retrieves multiple values passed to the PHP program and filters them
-	filter_list()			Returns a list of supported filters
-	filter_var()			Filters a variable
-	filter_var_array()		Filters a list of variables
-
-	*/
-
-	
 	public function validator(string $key, string $category): bool{
 
 		if (!$this->keyExist($key)) { return false; }
 
-		$input = $this->stringCollection[$key]['value'];
+		$input = $this->collection[$key]['value'];
 
 		switch($category) {
 
@@ -225,11 +150,19 @@ class Filter {
 		return !filter_var($input, $validator) ? false : true ;
 	}
 
+	// Очищает 
+
+	public function keepParams(string $key, string $category) {
+
+		// Очистить все кроме букв
+		// $str = preg_replace('/[^a-zA-Z]/', '', $input);
+		// Очистить все кроме букв и цифр
+		// $str = preg_replace('/[^a-zA-Z0-9\s]/', '', $mixed);
+	}
+
 	public function sanitizer(string $key, string $category): void {
 
 		if (!$this->keyExist($key)) { return; }
-
-		$input = $this->stringCollection[$key]['value'];
 
 		switch($category) {
 
@@ -246,41 +179,16 @@ class Filter {
 			default:  				return;											break;
 		}
 
-		// Очистить все кроме букв
-		// $str = preg_replace('/[^a-zA-Z]/', '', $input);
-		// Очистить все кроме букв и цифр
-		// $str = preg_replace('/[^a-zA-Z0-9\s]/', '', $mixed);
-
-		$this->stringCollection[$key]['value'] = filter_var($input, $sanitizer);
+		$this->collection[$key]['value'] = filter_var($this->collection[$key]['value'], $sanitizer);
 	}
 
 	 // TODO: Метод временный удалить потом
 
 	// Отфильтровываем все спецсимволы
 	// antisql, antixss, antirfi, antilfi, antishell
-	public function cleanAttack(string $key, array $catatt): void {
+	public function cleanAttack(string $key, array $filterParams = array('antisql', 'antixss', 'antirfi', 'antilfi', 'antishell')): void {
 
 		if (!$this->keyExist($key)) { return; }
-
-		if(empty($catatt)) {
-	
-			$category = array(
-				'antisql',
-				'antixss',
-				'antirfi', 
-				'antilfi',
-				'antishell'
-			);
-		}
-
-		$result = function($symbols) use (&$input, &$filter) {
-
-			foreach ($symbols as $k => $v) {
-				
-				$input = str_replace($v, '', $input);
-			}
-			//$filter = true;
-		};
 
 		// AntiXSS 
 		$antixss[] = "/script/i";
@@ -353,29 +261,91 @@ class Filter {
 		$antishell[] = "/system/i";
 		$antishell[] = "/show_source/i";
 
-		$input = $this->stringCollection[$key]['value'];
+		$input = $this->collection[$key]['value'];
 
-		foreach ($catatt as $k => $v) {
+		$filterAgent = function (array $patterns, string $input) {
+
+			return preg_replace($patterns, '', $input);
+		};
+
+		foreach ($filterParams as $k => $v) {
 			
 			switch($v) {
-				case 'antixss': 	$result($antixss); break;
-				case 'antisql': 	$result($antixss); break;
-				case 'antirfi': 	$result($antixss); break;
-				case 'antilfi': 	$result($antixss); break;
-				case 'antishell': 	$result($antixss); break;
+				case 'antixss': 	$input = $filterAgent($antixss, $input); break;
+				case 'antisql': 	$input = $filterAgent($antisql, $input); break;
+				case 'antirfi': 	$input = $filterAgent($antirfi, $input); break;
+				case 'antilfi': 	$input = $filterAgent($antilfi, $input); break;
+				case 'antishell': 	$input = $filterAgent($antishell, $input); break;
 			}
 		}
 
-		//if(!$filter) { return; }
+		//$input = htmlspecialchars($input);
 
-		$input = htmlspecialchars($input);
-
-		$this->stringCollection[$key]['value'] = $input;
+		$this->collection[$key]['value'] = $input;
 	}
 
-	function filterCollection() {
 
-		return array();
+	/*
+		$key 		- ключ по которому фильтруються значения
+		$options 	- это массим значений по которым фильтруються и проверяються данные
+
+								
+		itsMail = true
+		itsEmpty = true
+		itsUrl = true
+		itsMore = true
+		cutIt = true; 
+		sanitaze => number,html,url,email, etc
+		itsLess = true
+		itsEmpty = true 
+		cleanHtml = true // <--???
+		cleanHack = true
+					
+	*/
+
+	function letsFilterIt(string $key): void{
+
+		// фильтруем данные например от аттак 
+
+		if ($this->collection[$key]['itsEmpty'] && !$this->isNotEmpty($key)) {
+
+			$this->err[] = 'У вас есть пустые поля';
+		}
+
+		if ($this->collection[$key]['itsMore'] && !$this->isNotMore($key)) {
+
+			$this->err[] = 'Максимальное кол-во символов разрешенно: '.$this->collection[$key]['maximum'];
+		}
+
+		if ($this->collection[$key]['itsLess'] && !$this->isNotLess($key)) {
+
+			$this->err[] = 'Минимальное кол-во символов разрешенно: '.$this->collection[$key]['minimum'];
+		}
+
+		if ($this->collection[$key]['sanitazer']) {
+
+			$sanParams = $this->collection[$key]['sanitazer'];
+
+			foreach ($sanParams as $key => $value) {
+				
+				$this->sanitizer($key, $value);
+			}
+		}
+
+		if (!empty($this->collection[$key]['cleanHack'])) {
+
+			$this->cleanAttack($key);
+		}
+
+		if (!empty($this->collection[$key]['itsMail']) && !$this->validator($key, 'email')) {
+
+			$this->err[] = 'Ошибка! Указан неправильно емайл';
+		} 
+
+		if (!empty($this->collection[$key]['getNumber']) && !$this->convToNum($key)) {
+
+			$this->err[] = 'Ошибка! Значение нужно указать цифровым';
+		}
 	}
 }
 

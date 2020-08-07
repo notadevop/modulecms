@@ -17,7 +17,7 @@ define('RESTOREALLOW',true);
 
 define('DEFROUTEPATH', 'Routes' . DS);
 
-define('REDIRECTLOGIN', FALSE);
+define('REDIRECTLOGIN', TRUE);
 
 
 define('AllowLoginRedirect', true); // При правильной авторизации перенаправлять пользователя
@@ -57,7 +57,7 @@ define('SQLITEJOB', array(
 
 
 define('REDIRECTORS', array(
-	'defPostLogin' 	=> 'profle',
+	'defPostLogin' 	=> 'profile',
 	'defPostReg'	=> '',
 	'defPostRest'	=> ''
 ));
@@ -72,13 +72,13 @@ define('REDIRECTORS', array(
 /*
 Привелегии пользователя могут иметь несколько привелегий .... !!!!
 
- 1. administrator, 		(ALL PRIVELEGES)
- 2. moderator/editor  	(CAN EDIT OTHER POSTS, AUTHOR OF POSTS, CAN REMOVE ALL COMMENTS)
- 3. author,  			(CAN CREATE HIS POSTS, REMOVE HIS POSTS AND COMMENTS ONLY)
- 4. subscriber  		(CAN LEAVE COMMENTS, AND DELETE HIS COMMENTS)
- 5. blockeduser			(EXIST IN SYSTEM,NO LOGIN AND NO PRIVELEGES, TEMPORARY)
- 6. deleteduser 		(EXIST IN SYSTEM AS GHOST, NO PRIVELEGES FOREVER, NO LOGIN)
- 7. visitor				(NO PRIVELEGES, CAN VIEW OPEN POSTS ONLY, NOT REGISTERED)
+ 1. administrator, 		Имеет все привелегии
+ 2. moderator/editor  	Модератор/Редактор может редактировать, свои/чужие посты, удалять в карзину посты, редактировать всех коментарии
+ 3. author,  			Автор, Может добавлять/удалять только свои посты и коментарии.
+ 4. subscriber  		Подписчик может добавлять/удалять только свои коментарии
+ 5. blockeduser			Заблокированный пользователь, Временно не доступный пользователь, не имеет доступа и авторизации 
+ 6. deleteduser 		Удаленный пользователь, вход в систему запрещен пожизнено. 
+ 7. visitor				Гость, не определенный пользователь
 */
 
 define('ADMINISTRATOR', 1);

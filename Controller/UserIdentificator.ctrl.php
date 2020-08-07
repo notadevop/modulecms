@@ -91,9 +91,7 @@ class UserIdentificator {
 
 	private function filtration(string $input, array $options): string{
 
-		$this
-			->filter
-			->setVariables(
+		$this->filter->setVariables(
 				array(
 					'key' => array(
 						'value' => $input,
@@ -172,6 +170,70 @@ class UserIdentificator {
 
 	function loginAction(): bool{
 
+
+		$param = array(
+
+			'loginmail' => array(
+					'value'		=> null, 
+					'maximum' 	=> 40,
+					'minimum' 	=> 4,
+					'checkMail' => true,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html')
+
+					//'cutIt'		=> true;
+
+			),
+			'loginpasswd' => array(
+					'value'		=> null, 
+					'maximum' 	=> 40,
+					'minimum' 	=> 4,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html')
+			)
+		);
+
+		$p = array(); 				// Тут будет результат
+		$prof = $this->defineUser; 	// Устанавливаем сразу анонимного пользователя 
+
+		$this
+			->glob
+			->setGlobParam('_POST');
+
+		foreach ($param as $key => $value) {
+			
+			// если нету параметра устанавливаем анонимного пользователя
+			if(!$this->glob->isExist($key)) { return $prof(); }
+
+			$param[$key]['value'] = $this->glob->getGlobParam($key);
+
+			$this->filter->setVariables($param);
+
+			$this->filter->letsFilterIt($key);
+
+			$errors = $this->filter->getFilterErrors();
+
+			if (!empty($errors) && count($errors) > 0) {
+
+				foreach ($errors as $errKey => $errValue) {
+					
+					Logger::collectAlert('warnings', $errValue);
+				}
+
+				return $prof();
+			} 
+
+			$p[$key] = $this->filter->getKey($key);
+		}
+
+
+		/*
 		$this
 			->glob
 			->setGlobParam('_POST');
@@ -198,8 +260,9 @@ class UserIdentificator {
 
 			$p[$value] = $this->filtration($p[$value], $Opt);
 		}
+		*/
 
-		if ($this->errors > 0) { return $prof();}
+		//if ($this->errors > 0) { return $prof();}
 
 		$ue = $this
 				->users

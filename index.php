@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 $time = microtime();
 $time = explode(' ', $time);
 $time = $time[1] + $time[0];
@@ -14,7 +14,7 @@ if (session_id() == '') {session_start();}
 
 header('Content-Type: text/html; charset=utf-8');
 header('X-Powered-By: PHP Application');
-ini_set('error_reporting', E_ALL);
+ini_set('error_reporting', 'E_ALL');
 error_reporting(E_ALL);
 
 define('DS', DIRECTORY_SEPARATOR);
@@ -38,10 +38,7 @@ require_once ROOTPATH . 'init.inc.php';
 
 
 
-$result = array(
-			'permContrResult' 	=> array(), 
-			'templContrResult' 	=> array()
-		);
+$result = array();
 
 $routes = Routing::initDefRoutes();
 
@@ -56,12 +53,12 @@ foreach ($routes as $key => $value) {
 
 	if ($value['skipUri']) { 
 
-		$result['permContrResult'][$key] = Routing::dispatch($key);
+		$result['permanetCtrlResult'][$key] = Routing::dispatch($key);
 		Routing::cleanRoutes($key);
 	}
 }
 
-$result['templContrResult'] = Routing::dispatch();
+$result['templateCtrlResult'] = Routing::dispatch();
 
 $viewRender = new ViewRender();
 $viewRender->setActiveTemplate('simplelight');

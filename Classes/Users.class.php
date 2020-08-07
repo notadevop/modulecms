@@ -14,10 +14,11 @@ class Users extends Database {
       }
 
    	// Получаем список всех пользователей зарегестрированных на сайте
-   	function getListUsers(): ?array {
+   	function getListUsers(bool $all=false): ?array {
 
+         /*
          $sql = 'SELECT 
-         `user_id`, `user_name`, `user_email`, `user_password`, `user_last_visit`, `user_registration_date`, `user_activated` FROM `users` 
+         `user_id`, `user_name`, `user_email`, `user_password`, `user_last_visit`, `user_registration_date`, `user_activated`, `user_picture`  FROM `users` 
          WHERE `user_last_visit` != :lastv AND `user_activated` = :uact';
 
          $binder = array(
@@ -25,13 +26,20 @@ class Users extends Database {
             ':uact'  => 1
          );
 
-         $this->preAction($sql, $binder);         
+         $this->preAction($sql, $binder); 
+         */
+
+         $sql = 'SELECT 
+         `user_id`, `user_name`, `user_email`, `user_password`, `user_last_visit`, `user_registration_date`, `user_activated`, `user_picture`  FROM `users` ';
+
+         $this->preAction($sql); 
+
 
          if(!$this->doAction()) { return null; }
 
          $users = $this
                      ->postAction()
-                     ->fetch();
+                     ->fetchAll();
 
          return !empty($users) ? $users : null;
       }
@@ -51,7 +59,8 @@ class Users extends Database {
             `user_password`as password, 
             `user_registration_date` as regdate,
             `user_last_visit` as lastvisit,
-            `user_activated` as actstatus
+            `user_activated` as actstatus,
+            `user_picture` as userpicture
             FROM `users`';
 
          if(is_int($uid) || is_numeric($uid)) {

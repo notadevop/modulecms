@@ -84,13 +84,9 @@ class ViewRender {
 
 		foreach ($this->getTemplateSchema() as $value) {
 
-			if ($value == 'content') {
+			// Если из схемы выходит content то заменяем его шаблоном из route - url
 
-				require_once $tplFolder . $renderTpl;
-			} else {
-
-				require_once $tplFolder . $value . '.tpl.php';
-			}
+			require_once ($tplFolder . ($value == 'content' ? $renderTpl : $value . '.tpl.php') );
 		}
 
 		$this->htmlRenderRes = ob_get_contents();
