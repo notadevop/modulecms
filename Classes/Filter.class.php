@@ -186,9 +186,14 @@ class Filter {
 
 	// Отфильтровываем все спецсимволы
 	// antisql, antixss, antirfi, antilfi, antishell
-	public function cleanAttack(string $key, array $filterParams = array('antisql', 'antixss', 'antirfi', 'antilfi', 'antishell')): void {
+	public function cleanAttack(string $key, array $filterParams = array()): void {
 
 		if (!$this->keyExist($key)) { return; }
+
+		if(empty($filterParams)) { 
+
+			$filterParams = array('antisql', 'antixss', 'antirfi', 'antilfi', 'antishell');
+		}
 
 		// AntiXSS 
 		$antixss[] = "/script/i";
@@ -279,8 +284,6 @@ class Filter {
 			}
 		}
 
-		//$input = htmlspecialchars($input);
-
 		$this->collection[$key]['value'] = $input;
 	}
 
@@ -298,8 +301,9 @@ class Filter {
 		sanitaze => number,html,url,email, etc
 		itsLess = true
 		itsEmpty = true 
-		cleanHtml = true // <--???
+		convertHtml = true // запускает специальный метод для фильтрации html
 		cleanHack = true
+		getNumber = true
 					
 	*/
 
@@ -314,12 +318,12 @@ class Filter {
 
 		if ($this->collection[$key]['itsMore'] && !$this->isNotMore($key)) {
 
-			$this->err[] = 'Максимальное кол-во символов разрешенно: '.$this->collection[$key]['maximum'];
+			$this->err[] = 'Разрешенно максимум: '.$this->collection[$key]['maximum'];
 		}
 
 		if ($this->collection[$key]['itsLess'] && !$this->isNotLess($key)) {
 
-			$this->err[] = 'Минимальное кол-во символов разрешенно: '.$this->collection[$key]['minimum'];
+			$this->err[] = 'Разрешенно минимум: '.$this->collection[$key]['minimum'];
 		}
 
 		if ($this->collection[$key]['sanitazer']) {
@@ -339,7 +343,7 @@ class Filter {
 
 		if (!empty($this->collection[$key]['itsMail']) && !$this->validator($key, 'email')) {
 
-			$this->err[] = 'Ошибка! Указан неправильно емайл';
+			$this->err[] = 'Ошибка! Указан некорректный емайл';
 		} 
 
 		if (!empty($this->collection[$key]['getNumber']) && !$this->convToNum($key)) {

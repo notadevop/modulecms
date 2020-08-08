@@ -8,8 +8,8 @@ $toplinks = array(
 <div id="header">
   <div id="logo">
     <!-- class="logo_colour", allows you to change the colour of the text -->
-    <h1><a href="/">%website_title% simple<span class="logo_colour">_light</span></a></h1>
-    <h2>%website_description% Пояснение к заголовку вебсайта</h2>
+    <h1><a href="/">%website<span class="logo_colour">_title%</span></a></h1>
+    <h2>%website_description%</h2>
   </div>
   <div id="menubar">
     <ul id="menu">

@@ -10,7 +10,7 @@ if(empty($result['templateCtrlResult']['result']['access'])) { return ; }
 
 <div id="content">
 
-<p><a href="/profile/edit">Редактировать профиль</a>  | <a href="">Активные сессии</a></p>
+<p><a href="/profile/edit/<?=@PROFILE['userid']; ?>">Редактировать профиль</a>  | <a href="">Активные сессии</a></p>
 
 <h1>Профиль пользователя</h1>
 

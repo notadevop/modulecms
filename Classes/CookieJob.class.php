@@ -86,12 +86,14 @@ class CookieJob {
 
 	// Сохранить куки в массиве, 1-2 или 3 сразу 
 
-	function saveCookie(string $cookieName = ''): void {
+	function saveCookie(string $cookieName = ''): bool{
 
 		$saveAll = false;
 
-		if(empty($cookieName)) { $saveAll = true; }
-		if(empty($this->cookie)) { return; }
+		if(empty($cookieName)) { 
+			$saveAll = true; }
+
+		if(empty($this->cookie)) { return false; }
 
 		$csaver = function($name, $values) {
 
@@ -123,12 +125,14 @@ class CookieJob {
 			
 			if (!$t) {
 				throw new RuntimeException('Ошибка установки кук!');
-			}
+			} else { return true; }
 
 		} catch (Exception $e) {
 
 			debugger("Error! " . $e->getMessage(),__METHOD__);
 		}
+
+		return false;
 	}
 
 	function clearCookie(string $cookieName): void {

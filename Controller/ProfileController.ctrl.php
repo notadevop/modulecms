@@ -29,39 +29,12 @@ class ProfileController {
         );
 
         $this->filter->cleanAttack('key', array(''));
-
-
-
     }
 
 
     function getUserProfile($uid = 0): ?array {
 
-        $userid = (int) $uid;
-
-        // Фильтруем данные 
-
-        if ($userid == 0) {
-
-            Logger::collectAlert('attentions', '<b>Не могу вывести указанного пользователя</b>');
-
-            return null;
-        }
-
-        $users = $this
-                    ->users
-                    ->getUserProfile($userid);
-
-        if (!$users) {
-
-            Logger::collectAlert('attentions', '<b>Указанный пользователь не найден!</b>');
-            return null;
-        }
-        
-
-        //debugger($users,__METHOD__);
-
-        // TODO: Проверяем привелегии пользователя который запрашивает профиль указанного юзера
+                // TODO: Проверяем привелегии пользователя который запрашивает профиль указанного юзера
         // Если привелегии не достаточно, выводим только базовую информацию
         // TODO: Сделать отключение показа социальных данных или профиля пользователям у которых нету привелегий смотреть профиль
 
@@ -85,16 +58,37 @@ class ProfileController {
                         ->verifyRest($perms);
 
         // Проверяем  есть у даннго пользователя привелегии
-	    if (!$checkPerm) {
+        if (!$checkPerm) {
 
             Logger::collectAlert('attentions', '<b>Недостаточно привелегий.</b>');
-	    	return null;
-	    } 
+            return null;
+        } 
+
+        $userid = (int) $uid;
+
+        // Фильтруем данные 
+
+        if ($userid == 0) {
+
+            Logger::collectAlert('attentions', '<b>Не могу вывести указанного пользователя</b>');
+
+            return null;
+        }
+
+        $users = $this
+                    ->users
+                    ->getUserProfile($userid);
+
+        if (!$users) {
+
+            Logger::collectAlert('attentions', '<b>Указанный пользователь не найден!</b>');
+            return null;
+        }
+        
+        //debugger($users,__METHOD__);
 
 	    return array('access' => PROFILE);
 	 }
-
-
 
 
      function getAllUsers(): ?array {

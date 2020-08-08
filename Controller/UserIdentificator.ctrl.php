@@ -27,16 +27,6 @@ class UserIdentificator {
 
 		$this->errors 	= 0;
 
-		// Временно, удалить поже 
-
-		$this->plugExec = function (string $category): bool {
-
-			// TODO: сделать исполнения части кода из дополнительных частей
-			// Например, если использовать Action Каптчи 
-
-			return true;
-		};
-
 		$this->AuthParams = array(
 			'future' 	=> '+2 Hours',
 			'past' 		=> '-2 Hours',
@@ -154,7 +144,9 @@ class UserIdentificator {
 			// пустые емай и хеш и стираем данные
 			$this->saveAuthAction('', '', true); 
 
-			if ($redirect) { header("refresh:5; url=" . HOST); }
+			if ($redirect || LOGOUT['redirectuser']) {
+
+				header('refresh:'.LOGOUT['timeout'].'; url=' . LOGOUT['redirectpath']); }
 
 			$this->errors++;
 			Logger::collectAlert('information', 'Вы вышли из своего аккаунта!');
@@ -170,7 +162,6 @@ class UserIdentificator {
 
 	function loginAction(): bool{
 
-
 		$param = array(
 
 			'loginmail' => array(
@@ -183,9 +174,7 @@ class UserIdentificator {
 					'itsMore'	=> true,
 					'itsLess'	=> true,
 					'sanitazer'	=> array('specchars','html')
-
 					//'cutIt'		=> true;
-
 			),
 			'loginpasswd' => array(
 					'value'		=> null, 
@@ -232,38 +221,6 @@ class UserIdentificator {
 			$p[$key] = $this->filter->getKey($key);
 		}
 
-
-		/*
-		$this
-			->glob
-			->setGlobParam('_POST');
-
-		$params = array('loginmail', 'loginpasswd');
-		$p = array();
-		$prof = $this->defineUser;
-
-		foreach ($params as $key => $value) {
-			
-			if(!$this
-					->glob
-					->isExist($value)) { return $prof(); }
-
-			$Opt = array(
-					'maxSym' => 30,
-					'minSym' => 4,
-					'checkMail' => $value == $params[0] ? true : false,
-			);
-
-			$p[$value] = $this
-							->glob
-							->getGlobParam($value);
-
-			$p[$value] = $this->filtration($p[$value], $Opt);
-		}
-		*/
-
-		//if ($this->errors > 0) { return $prof();}
-
 		$ue = $this
 				->users
 				->userExist($p['loginmail']);
@@ -279,7 +236,7 @@ class UserIdentificator {
 
 		if (!$ub) {
 
-			Logger::collectAlert('warnings', 'Ошибка! Пользователь заблокирован или не активирован.');
+			Logger::collectAlert('warnings', 'Пользователь заблокирован или не активирован.');
 			return $prof();
 		}
 
@@ -293,6 +250,21 @@ class UserIdentificator {
 			return $prof();
 		}
 
+		$redirection = array();
+
+		if (!defined('REDIRECTLOGIN')) {
+
+			$redirection = array(
+							'redirectuser' 	=> false,
+			);
+		} else {
+			$redirection = REDIRECTLOGIN;
+
+			// если по умолчанию перенаправляет на профиль пользователя
+
+			$redirection['redirectpath'] = str_replace('%userid%', $profile['userid'], $redirection['redirectpath']);
+		}
+
 		$profile['tokenHash'] = $this
 									->auth
 									->updateUserHash($profile['userid'], false);
@@ -303,11 +275,11 @@ class UserIdentificator {
 			return $prof(); 
 		}
 
-		$this->saveAuthAction($p['loginmail'], $profile['tokenHash']);
+		$this->saveAuthAction($p['loginmail'], $profile['tokenHash'], false, true);
 
-		if (REDIRECTLOGIN) { 
-			header( "refresh: 5; url=/" );
-			//header('Location: /'); 
+		if ($redirection['redirectuser']) { 
+
+			header('refresh: '.$redirection['timeout'].'; url='.$redirection['redirectpath']);
 		}
 
 		Logger::collectAlert('success', 'Вы вошли в свой аккаунт!');
@@ -325,36 +297,64 @@ class UserIdentificator {
 
 	function authAction(): bool {
 
+		$param = array(
+
+			'mailhash' => array(
+
+					'value'		=> null, 
+					'maximum' 	=> 500,
+					'minimum' 	=> 4,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html')
+			),
+			'tokenhash' => array(
+
+					'value'		=> null, 
+					'maximum' 	=> 500,
+					'minimum' 	=> 4,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html')
+			)
+		);
+
+		$p = array(); 				// Тут будет результат
+		$prof = $this->defineUser; 	// Устанавливаем сразу анонимного пользователя 
+
 		$this
 			->glob
 			->setGlobParam('_COOKIE');
 
-		$params = array('mailhash', 'tokenhash');
-
-		$p = array();
-
-		$Opt = array(
-				'maxSym' 	=> 500,
-				'minSym' 	=> 4,
-				'checkMail' => false
-		);
-
-		$prof = $this->defineUser; // Идет как замыкание
-
-		foreach ($params as $value) {
+		foreach ($param as $key => $value) {
 			
-			// Возвращает false обычно, заканчивая аутентификацию, так, как нету нужных параметров
-			if(!$this
-					->glob
-					->isExist($value)) return $prof(); 
+			// если нету параметра устанавливаем анонимного пользователя
+			if(!$this->glob->isExist($key)) { return $prof(); }
 
-			$p[$value] = $this
-							->glob
-							->getGlobParam($value);
-			$p[$value] = $this->filtration($p[$value], $Opt);
+			$param[$key]['value'] = $this->glob->getGlobParam($key);
+
+			$this->filter->setVariables($param);
+
+			$this->filter->letsFilterIt($key);
+
+			$errors = $this->filter->getFilterErrors();
+
+			if (!empty($errors) && count($errors) > 0) {
+
+				foreach ($errors as $errKey => $errValue) {
+					
+					Logger::collectAlert('warnings', $errValue);
+				}
+
+				return $prof();
+			} 
+
+			$p[$key] = $this->filter->getKey($key);
 		}
-
-		if ($this->errors > 0) { return $prof(); }
 
 		$ue = $this
 					->users
@@ -390,7 +390,7 @@ class UserIdentificator {
 
 	// TODO: => перенести в COOKIEJOB
 
-	private function saveAuthAction(string $email = '', string $hash = '', bool $gopast = false): void{
+	private function saveAuthAction(string $email = '', string $hash = '', bool $gopast = false, bool $showerr=false): void{
 
 		$time = !$gopast ? $this->AuthParams['future'] : $this->AuthParams['past'];
 
@@ -402,6 +402,8 @@ class UserIdentificator {
 			->cjob
 			->setCookies($authParams);
 
+		$errors = array();
+
 		foreach ($authParams as $key => $value) {
 
 			$this
@@ -410,46 +412,76 @@ class UserIdentificator {
 			$this
 				->cjob
 				->setPathDomenCookie($key, $this->AuthParams['host'], $this->AuthParams['domain']);
-			$this
-				->cjob
-				->saveCookie($key);
+			$r = $this
+					->cjob
+					->saveCookie($key);
+
+			if (!$r && $showerr) {
+
+				Logger::collectAlert('warnings', 'Не могу установить/стереть куки!');
+			}		
 		}
 	}
 	
 	// ----------------------------------------------
 
-	function resAction(): ?string{
+	function resAction(): ?string {
+
+		$param = array(
+
+			'restoremail' => array(
+					'value'		=> null, 
+					'maximum' 	=> 40,
+					'minimum' 	=> 4,
+					'checkMail' => true,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html')
+					//'cutIt'		=> true;
+			),
+		);
+
+		$p = array(); 				// Тут будет результат
+		$prof = $this->defineUser; 	// Устанавливаем сразу анонимного пользователя 
 
 		$this
 			->glob
 			->setGlobParam('_POST');
 
-		$email = $this
-					->glob
-					->isExist('restoremail');
+		foreach ($param as $key => $value) {
+			
+			// если нету параметра устанавливаем анонимного пользователя
+			if(!$this->glob->isExist($key)) { return $prof(); }
 
-		if (!$email) {return null;}
+			$param[$key]['value'] = $this->glob->getGlobParam($key);
 
-		$emailOpt = array(
-			'maxSym' => 100,
-			'minSym' => 4,
-			'checkMail' => true,
-		);
+			$this->filter->setVariables($param);
 
-		$email = $this
-			->glob
-			->getGlobParam('restoremail');
+			$this->filter->letsFilterIt($key);
 
-		$email = $this->filtration($email, $emailOpt);
+			$errors = $this->filter->getFilterErrors();
 
-		if ($this->errors > 0) { return null;}
+			if (!empty($errors) && count($errors) > 0) {
+
+				foreach ($errors as $errKey => $errValue) {
+					
+					Logger::collectAlert('warnings', $errValue);
+				}
+
+				return $prof();
+			} 
+
+			$p[$key] = $this->filter->getKey($key);
+		}
 
 		$mr = $this
 				->users
-				->userExist($email);
+				->userExist($p['restoremail']); 
 		$ms = $this
 				->auth
-				->userActivated($email);
+				->userActivated($p['restoremail']);
 
 		if (!$mr || !$ms) {
 
@@ -460,7 +492,7 @@ class UserIdentificator {
 
 		$meta = $this
 			->auth
-			->generateActivations($email);
+			->generateActivations($p['restoremail']);
 
 		if (empty($meta)) {return null;}
 
@@ -474,109 +506,82 @@ class UserIdentificator {
 		return true;
 	}
 
-	/**
-	*   если $verifbyid установлен в false  то нужно указать по $id 
-	*/
-
-	function updatePassword(bool $verifbyid=true, int $userid=0): bool {
-
-		if ($verifbyid) {
-
-			$p = $this->verifyUserModifications();
-
-			if (!$p || empty($p)) {return false;}
-		}
-
-		$this
-			->glob
-			->setGlobParam('_POST');
-
-		$pass = array('newpassword1', 'newpassword2');
-
-		$Opt = array(
-				'maxSym' 	=> 100,
-				'minSym' 	=> 6,
-				'checkMail' => false,
-			);
-
-		foreach ($pass as $key => $value) {
-
-			if (!$this->glob->isExist($value)) {return false;}
-
-			$value = $this
-						->glob
-						->getGlobParam($value);
-
-			$pass[$key] = $this->filtration($value, $Opt);
-		}
-
-		if ($this->errors > 0) { return false;}
-
-		if ($pass[0] !== $pass[1]) {
-
-			Logger::collectAlert('warnings', 'Ошибка! пароли не совпадают.');
-
-			return false;
-		}
-
-		$r = $this
-				->users
-				->updateUserPassword($p['userid'], $pass[0], true);
-
-		if (!$r) {
-
-			Logger::collectAlert('warnings', 'Ошибка обновления пароля!');
-			return false;
-		}
-
-		$this
-			->auth
-			->clearActivations($p['userid']);
-
-		Logger::collectAlert('success', 'Пароль обновлен!');
-
-		return true;
-	}
 
 
 	// ----------------------------------------------
 
 	function verifyUserModifications(): ?array{
 
+
+		$param = array(
+
+			'userid' => array(
+					'value'		=> null, 
+					'maximum' 	=> 5,
+					'minimum' 	=> 4,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html'),
+					'getNumber'	=> true
+			),
+			'confirm' => array(
+					'value'		=> null, 
+					'maximum' 	=> 500,
+					'minimum' 	=> 5,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html'),
+					'getNumber'	=> true
+			),
+			'token' => array(
+					'value'		=> null, 
+					'maximum' 	=> 500,
+					'minimum' 	=> 5,
+					'checkMail' => true,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html'),
+					'getNumber'	=> true
+			),
+		);
+
+		$p = array(); 				// Тут будет результат
+		$prof = $this->defineUser; 	// Устанавливаем сразу анонимного пользователя 
+
 		$this
 			->glob
 			->setGlobParam('_GET');
 
-		$params = array('userid', 'confirm', 'token');
+		foreach ($param as $key => $value) {
+			
+			// если нету параметра устанавливаем анонимного пользователя
+			if(!$this->glob->isExist($key)) { return $prof(); }
 
-		$p = array();
+			$param[$key]['value'] = $this->glob->getGlobParam($key);
 
-		foreach ($params as $key => $value) {
+			$this->filter->setVariables($param);
 
-			$Opt = array(
-				'maxSym' 	=> 50,
-				'minSym' 	=> ($value == 'userid' ? 1 : 30),
-				'checkMail' => false,
-				'getNumber'	=> ($value == 'userid' ? true : false),
-			);
+			$this->filter->letsFilterIt($key);
 
-			if(!$this->glob->isExist($value)) { 
+			$errors = $this->filter->getFilterErrors();
 
-				Logger::collectAlert('warnings', 'Ошибка! параметров подтверждения');
-				return null; }
+			if (!empty($errors) && count($errors) > 0) {
 
-			$p[$value] = $this
-							->glob
-							->getGlobParam($value);
+				foreach ($errors as $errKey => $errValue) {
+					
+					Logger::collectAlert('warnings', $errValue);
+				}
 
-			$p[$value] = $this->filtration($p[$value], $Opt);
-		}
+				return $prof();
+			} 
 
-		if ($this->errors > 0) {
-
-			Logger::collectAlert('warnings', 'Ошибка параметров подтверждения пользователя!');
-
-			return null;
+			$p[$key] = $this->filter->getKey($key);
 		}
 
 		$sp = $this
@@ -592,44 +597,180 @@ class UserIdentificator {
 		return $p; // Возвращает id, confirm и token для дальнейшего использования 
 	}
 
-	// добавляет нового пользователя в базу данных
-	// ----------------------------------------------
+	/**
+	*   если $verifbyid установлен в false  то нужно указать по $id 
+	*/
 
-	function regAction():  ?string{
+	function updatePassword(bool $verifbyid=true, int $userid=0): bool {
+
+		if ($verifbyid) {
+
+			$v = $this->verifyUserModifications();
+
+			if (!$v || empty($v)) { return false;}
+		}
+
+		$param = array(
+
+			'newpassword1' => array(
+					'value'		=> null, 
+					'maximum' 	=> 100,
+					'minimum' 	=> 6,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html')
+			),
+			'newpassword2' => array(
+					'value'		=> null, 
+					'maximum' 	=> 100,
+					'minimum' 	=> 6,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html')
+			),
+		);
 
 		$this
 			->glob
 			->setGlobParam('_POST');
 
-		$params = array(
-
-			'userregemail',
-			'userregname',
-			'userregpassword1',
-			'userregpassword2'
-		);
-
-		$p = array();
-
-		foreach ($params as $value) {
+		foreach ($param as $key => $value) {
 			
-			$paramOpt = array(
+			// если нету параметра устанавливаем анонимного пользователя
+			if(!$this->glob->isExist($key)) { return false; }
 
-				'maxSym' 	=> 30,
-				'minSym' 	=> ('userregname' == $value ? 4 : 6),
-				'checkMail' => ('userregemail' == $value ? true : false)
-			);
+			$param[$key]['value'] = $this->glob->getGlobParam($key);
 
-			if(!$this->glob->isExist($value)) { return null; }
+			$this->filter->setVariables($param);
 
-			$p[$value] = $this
-							->glob
-							->getGlobParam($value);
+			$this->filter->letsFilterIt($key);
 
-			$p[$value] = $this->filtration($p[$value], $paramOpt);
+			$errors = $this->filter->getFilterErrors();
+
+			if (!empty($errors) && count($errors) > 0) {
+
+				foreach ($errors as $errKey => $errValue) {
+					
+					Logger::collectAlert('warnings', $errValue);
+				}
+
+				return false;
+			} 
+
+			$p[$key] = $this->filter->getKey($key);
 		}
 
-		if ($this->errors > 0) { return null; }
+		//if ($p[0] !== $p[1]) {
+		if ($p['newpassword1'] !== $p['newpassword2']) {
+
+			Logger::collectAlert('warnings', 'Ошибка! пароли не совпадают.');
+
+			return false;
+		}
+
+		$r = $this
+				->users
+				->updateUserPassword($v['userid'], $p[0], true);
+
+		if (!$r) {
+
+			Logger::collectAlert('warnings', 'Ошибка обновления пароля!');
+			return false;
+		}
+
+		$this->auth->clearActivations($v['userid']);
+
+		Logger::collectAlert('success', 'Пароль обновлен!');
+
+		return true;
+	}
+
+
+
+	// добавляет нового пользователя в базу данных
+	// ----------------------------------------------
+
+	function regAction():  ?string{
+
+		$param = array(
+
+			'userregemail' => array(
+					'value'		=> null, 
+					'maximum' 	=> 40,
+					'minimum' 	=> 4,
+					'checkMail' => true,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html')
+					//'cutIt'		=> true;
+			),
+			'userregname' => array(
+					'value'		=> null, 
+					'maximum' 	=> 40,
+					'minimum' 	=> 4,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html')
+			),
+			'userregpassword1' => array(
+					'value'		=> null, 
+					'maximum' 	=> 40,
+					'minimum' 	=> 4,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html')
+			),
+			'userregpassword2' => array(
+					'value'		=> null, 
+					'maximum' 	=> 40,
+					'minimum' 	=> 4,
+					'cleanHack'	=> true,
+					'itsEmpty' 	=> true,
+					'itsMore'	=> true,
+					'itsLess'	=> true,
+					'sanitazer'	=> array('specchars','html')
+			)
+		);
+
+		$this
+			->glob
+			->setGlobParam('_POST');
+
+		foreach ($param as $key => $value) {
+			
+			// если нету параметра устанавливаем анонимного пользователя
+			if(!$this->glob->isExist($key)) { return false; }
+
+			$param[$key]['value'] = $this->glob->getGlobParam($key);
+
+			$this->filter->setVariables($param);
+
+			$this->filter->letsFilterIt($key);
+
+			$errors = $this->filter->getFilterErrors();
+
+			if (!empty($errors) && count($errors) > 0) {
+
+				foreach ($errors as $errKey => $errValue) {
+					
+					Logger::collectAlert('warnings', $errValue);
+				}
+
+				return false;
+			} 
+
+			$p[$key] = $this->filter->getKey($key);
+		}
 
 		if ($p['userregpassword1'] !== $p['userregpassword2']) {
 
@@ -643,8 +784,7 @@ class UserIdentificator {
 
 		if ($e) {
 
-			Logger::collectAlert('warnings', 'Ошибка! Возможно такой пользователь уже зарегестрирован!');
-
+			Logger::collectAlert('warnings', 'Возможно такой пользователь уже зарегестрирован!');
 			return null;
 		}
 
@@ -654,7 +794,8 @@ class UserIdentificator {
 
 		if (!$insert) {
 
-			Logger::collectAlert('warnings', 'Ошибка! Не получилось зарегестрироваться! Проверьте еще раз ваши данные.При повторной ошибке обратитесь к администратору!');
+			Logger::collectAlert('warnings', 'Не получилось зарегестрироваться!'); 
+			Logger::collectAlert('warnings', 'Проверьте еще раз ваши данные.При повторной ошибке обратитесь к администратору!');
 			return null;
 		}
 

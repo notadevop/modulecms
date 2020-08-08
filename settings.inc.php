@@ -16,19 +16,38 @@ define('RESTOREALLOW',true);
 
 
 define('DEFROUTEPATH', 'Routes' . DS);
-
-define('REDIRECTLOGIN', TRUE);
-
-
-define('AllowLoginRedirect', true); // При правильной авторизации перенаправлять пользователя
-define('LoginRedirectPath', '/profile/');	
+define('HOST', 'http://'.$_SERVER['HTTP_HOST']);
 
 // нужно для того, чтобы отдельно указывать другой путь шаблону
 define('TPLDEFAULTFOLDER', ROOTPATH . 'Templates'.DS); 
-
 define('TPLDEFAULTTEMPLATE', 'default'.DS);
 
-define('SOLT','abcabcabc'); // сгенерирован при установке
+define('REDIRECTLOGIN', array(
+			
+			'redirectuser' 	=> true,		// Разрешает перенаправление при авторизации
+			'timeout'		=> 0,			// Через какое время перенаправлять в сек.
+			'redirectpath'	=> '/profile/%userid%', // Куда перенаправлять, по умолчанию
+			'reffredirect'	=> false 		// перенаправлять, если пришел с какой то страницы
+));
+
+define('LOGOUT',array(
+
+		'redirectuser' 	=> true,
+		'timeout' 		=> 0,
+		'redirectpath' 	=> HOST	
+));
+
+define('AUTHUPDATE', array(
+
+		'updateAuthCookieInterval' 	=> 7, 			// Обновление хеша при аутентификации
+		'updatePasswrdInterval'		=> 70, 			// Запрос на обновления пароля при истичении пароля
+		'waitARegistration'			=> '+24 Hours'	// Время которое дается пользоватею для акт. регистрации
+));
+
+
+
+
+define('SOLT','abcabcabc'); // сгенерировать при установке
 
 define('PRIVATEKEY', 'mycoolprivatekeytohidesomething');
 define('PUBLICKEY', 'mymorecoolpublickeytohidesomething');
@@ -37,9 +56,7 @@ define('UPDATEAUTHINTERVAL', 7); // Интервал обновления хеш
 define('UPDATEPWDINTERVAL', 70); // Интервал обновления пароля пользователя в днях
  
 
-//define('DS', DIRECTORY_SEPARATOR);
 
-define('HOST', 'http://'.$_SERVER['HTTP_HOST']);
 
 
 // Время данное для подтверждение регистрации пользователя 
@@ -56,11 +73,7 @@ define('SQLITEJOB', array(
 ));
 
 
-define('REDIRECTORS', array(
-	'defPostLogin' 	=> 'profile',
-	'defPostReg'	=> '',
-	'defPostRest'	=> ''
-));
+
 
 /*
 	LOGIN 		- откуда человек пришел в пределах сайта

@@ -12,16 +12,10 @@
   }
 
   // Тут временные ссылки для 
-  $temporaryLinkMap = array(
+  $tempLinkMap = array(
 
-      '' => array(
-
-      ),
-
+        '/users' => 'Список пользователей'
   );
-
-
-
 ?>
 
 <div id="site_content">
@@ -42,11 +36,14 @@
     <ul>
       <?php
           // тут использовать луп for 
+
+      foreach ($tempLinkMap as $key => $value) {
+        
+        echo '<li><a href="'.$key.'">'.$value.'</a></li>';
+      }
+
       ?>
-      <li><a href="/users">Cписок пользователей</a></li>
-      <li><a href="#">link 2</a></li>
-      <li><a href="#">link 3</a></li>
-      <li><a href="#">link 4</a></li>
+
     </ul>
 
     <h1>Последние новости</h1>
