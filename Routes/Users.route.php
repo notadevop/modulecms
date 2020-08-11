@@ -28,10 +28,7 @@ $routes = array(
 			'priority'	=> 3
 	),
 
-	// Профиль пользователя который хочет посмотреть кто-то посторонний 
-	// смотреть можно любой выбранный пользователь
-
-	'/profile/:any' => array(
+	'/profile/:num' => array(
 			'action' 	=> 'ProfileController/getUserProfile/$1',
 			'template'	=> 'infopage.tpl.php',
 			'ifRegOk'	=> 'viewProfile.tpl.php',
@@ -42,8 +39,8 @@ $routes = array(
 
 	// Редактирование указанного профиля
 
-	'/profile/edit/:any' => array(
-			'action' 	=> 'ProfileController/getUserProfile',
+	'/profile/edit/:num' => array(
+			'action' 	=> 'ProfileController/editUserProfile/$1',
 			'template'	=> 'infopage.tpl.php',
 			'ifRegOk'	=> 'editProfile.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
@@ -52,7 +49,7 @@ $routes = array(
 	),
 
 	'/profile/edit' => array(
-			'action' 	=> 'ProfileController/getUserProfile',
+			'action' 	=> 'ProfileController/editUserProfile',
 			'template'	=> 'infopage.tpl.php',
 			'ifRegOk'	=> 'editProfile.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!

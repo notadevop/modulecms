@@ -66,12 +66,12 @@ class ProfileController {
 
         $userid = (int) $uid;
 
+
         // Фильтруем данные 
 
         if ($userid == 0) {
 
             Logger::collectAlert('attentions', '<b>Не могу вывести указанного пользователя</b>');
-
             return null;
         }
 
@@ -87,9 +87,12 @@ class ProfileController {
         
         //debugger($users,__METHOD__);
 
-	    return array('access' => PROFILE);
+        return $users;
 	 }
 
+     function editUserProfile($uid = 0) {
+
+     }
 
      function getAllUsers(): ?array {
 
@@ -156,10 +159,6 @@ class ProfileController {
      // Фильтрует данные пользователя, что выводить
 
      private function filterPersonalInfo(array $userdata): ?array {
-
-     }
-
-     function editUserProfile(int $userid=-1) {
 
      }
 }

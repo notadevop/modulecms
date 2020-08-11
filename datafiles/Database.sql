@@ -26,7 +26,8 @@ CREATE TABLE `users` (
   `user_picture` varchar(255) DEFAULT NULL,
   `user_last_visit` int(15) NOT NULL,
   `user_registration_date` int(15) NOT NULL,
-  `user_activated` int(1) NOT NULL
+  `user_activated` int(1) NOT NULL,
+  `user_social` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user_tokens` (

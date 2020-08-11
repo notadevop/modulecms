@@ -13,8 +13,7 @@ class UserIdentificator {
 	private $granter; // Получаем привелегии пользователя 
 
 	private $defineUser;
-
-	private $errors;
+	private $filterAction;
 
 	function __construct() {
 
@@ -25,13 +24,11 @@ class UserIdentificator {
 		$this->users 	= new Users();
 		$this->granter 	= new PrivelegesController();
 
-		$this->errors 	= 0;
-
 		$this->AuthParams = array(
 			'future' 	=> '+2 Hours',
 			'past' 		=> '-2 Hours',
 			'host' 		=> '/',
-			'domain' 	=> 'localhost',
+			'domain' 	=> 'localhost'
 		);
 
 		// Замыкание которое возвращает результат как профиль пользователя
@@ -79,60 +76,6 @@ class UserIdentificator {
 
 	// ----------------------------------------------
 
-	private function filtration(string $input, array $options): string{
-
-		$this->filter->setVariables(
-				array(
-					'key' => array(
-						'value' => $input,
-						'maximum' => $options['maxSym'],
-						'minimum' => $options['minSym'],
-					),
-				)
-			);
-
-		// TODO: filtration: eazy, medium, hard
-		$this
-			->filter
-			->cleanAttack('key', array(''));
-
-		if ($options['checkMail'] && !$this->filter->validator('key', 'email')) {
-
-			$this->errors++;
-			Logger::collectAlert('warnings', 'Ошибка! Укажите правильный емайл');
-		}
-
-		// конвертирует в целое число 
-		if(isset($options['getNumber']) && $options['getNumber']){
-
-			$this
-				->filter
-				->convertToNumber('key');
-		}
-
-		if (!$this->filter->isNotEmpty('key')) {
-
-			$this->errors++;
-			Logger::collectAlert('warnings', 'Недопустима пустая строка!');
-
-		} else if (!$this->filter->isNotMore('key')) {
-
-			$this->errors++;
-			Logger::collectAlert('warnings', 'Недопустимое кол-во символов! Большое значение.');
-
-		} else if (!$this->filter->isNotLess('key')) {
-
-			$this->errors++;
-			Logger::collectAlert('warnings', 'Недопустимое кол-во символов! Маленькое значение.');
-		}
-
-		return $this
-					->filter
-					->getKey('key');
-	}
-
-	// ----------------------------------------------
-
 	function logout(bool $redirect = false, bool $clean = false): bool{
 
 		$this
@@ -146,9 +89,9 @@ class UserIdentificator {
 
 			if ($redirect || LOGOUT['redirectuser']) {
 
-				header('refresh:'.LOGOUT['timeout'].'; url=' . LOGOUT['redirectpath']); }
+				header('refresh:'.LOGOUT['timeout'].'; url=' . LOGOUT['redirectpath']); 
+			}
 
-			$this->errors++;
 			Logger::collectAlert('information', 'Вы вышли из своего аккаунта!');
 
 			return true;
@@ -518,7 +461,7 @@ class UserIdentificator {
 			'userid' => array(
 					'value'		=> null, 
 					'maximum' 	=> 5,
-					'minimum' 	=> 4,
+					'minimum' 	=> 1,
 					'cleanHack'	=> true,
 					'itsEmpty' 	=> true,
 					'itsMore'	=> true,
@@ -561,7 +504,7 @@ class UserIdentificator {
 		foreach ($param as $key => $value) {
 			
 			// если нету параметра устанавливаем анонимного пользователя
-			if(!$this->glob->isExist($key)) { return $prof(); }
+			if(!$this->glob->isExist($key)) { return null; }
 
 			$param[$key]['value'] = $this->glob->getGlobParam($key);
 
@@ -578,7 +521,7 @@ class UserIdentificator {
 					Logger::collectAlert('warnings', $errValue);
 				}
 
-				return $prof();
+				return null;
 			} 
 
 			$p[$key] = $this->filter->getKey($key);
@@ -593,6 +536,12 @@ class UserIdentificator {
 			Logger::collectAlert('warnings', 'Ошибка параметров подтверждения пользователя!');
 			return null;
 		}
+
+		// сгенерировать ссылку для формы action
+
+		//$query = http_build_query($result['templateCtrlResult']['result']);
+  		//$action = '/confpass/?'.$query;
+
 
 		return $p; // Возвращает id, confirm и token для дальнейшего использования 
 	}
@@ -674,7 +623,7 @@ class UserIdentificator {
 
 		$r = $this
 				->users
-				->updateUserPassword($v['userid'], $p[0], true);
+				->updateUserPassword($v['userid'], $p['newpassword1'], true);
 
 		if (!$r) {
 

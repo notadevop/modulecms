@@ -12,8 +12,6 @@ $routes = array(
 			'priority'	=> 4
 	),
 
-	// ПОСТОЯННЫЕ ССЫЛКА
-
 	'auth' 			=> array(
 			'action' 	=> 'UserIdentificator/authAction',
 			'template'	=> 'infopage.tpl.php',
@@ -40,7 +38,7 @@ $routes = array(
 	),
 	'/verifres' 	=> array(
 			'action' 	=> 'UserIdentificator/verifyUserModifications',
-			'template'	=> 'passform.tpl.php',
+			'template'	=> 'updatepass.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Проверить восстановление',

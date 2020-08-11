@@ -14,7 +14,8 @@
   // Тут временные ссылки для 
   $tempLinkMap = array(
 
-        '/users' => 'Список пользователей'
+        '/users'      => 'Список пользователей',
+        '/priveleges' => 'Редактирование Привелегий'
   );
 ?>
 
@@ -25,7 +26,6 @@
     <form method="get" action="" id="search_form">
       <p>
         <input class="search" type="text" name="search" value="" placeholder="Поиск по сайту" />
-        <!--<input name="search" type="submit" value="Поиск" alt="Search" title="Search" />-->
       </p>
     </form>
 
@@ -35,13 +35,11 @@
     <h1>Полезные ссылки</h1>
     <ul>
       <?php
-          // тут использовать луп for 
-
+      // тут использовать луп for 
       foreach ($tempLinkMap as $key => $value) {
         
         echo '<li><a href="'.$key.'">'.$value.'</a></li>';
       }
-
       ?>
 
     </ul>
