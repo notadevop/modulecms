@@ -45,9 +45,11 @@
   <h1>Пароль пользователя</h1>
   <form action="/profile/edit/<?=@$result['templateCtrlResult']['result']['id']; ?>" method="post">
      <div class="form_settings">
-      <p><span>Пароль пользователя</span>
-        <input class="contact" type="text" name="userpassword1" value="" placeholder="Пароль пользователя" /></p>
-      <p><span>Емайл пользователя повторить</span>
+      <p><span>Старый Пароль пользователя</span>
+        <input class="contact" type="text" name="olduserpassword" value="" placeholder="Cтарый пароль пользователя" /></p>
+      <p><span>Новый пароль пользователя</span>
+        <input class="contact" type="text" name="userpassword1" value="" placeholder="Новый пароль пользователя" /></p>
+      <p><span>Новый пароль пользователя повторить</span>
         <input class="contact" type="text" name="userpassword2" value="" placeholder="Пароль пользователя повторить" /></p>
 
       <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="loginaction" value="Обновить пароль" /></p>

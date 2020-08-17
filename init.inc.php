@@ -86,6 +86,17 @@ function debugger($input, $param=__FUNCTION__, $debug=false): void {
 	</table>
 	-->
 	<h4>
+		<?php 
+			echo 'Определенные пользователем функции:';
+
+			$functions = get_defined_functions();
+			$r = array_keys($functions['user']);
+
+			echo '<pre>';
+			print_r($r);
+			echo '</pre>';
+		?>
+
 		<!--<p>Файл запущен: => <?=basename( $_SERVER['PHP_SELF'] ); ?></p>-->
 		<p>Путь Исполнения: => <b style="color: red;"> <?=$param; ?></b></p>	
 		<p>Результат Исполнения: => <pre><?php print_r($input); ?></pre></p><hr/>
