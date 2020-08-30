@@ -60,6 +60,9 @@ $routes = array(
 			'decript'	=> 'Подтверждение регистрации',
 			'priority'	=> 2
 	),
+
+	// /logout/user_token_as_:any
+
 	'/logout' 		=> array(
 			'action' 	=> 'UserIdentificator/logout/true/false',
 			'template'	=> 'infopage.tpl.php',

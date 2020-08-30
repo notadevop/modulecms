@@ -35,13 +35,9 @@ require_once ROOTPATH . 'init.inc.php';
 	Метод хуков????
 	url_fixer разрешает конфликты в ссылках
 */
-
-
-
+	
 $result = array();
-
 $routes = Routing::initDefRoutes();
-
 //
 foreach ($routes as $key => $value) {
 	
@@ -72,4 +68,17 @@ $total_time = round(($finish - $start), 4);
 $load = 'Страница сгенерированна через: ' . $total_time . ' cекунд.';
 
 // в конечном итоге вывидим все.
-$viewRender->viewRender($load);
+//$viewRender->viewRender($load);
+
+$params = array(
+
+	'%loadtime%' => $load,
+	'%username%' => PROFILE['username']
+);
+
+$viewRender->replace($params);
+// в конечном итоге вывидим все.
+$viewRender->viewRender();
+
+
+

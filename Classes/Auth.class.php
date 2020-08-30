@@ -219,12 +219,29 @@ class Auth extends Database {
 
 		if ($dbfinger !== $userfinger) { return null; }
 
+		// Обновляем время посещения! =======
+		$time = intval(time());
+		$sql = 'UPDATE users SET user_last_visit= :visitime WHERE user_email = :useremail';
+
+		$binder = array(
+			':visitime' 	=> $time,
+			':useremail'	=> $useremail
+		);
+
+		$this->preAction($sql, $binder);
+		if(!$this->doAction() ) {
+
+			debugger('Не могу обновить время',__METHOD__);
+		}		
+
+		///=====
+
 		return array( 
 			'userid' 	=> $profile['id'],
 			'username' 	=> $profile['name'],
 			'useremail' => $useremail,
 			'userregd' 	=> $profile['regdate'],
-			'userlastv'	=> $profile['userlastv']
+			'userlastv'	=> $time
 		);
 	}
 

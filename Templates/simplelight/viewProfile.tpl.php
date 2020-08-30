@@ -49,12 +49,12 @@ if(empty($result['templateCtrlResult']['result'])) {
   
   <tr>
     <td>Дата Регистрации:</td>
-    <td><?=@date('Y M D H:m' ,$result['templateCtrlResult']['result']['regdate']);?></td>
+    <td><?=@date('F j, D, Y, g:i a' ,$result['templateCtrlResult']['result']['regdate']);?></td>
   </tr>
 
   <tr>
     <td>Последний визит:</td>
-    <td><?=@date('Y M D H:m' ,$result['templateCtrlResult']['result']['lastvisit']);?></td>
+    <td><?=@date('F j, D, Y, g:i a' ,$result['templateCtrlResult']['result']['lastvisit']);?></td>
   </tr>
 
   <tr>

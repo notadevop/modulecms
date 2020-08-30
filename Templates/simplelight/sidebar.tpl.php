@@ -25,7 +25,7 @@
 <div id="site_content">
   <div class="sidebar">
 
-    <h1>Search</h1>
+    <h1>Поиск по сайту</h1>
     <form method="get" action="" id="search_form">
       <p>
         <input class="search" type="text" name="search" value="" placeholder="Поиск по сайту" />

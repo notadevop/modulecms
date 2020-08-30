@@ -4,5 +4,5 @@
 
   <br />
   <br />
-  <p><b> %loadtime% </b></p>
+  <p><b>%loadtime%</b></p>
 </div>
