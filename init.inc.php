@@ -71,20 +71,26 @@ function genCallTrace(){
 function debugger($input, $param=__FUNCTION__, $debug=false): void {
 
 	?>
-	<!--
-	<h2>The vertical-align Property</h2>
-	<p></p>
-	<table>
-	  <tr>
-	    <th>Firstname</th>
-	    <th>Lastname</th>
-	  </tr>
-	  <tr>
-	    <td>Peter</td>
-	    <td>Griffin</td>
-	  </tr>
-	</table>
-	-->
+
+	<div style="margin: 15px; padding: 10px">
+	<p>Файл запущен из: <?=basename( $_SERVER['PHP_SELF'] ); ?></p>
+		<p>Объект или доп. информация: <b style="color: red;"> <?=$param; ?></b></p>	
+		<p>Исполнитель: 
+	<?php 
+
+	if (empty($input)) {
+
+		echo 'переменная пустая или не указанна: <br/>';
+		var_dump($input);
+
+	} else {
+		?><br /><pre style='margin: 5px'><?php print_r($input); ?></pre></p><hr/><?php	
+	}
+
+	echo '</div>';
+	return;
+	?>
+
 	<h4>
 		<?php 
 			echo 'Определенные пользователем функции:';
@@ -97,27 +103,9 @@ function debugger($input, $param=__FUNCTION__, $debug=false): void {
 			echo '</pre>';
 		?>
 
-		<!--<p>Файл запущен: => <?=basename( $_SERVER['PHP_SELF'] ); ?></p>-->
-		<p>Путь Исполнения: => <b style="color: red;"> <?=$param; ?></b></p>	
-		<p>Результат Исполнения: => <pre><?php print_r($input); ?></pre></p><hr/>
-		<?php // var_dump($input); // ?>
-	</h4>
 
+	</h4>
 	<?php
-	if ($debug) {
-		ob_start();
-		echo '<pre>';
-		//debug_print_backtrace(); // выводи стек, как вариант: debug_backtrace();
-		print_r(debug_backtrace());
-		echo '</pre>';
-		$trace = ob_get_contents();
-		ob_end_clean();
-		echo '<h1> Backtrace: </h1><hr /><pre>';
-		print_r(genCallTrace());
-		//debug_print_backtrace();
-		//print_r($trace); // debug_backtrace;
-		echo '</pre>';
-	}
 }
 
 // 

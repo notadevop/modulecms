@@ -4,10 +4,10 @@
  */
 class ViewRender {
 
-	function __construct() { 
+	function __construct(array $currentRouteName) { 
 
-		$this->curRouteName = Routing::getNameOfRoute();
-		$this->replaceParams = array();
+		$this->curRouteName 	= $currentRouteName;
+		$this->replaceParams 	= array();
 	}
 
 
@@ -15,9 +15,9 @@ class ViewRender {
 
 	function getTemplateSchema() {
 
-		require_once $this->tplDir . $this->currentTpl . 'schema.tpl.php';
+		return require_once $this->tplDir.$this->currentTpl.'schema.tpl.php';
 		
-		return layoutScheme();
+		//return layoutScheme();
 	}
 
 	// Список всех шаблонов и выбраных шаблонов
@@ -34,24 +34,7 @@ class ViewRender {
 
 		$this->currentTpl = (!empty($template)) ? $template . DS : $this->currentTpl;
 	}
-	/*
-	function getAListOfTemplates(): array {
 
-		return array();
-	}
-	*/
-	// sidebar = array('sidebar.tpl.php', $params), posts
-	/*
-	function activateTemplate(array $templates): bool{
-
-		// Используется если хотите установить активный шаблон
-		
-		return false;
-	}
-	*/
-	// Генерируем превью для шаблонов
-
-	// TODO: 123 <== Временно, написать класс ViewRender.class.php => pageBuilder.ctrl.php
 
 	function prepareRender($routes, $result, $curRoutePath=false): void {
 

@@ -15,14 +15,14 @@
 */
 
 
-$routes = array(
+return array(
 
 	// Профиль пользователя который хочет посмотреть свой аккаунт
 
 	'/profile' => array(
 			'action' 	=> 'ProfileController/getUserProfile',
 			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'viewProfile.tpl.php',
+			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Профиль',
 			'priority'	=> 3
@@ -51,7 +51,7 @@ $routes = array(
 	'/profile/edit' => array(
 			'action' 	=> 'ProfileController/editUserProfile',
 			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'editProfile.tpl.php',
+			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Профиль',
 			'priority'	=> 3
@@ -75,6 +75,24 @@ $routes = array(
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Профиль',
 			'priority'	=> 3
+	),
+
+	'/usersonline' 	=> array(
+			'action' 	=> 'Visitor/getOnlineUsers',
+			'template'	=> 'infopage.tpl.php',
+			'ifRegOk'	=> 'infopage.tpl.php',
+			'skipUri' 	=> false, // Permanent or not if yes, !!!
+			'decript'	=> 'Пользователи Онлайн',
+			'priority'	=> 3
+	),
+
+	'online' 		=> array(
+			'action' 	=> 'Visitor/users_online',
+			'template'	=> 'infopage.tpl.php',
+			'ifRegOk'	=> 'infopage.tpl.php',
+			'skipUri' 	=> true, // Permanent or not if yes, !!!
+			'decript'	=> 'Список пользователей онлайн',
+			'priority'	=> 4
 	),
 
 );

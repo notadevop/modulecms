@@ -19,12 +19,12 @@ final class Routing {
 	}
 
 	/**
-	*	Загружает все дефольтные роуты из папки Routes
+	*	Загружает все пут
 	*/
 	public static function initDefRoutes(): ?array {
 
 		$fm = new Filemanipulator();
-		$fm->setDirName( ROOTPATH . DEFROUTEPATH);
+		$fm->setDirName(ROOTPATH . DEFROUTEPATH);
 
 		$files = $fm->listFolder();
 
@@ -33,55 +33,43 @@ final class Routing {
 			die('Пути не найдены! Обратитесь к администратору для решения проблемы.');
 		};
 
-		// Использ. preg_grep($key, $array);
-		// Использ. array_walk()
-		// Использ. array_filter() испльз. сallback function
+		if (!$files || count($files) == 0) { 
 
-		if (!$files || count($files) == 0) { $exiting(); }
+			$exiting(); 
+		}
 
 		$files = preg_grep('/.route.php/i', $files);
 
-		if (empty($files)) {  $exiting(); }
+		if (empty($files))  { 
+			
+			$exiting();
+		}
 
-		$loadedRoutes = array();
+		$allRoutes = array();
 
 		foreach ($files as $key => $value) {
 			
 			$path = ROOTPATH . DEFROUTEPATH . $value;
 
-			if (file_exists($path)) {
+			if (!file_exists($path)) { continue; }
 
-				require_once $path;
+			$route = require_once $path;
 
-				if (isset($routes) && !empty($routes)) {
+			if (is_array($route) && count($route) > 0) {
 
-					$loadedRoutes = array_merge($loadedRoutes, $routes);
+				$allRoutes = array_merge($allRoutes, $route);
+				self::$routes = array_merge(self::$routes, $route);
 
-					unset($routes);
-				}
+				unset($route);
 			}
 		}
 
-		return $loadedRoutes;
+		return $allRoutes;
 	}
 
 	public static function showRoutes() {
 
 		debugger(self::$routes, __METHOD__);
-	}
-
-	/**
-	 * Разделить переданный URL на компоненты
-	 */
-	public static function splitUrl(string $url) {
-
-		return preg_split('/\//', $url, -1, PREG_SPLIT_NO_EMPTY);
-	}
-
-	//  ВОЗВРАЩАЕТ ПОЛНЫЙ ОБРЕЗАННЫЙ URI не URL 
-	public static function getCurrentUrl() {
-
-		return (self::$requestedUrl ?: '/');
 	}
 
 	/**
@@ -95,7 +83,9 @@ final class Routing {
 		}
 	}
 
-	public static function getNameOfRoute() {
+	// Возвращает массив с array('uri' => '', 'params' => 'controller')
+
+	public static function getNameOfRoute(): ?array {
 
 		$routes = self::$routes;
 
@@ -108,11 +98,70 @@ final class Routing {
 		    	return array('uri' => $reg, 'params' => $controller);
 		  	}
 		}
-		return false;
+		return null;
 	}
 
 	/**
-	 * Обработка переданного URL
+	 * // /search/something/is/here/ -> Возвращает массив всех путей
+	 * // -> ['search', 'something', 'is', 'here']
+	 *  Пример использования:
+	 *	$routes = $obj->getRoutes();
+	 *	if($routes[0] == 'search') {
+	 *		if($routes[1] == 'book') {
+	 *			echo 'clicked';
+	 *		}
+	 *	}
+	 */
+	public static function getRoutes(string $extUri = ''): ?array{
+
+		$base_uri = empty($extUri) ? self::getCurrentUri() : $extUri;
+
+		$routeValues = array();
+		$routes = explode('/', $base_uri);
+
+		foreach ($routes as $route) {
+
+			if (trim($route) != '') {
+
+				array_push($routeValues, $route);
+			}
+		}
+
+		return !empty($routeValues) ? $routeValues : null;
+	}
+
+	/**
+	 * Разделить переданный URL на компоненты
+	 	https://google.ru/index.php?var=123  = array=>( https:, google, index.php?var=123); 
+	 */
+	public static function splitUrl(string $url) {
+
+		return preg_split('/\//', $url, -1, PREG_SPLIT_NO_EMPTY);
+	}
+
+	/*
+	public static function getCurrentUrl() {
+
+		return (self::$requestedUrl ?: '/');
+	}
+	*/
+
+	public static function getCurrentUri() {
+
+		$scriptName = $_SERVER['SCRIPT_NAME'];
+
+		$basepath 	= implode('/', array_slice(explode('/', $scriptName), 0, -1)) . '/';
+
+		$uri 		= substr($_SERVER['REQUEST_URI'], strlen($basepath));
+
+		if (strstr($uri, '?')) {$uri = substr($uri, 0, strpos($uri, '?'));}
+
+		return strtolower('/' . trim($uri, '/'));
+	}
+
+
+	/**
+	 * отправляем url и получаем результат, но до этого разбиваем урл и сравниваем с путями установлеными в системе
 	 */
 	public static function dispatch($requestedUrl = null) {
 
@@ -129,70 +178,32 @@ final class Routing {
 		if (isset(self::$routes[$requestedUrl])) {
 
 			self::$params = self::splitUrl(self::$routes[$requestedUrl]); // $requestedUrl
-			return self::executeAction();
-		}
+		} else { 
+			foreach (self::$routes as $route => $uri) {
 
-		foreach (self::$routes as $route => $uri) {
+				// Заменяем wildcards на рег. выражения
+				if (strpos($route, ':') !== false) {
 
-			// Заменяем wildcards на рег. выражения
-			if (strpos($route, ':') !== false) {
-
-				$route = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $route));
-			}
-
-			if (preg_match('#^' . $route . '$#', $requestedUrl)) { // $requestedUrl
-				
-				if (strpos($uri, '$') !== false && strpos($route, '(') !== false) {
-
-					$uri = preg_replace('#^' . $route . '$#', $uri, $requestedUrl);
+					$route = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $route));
 				}
 
-				self::$params = self::splitUrl($uri); // ты мы разбиваем value роута на параметры и сохраняем
-				break; // URL обработан!
+				if (preg_match('#^' . $route . '$#', $requestedUrl)) { // $requestedUrl
+					
+					if (strpos($uri, '$') !== false && strpos($route, '(') !== false) {
+
+						$uri = preg_replace('#^' . $route . '$#', $uri, $requestedUrl);
+					}
+
+					self::$params = self::splitUrl($uri); // разбиваем value роута на параметры и сохраняем
+
+					break; // URL обработан!
+				}
 			}
 		}
+
+		// Возвращает результат отработанно
 
 		return self::executeAction();
-	}
-
-	public static function getCurrentUri() {
-
-		$scriptName = $_SERVER['SCRIPT_NAME'];
-		$basepath 	= implode('/', array_slice(explode('/', $scriptName), 0, -1)) . '/';
-		$uri 		= substr($_SERVER['REQUEST_URI'], strlen($basepath));
-
-		if (strstr($uri, '?')) {$uri = substr($uri, 0, strpos($uri, '?'));}
-
-		return strtolower('/' . trim($uri, '/'));
-	}
-
-	/**
-	 * // /search/something/is/here/ -> Возвращает массив всех путей
-	 * // -> ['search', 'something', 'is', 'here']
-	 *  Пример использования:
-	 *	$routes = $obj->getRoutes();
-	 *	if($routes[0] == 'search') {
-	 *		if($routes[1] == 'book') {
-	 *			echo 'clicked';
-	 *		}
-	 *	}
-	 */
-	public static function getRoutes(string $extUri = ''): array{
-
-		$base_uri = empty($extUri) ? self::getCurrentUri() : $extUri;
-
-		$routeValues = array();
-		$routes = explode('/', $base_uri);
-
-		foreach ($routes as $route) {
-
-			if (trim($route) != '') {
-
-				array_push($routeValues, $route);
-			}
-		}
-
-		return empty($routeValues) ? array('') : $routeValues;
 	}
 
 	/**
@@ -201,18 +212,12 @@ final class Routing {
 	public static function executeAction() {
 
 		$controller = isset(self::$params[0]) ? self::$params[0] : 'MainController';
-		$action = isset(self::$params[1]) ? self::$params[1] : 'defaultMethod';
-		$params = array_slice(self::$params, 2);
+		$action 	= isset(self::$params[1]) ? self::$params[1] : 'defaultMethod';
+		$params 	= array_slice(self::$params, 2);
 
 		$obj = new $controller();
 		$cresult = call_user_func_array(array($obj, $action), $params);
 
-		/*
-		$params = array(
-			'errors' => 'getErrors', 
-			'notifs' => 'getNotif'
-		);
-		*/
 		foreach ($params as $key => $value) {
 			
 			if(method_exists($controller, $value)) {
@@ -221,12 +226,46 @@ final class Routing {
 			}
 		}
 
+		//return $cresult;
+
 		return array(
 			'result' => $cresult,
 			//'errors' => $params['errors'],
 			//'notifs' => $params['notifs']	
 		);
 	}
+
+
+	// TODO: ВРЕМЕНО УДАЛИТЬ ПОЖЖЕ! Нужно работы движка
+
+	public static function getResult() {
+
+		$result = array();
+
+		//self::$routes
+	
+		foreach (self::initDefRoutes() as $key => $value) {
+		
+			// Добавляем все пути
+
+			self::addRoute($key, $value['action']);
+
+			// Отрабатывает только перманентные роуты
+
+			if ($value['skipUri']) { 
+
+				$result[$key] = self::dispatch($key);
+				self::cleanRoutes($key);
+			}
+		}
+
+		return array(
+
+			'templateCtrlResult' 	=> self::dispatch(),
+			'permanetCtrlResult'	=> $result
+		);
+	}
+
 
 	//  ------------------------------------
 	//  +          пример использования
@@ -249,13 +288,13 @@ final class Routing {
 	));
 
 	// добавляем все маршруты за раз
-	RouterLite::addRoute($routes);
+	Routing::addRoute($routes);
 
 	// а можно добавлять по одному
-	RouterLite::addRoute('/about', 'MainController/about');
+	Routing::addRoute('/about', 'MainController/about');
 
 	// непосредственно запуск обработки
-	RouterLite::dispatch();
+	Routing::dispatch();
 	*/
 
 	// ========== ДЛЯ НОРМАЛЬНОГО ИСПОЛЬЗОВАНИЯ РОУТЕРА НУЖНО ИСПОЛЬЗОВАТЬ ЭТО ======= //

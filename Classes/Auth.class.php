@@ -24,7 +24,6 @@ class Auth extends Database {
 
 		$this->dateClass = function(int $time1,int $time2,string $timetype='%d',int $interval): bool {
 
-
 			return true; // Указывает, что нужно обновить хеш!!!!
 
 			// TODO: Не работает сравнение даты никак вообще 

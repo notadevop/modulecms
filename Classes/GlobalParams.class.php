@@ -38,6 +38,14 @@ class GlobalParams {
 
 	public function getGlobParam(string $key): ?string {
 
+		/*
+		if (!array_key_exists($key, $this->globtype)) {
+
+			throw new Exception('Такого параметра не существует!', 1);
+
+		} else return $this->globtype[$key];
+		*/
+
 		return $this->isExist($key) ? $this->globtype[$key] : null;
 	}
 }

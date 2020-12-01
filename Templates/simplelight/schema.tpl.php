@@ -1,15 +1,14 @@
 <?php
 
 
-function layoutScheme(): array {
+return array(
 
-	return array(
-  		'header',
-  		'top',
-  		'sidebar',
-  		'banner',
-  		'content',
-  		'footer',
-  		'bottom'
-	);
-}
+	'header',
+	'top',
+	'sidebar',
+	'banner',
+	'content',
+	'footer',
+	'bottom'
+);
+

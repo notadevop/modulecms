@@ -25,6 +25,7 @@ class Role extends Database {
         $binder = array(":role_id" => $role_id);
 
         $this->preAction($sql, $binder);
+        
         if (!$this->doAction()) {return null;}
      
         while($row = $this->postAction()->fetch()) {

@@ -1,6 +1,10 @@
 <div id="content">
 
-  <p><a href="/profile/<?=@$result['templateCtrlResult']['result']['id']; ?>">Просмотреть профиль</a>  | <a href="">Активные сессии</a></p>
+  <a href="">Профиль</a> | <a href="">Редактировать</a> | <a href="">Активные сессии</a>
+
+  </br></br>
+
+  <p><a href="/profile/<?=$result['templateCtrlResult']['result']['id']; ?>">Просмотреть профиль</a>  | <a href="">Активные сессии</a></p>
 
   <h1>Форма редактирования профиля</h1>
 

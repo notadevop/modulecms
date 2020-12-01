@@ -10,7 +10,7 @@ if (version_compare(phpversion(), '8.0.0', '>=') == true) {
 	die('PHP 7.0 or newer Only!');
 }
 
-if (session_id() == '') {session_start();}
+if (session_id() == '') { session_start(); }
 
 header('Content-Type: text/html; charset=utf-8');
 header('X-Powered-By: PHP Application');
@@ -35,28 +35,14 @@ require_once ROOTPATH . 'init.inc.php';
 	Метод хуков????
 	url_fixer разрешает конфликты в ссылках
 */
-	
-$result = array();
-$routes = Routing::initDefRoutes();
-//
-foreach ($routes as $key => $value) {
-	
-	Routing::addRoute($key, $value['action']);
 
-	// Условие нужно для перманентных контроллеров
-	// которые не используют пути и должны испольнятся всегда
-	// После запуска удаляем путь 
+Router::initDefaultRoutes();
+$routes = Router::getSavedRoutes();
+$result = Router::getResult();
+$curRoute = Router::getCurrentRouteParams();
 
-	if ($value['skipUri']) { 
+$viewRender = new ViewRender($curRoute);
 
-		$result['permanetCtrlResult'][$key] = Routing::dispatch($key);
-		Routing::cleanRoutes($key);
-	}
-}
-
-$result['templateCtrlResult'] = Routing::dispatch();
-
-$viewRender = new ViewRender();
 $viewRender->setActiveTemplate('simplelight');
 $viewRender->prepareRender($routes, $result, Routing::getNameOfRoute());
 
@@ -67,16 +53,14 @@ $finish = $time;
 $total_time = round(($finish - $start), 4);
 $load = 'Страница сгенерированна через: ' . $total_time . ' cекунд.';
 
-// в конечном итоге вывидим все.
-//$viewRender->viewRender($load);
 
-$params = array(
+$viewRender->replace(
+	array(
 
-	'%loadtime%' => $load,
-	'%username%' => PROFILE['username']
+		'%loadtime%' => $load,
+		'%username%' => PROFILE['username']
+	)
 );
-
-$viewRender->replace($params);
 // в конечном итоге вывидим все.
 $viewRender->viewRender();
 

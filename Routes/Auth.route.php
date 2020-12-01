@@ -1,7 +1,7 @@
 <?php 
 
 
-$routes = array(
+return array(
 
 	'/login' 		=> array( 
 			'action' 	=> 'UserIdentificator/loginAction',
@@ -61,7 +61,7 @@ $routes = array(
 			'priority'	=> 2
 	),
 
-	// /logout/user_token_as_:any
+	// /logout/user_token_as_:any attack protection
 
 	'/logout' 		=> array(
 			'action' 	=> 'UserIdentificator/logout/true/false',

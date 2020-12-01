@@ -2,7 +2,7 @@
 
 
 
-$routes = array(
+return array(
 
 	// url путь 
 			// Контроллер и его метод
@@ -28,22 +28,7 @@ $routes = array(
 			'decript'	=> 'Главная',  // TODO: ВРЕМЕННО, для указания ссылки, будет использоваться отдельно, в языковом пакете
 			'priority'	=> 4 // Показывать по при оритету
 	),
-	'online' 		=> array(
-			'action' 	=> 'Visitor/users_online',
-			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> true, // Permanent or not if yes, !!!
-			'decript'	=> 'Список пользователей онлайн',
-			'priority'	=> 4
-	),
-	'/usersonline' 	=> array(
-			'action' 	=> 'Visitor/getOnlineUsers',
-			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Пользователи Онлайн',
-			'priority'	=> 3
-	),
+	
 	'/404page' 		=> array(
 			'action' 	=> 'MainController/defaultMethod',
 			'template'	=> '404page.tpl.php',

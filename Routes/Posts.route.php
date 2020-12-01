@@ -2,7 +2,7 @@
 
 // файл путей постов
 
-$routes = array(
+return array(
 
 	'/posts/:num' 	=> array(
 			'action' 	=> 'MainController/test/$1',
