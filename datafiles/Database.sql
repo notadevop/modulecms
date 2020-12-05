@@ -60,6 +60,13 @@ CREATE TABLE `users_activation` (
   `activation_expired`  int(12) NOT NULL
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+
+CREATE TABLE `website_options` (
+  `option_name` varchar(255) NOT NULL,
+  `option_value` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
   ADD KEY `users_idx` (`user_id`),

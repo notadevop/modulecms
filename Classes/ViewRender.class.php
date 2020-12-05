@@ -16,8 +16,6 @@ class ViewRender {
 	function getTemplateSchema() {
 
 		return require_once $this->tplDir.$this->currentTpl.'schema.tpl.php';
-		
-		//return layoutScheme();
 	}
 
 	// Список всех шаблонов и выбраных шаблонов
@@ -34,6 +32,22 @@ class ViewRender {
 
 		$this->currentTpl = (!empty($template)) ? $template . DS : $this->currentTpl;
 	}
+
+	function initHostSettings(array $pararms){
+
+		// Устанавливаем тему по умолчанию 
+		// устанавливаем имя зарегестрированного пользователя
+		// время загрузки
+
+		// Получаем нужные настройки из базы
+
+	}
+
+
+
+	// Нужно отдельный шаблон и пути для АДМИНИСТРАТИВНОЙ ЧАСТИ !!!!!!!!!
+
+
 
 
 	function prepareRender($routes, $result, $curRoutePath=false): void {
@@ -52,6 +66,7 @@ class ViewRender {
 
 			$defTpl 	= $routes['/404page']['template'];
 			$ifRegOk 	= $routes['/404page']['ifRegOk'];
+
 		} else {
 
 			$defTpl 	= $routes[$this->curRouteName['uri']]['template'];  
@@ -97,4 +112,10 @@ class ViewRender {
 		print($this->htmlRenderRes);
 	}
 
+	function __desctructor(){
+
+		unset($this->curRouteName);
+		unset($this->replaceParams);
+		unset($this->htmlRenderRes);
+	}
 }

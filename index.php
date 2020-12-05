@@ -6,7 +6,7 @@ $time = $time[1] + $time[0];
 $start = $time;
 
 if (version_compare(phpversion(), '8.0.0', '>=') == true) {
-
+	
 	die('PHP 7.0 or newer Only!');
 }
 
@@ -36,10 +36,14 @@ require_once ROOTPATH . 'init.inc.php';
 	url_fixer разрешает конфликты в ссылках
 */
 
+$host = new HostSettings();
+
+
+
 Router::initDefaultRoutes();
-$routes = Router::getSavedRoutes();
-$result = Router::getResult();
-$curRoute = Router::getCurrentRouteParams();
+$routes 	= Router::getSavedRoutes();
+$result 	= Router::getResult();
+$curRoute 	= Router::getCurrentRouteParams();
 
 $viewRender = new ViewRender($curRoute);
 
@@ -51,14 +55,23 @@ $time = explode(' ', $time);
 $time = $time[1] + $time[0];
 $finish = $time;
 $total_time = round(($finish - $start), 4);
-$load = 'Страница сгенерированна через: ' . $total_time . ' cекунд.';
+$load = 'Загрузка: ' . $total_time . ' cекунд.';
+
+function convert($size) {
+    $unit=array('b','Kb','Mb','Gb','Tb','Pb');
+    return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
+}
+
+$mem = 'Занятая память: '.convert(memory_get_usage(true)); // 123 kb
+
 
 
 $viewRender->replace(
 	array(
 
-		'%loadtime%' => $load,
-		'%username%' => PROFILE['username']
+		'%loadtime%' 	=> $load,
+		'%username%' 	=> PROFILE['username'], 
+		'%memused%'		=> $mem
 	)
 );
 // в конечном итоге вывидим все.
