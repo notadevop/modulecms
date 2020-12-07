@@ -11,29 +11,36 @@ class HostSettings extends Database {
 		parent::__construct(true);
 	}
 
-	// Возвращает массив имени и его значения!
+	// Получаем все указанные настройки по указанному массиву 
 
-	private function getSettings(string $name): ?array{
+	public function getSettings(array $option_key): ?array{
 
-		$sql = 'SELECT option_name as name, option_value as value 
+		$sql = 'SELECT option_value as value 
 				FROM website_options WHERE option_name LIKE :name LIMIT 1';
 
-        $this->preAction($sql);
+        $row = array();
 
-        $this->binder(array(':name' => $name));
+        foreach ($option_key as $key => $value) {
 
-        if(!$this->doAction()) {
-        	return null;
+        	$this->preAction($sql, array(':name' => $value));
+ 
+        	if(!$this->doAction()) {
+        		continue;
+        	}
+
+        	$row[$value] = $this
+        					->postAction()
+        					->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        $row = $this
-        		->postAction()
-        		->fetchAll(PDO::FETCH_ASSOC);
+        $row = array_filter($row);
 
         return !empty($row) ? $row : null;
 	}
 
-	function addSettings(): bool {
+	function addSettings(array $settings): bool {
+
+
 
 	}
 

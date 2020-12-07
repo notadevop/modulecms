@@ -4,12 +4,31 @@
  */
 class ViewRender {
 
-	function __construct(array $currentRouteName) { 
+	// Список всех шаблонов и выбраных шаблонов
 
-		$this->curRouteName 	= $currentRouteName;
+	private $currentTpl;
+	private $tplDir;
+	private $htmlRenderRes;
+	private $curRouteName;
+
+	function __construct() { 
+
+		//Router::initDefaultRoutes();
+
+		$this->curRouteName 	= Router::getCurrentRouteParams();
 		$this->replaceParams 	= array();
+
+		$this->currentTpl 		= TPLDEFAULTTEMPLATE;
+		$this->tplDir 			= TPLDEFAULTFOLDER;
+		$this->htmlRenderRes	= NULL;
+
+		// Запустить активацию шаблона по умолчанию
 	}
 
+	private function AdminZone(): bool {
+
+		return false;
+	}
 
 	// Получаем данные из базы данных, какой шаблон используется в данный момент, 
 
@@ -18,17 +37,14 @@ class ViewRender {
 		return require_once $this->tplDir.$this->currentTpl.'schema.tpl.php';
 	}
 
-	// Список всех шаблонов и выбраных шаблонов
-
-	private $currentTpl 	= TPLDEFAULTTEMPLATE;
-	private $tplDir 		= TPLDEFAULTFOLDER;
-	private $htmlRenderRes	= NULL;
-
-	private $curRouteName 	= false;
-
 	function setActiveTemplate(string $template=''): void {
 
 		// TODO: Проверить существует ли данный шаблон или нет!
+
+		// Загружаем активную версию шаблона при условии, если мы не в административной части !!!!!
+
+		// Загружаем с таблицы website_options -> website_active_template -> simplelight
+
 
 		$this->currentTpl = (!empty($template)) ? $template . DS : $this->currentTpl;
 	}
@@ -40,17 +56,13 @@ class ViewRender {
 		// время загрузки
 
 		// Получаем нужные настройки из базы
-
 	}
-
-
 
 	// Нужно отдельный шаблон и пути для АДМИНИСТРАТИВНОЙ ЧАСТИ !!!!!!!!!
 
+	//function prepareRender($routes, $result, $curRoutePath=false): void {
 
-
-
-	function prepareRender($routes, $result, $curRoutePath=false): void {
+	function prepareRender($result) {
 
 		// TODO: получаем созданый дизайнере xml файл где раставленны как и какой шаблон должны идти
 		// тут указываем, что показывать и засовываем данные
@@ -61,6 +73,8 @@ class ViewRender {
 
 			$regOk = true; 
 		}
+
+		$routes = Router::getSavedRoutes();
 
 		if ( !$this->curRouteName || empty($routes[$this->curRouteName['uri']]) ) {
 

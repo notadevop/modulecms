@@ -39,16 +39,25 @@ require_once ROOTPATH . 'init.inc.php';
 $host = new HostSettings();
 
 
+$arr = array(
+	'website_name',
+	'website_desc'
+);
+
+
+//debugger($host->getSettings($arr));
+
+
 
 Router::initDefaultRoutes();
-$routes 	= Router::getSavedRoutes();
-$result 	= Router::getResult();
-$curRoute 	= Router::getCurrentRouteParams();
 
-$viewRender = new ViewRender($curRoute);
+$result = Router::getResult();
+
+$viewRender = new ViewRender();
 
 $viewRender->setActiveTemplate('simplelight');
-$viewRender->prepareRender($routes, $result, Routing::getNameOfRoute());
+$viewRender->prepareRender($result);
+
 
 $time = microtime();
 $time = explode(' ', $time);
@@ -63,7 +72,6 @@ function convert($size) {
 }
 
 $mem = 'Использованная память: '.convert(memory_get_usage(true)); // 123 kb
-
 
 
 $viewRender->replace(
