@@ -1,7 +1,6 @@
 <?php 
 
-//if (!defined('ROOTPATH')) 
-//	die('no key defined!');
+(defined('ROOTPATH') && defined('DS')) or die('something wrong');
 
 // Обьявить пространство имен для защиты от запуска из любого класа из любой точки
 
@@ -66,9 +65,20 @@ function genCallTrace(){
 }
 
 
- // Для определения метода или функции __METHOD__, __FUNCTION__
+ // Для определения: 
 
-function debugger($input, $param=__FUNCTION__, $debug=false): void {
+/*
+__FILE__ – The full path and filename of the file.
+__DIR__ – The directory of the file.
+__FUNCTION__ – The function name.
+__CLASS__ – The class name.
+__METHOD__ – The class method name.
+__LINE__ – The current line number of the file.
+__NAMESPACE__ – The name of the current namespace
+*/
+
+
+function debugger($input='no input', $param=__FUNCTION__, $debug=false, $where=__FILE__): void {
 
 	?>
 
@@ -107,8 +117,3 @@ function debugger($input, $param=__FUNCTION__, $debug=false): void {
 	</h4>
 	<?php
 }
-
-// 
-function console($input, $param='', $doAction) { }
-
-

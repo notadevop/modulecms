@@ -1,4 +1,7 @@
 <?php
+
+(defined('ROOTPATH') && defined('DS')) or die('something wrong!');
+
 /**
  *
  */
@@ -13,31 +16,40 @@ class ViewRender {
 
 	function __construct() { 
 
-		//Router::initDefaultRoutes();
-
 		$this->curRouteName 	= Router::getCurrentRouteParams();
 		$this->replaceParams 	= array();
 
 		$this->currentTpl 		= TPLDEFAULTTEMPLATE;
 		$this->tplDir 			= TPLDEFAULTFOLDER;
 		$this->htmlRenderRes	= NULL;
-
-		// Запустить активацию шаблона по умолчанию
 	}
 
-	private function AdminZone(): bool {
-
-		return false;
-	}
+	private function AdminZone(): bool { return false; }
 
 	// Получаем данные из базы данных, какой шаблон используется в данный момент, 
 
+	// Удалить поже, схема не нужна --- 
+
 	function getTemplateSchema() {
 
-		return require_once $this->tplDir.$this->currentTpl.'schema.tpl.php';
+		$dir	= $this->tplDir;
+		$tpl 	= $this->currentTpl;
+
+		return require_once $dir.$tpl.'schema.tpl.php';
 	}
 
+	private $activeTemplate;
+
 	function setActiveTemplate(string $template=''): void {
+
+		$tmpTplName = null;
+
+		/*
+		if (!empty($template) && file_exists(filename)) {
+
+			$tmpTplName = 
+		}
+		*/
 
 		// TODO: Проверить существует ли данный шаблон или нет!
 
@@ -46,21 +58,32 @@ class ViewRender {
 		// Загружаем с таблицы website_options -> website_active_template -> simplelight
 
 
-		$this->currentTpl = (!empty($template)) ? $template . DS : $this->currentTpl;
+		$this->currentTpl = !empty($template) ? $template . DS : $this->currentTpl;
 	}
 
-	function initHostSettings(array $pararms){
+	private $hostSettings;
+
+	function initHostSettings(array $pararms): ?array{
+
+		$hostParams = array(
+
+			'activeTpl' 	=> null,
+			'websiteTitle'	=> 'Not set yet',
+			'websiteDescrip'=> 'Not set yet',
+			'username'		=> PROFILE['username'],
+
+		);
 
 		// Устанавливаем тему по умолчанию 
 		// устанавливаем имя зарегестрированного пользователя
 		// время загрузки
 
 		// Получаем нужные настройки из базы
+
+		return null;
 	}
 
 	// Нужно отдельный шаблон и пути для АДМИНИСТРАТИВНОЙ ЧАСТИ !!!!!!!!!
-
-	//function prepareRender($routes, $result, $curRoutePath=false): void {
 
 	function prepareRender($result) {
 
@@ -128,8 +151,10 @@ class ViewRender {
 
 	function __desctructor(){
 
-		unset($this->curRouteName);
-		unset($this->replaceParams);
-		unset($this->htmlRenderRes);
+		debugger('DEstructor is working',__CLASS__);
+
+		//unset($this->curRouteName);
+		//unset($this->replaceParams);
+		//unset($this->htmlRenderRes);
 	}
 }

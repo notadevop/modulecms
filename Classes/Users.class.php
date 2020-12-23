@@ -1,6 +1,6 @@
 <?php 
 
-
+(defined('ROOTPATH') && defined('DS')) or die('something wrong!');
 
 class Users extends Database {
 

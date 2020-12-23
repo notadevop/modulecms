@@ -15,6 +15,9 @@ define('LOGINALLOW', true);
 define('RESTOREALLOW',true);
 
 
+define('HOSTENABLED', true);
+
+
 define('DEFROUTEPATH', 'Routes' . DS);
 define('HOST', 'http://'.$_SERVER['HTTP_HOST']);
 

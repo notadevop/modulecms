@@ -22,7 +22,7 @@ class Auth extends Database {
 
 		// Временно!!!!! проверяем по времени разницу будет заменен на класс
 
-		$this->dateClass = function(int $time1,int $time2,string $timetype='%d',int $interval): bool {
+		$this->dateClass = function(int $time1,int $time2,string $timetype='%d',int $interval=AUTHUPDATE['updatePasswrdInterval']): bool {
 
 			return true; // Указывает, что нужно обновить хеш!!!!
 
