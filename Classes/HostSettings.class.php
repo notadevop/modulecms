@@ -11,11 +11,11 @@ class HostSettings extends Database {
 		parent::__construct(true);
 	}
 
-	public function settingExist(string $option_key): bool {
+	public function settingExist(string $key): bool {
 
 		$sql = 'SELECT COUNT(*) FROM website_options WHERE option_name LIKE :optname LIMIT 1';
 
-		$this->preAction($sql, array(':optname' => $value));
+		$this->preAction($sql, array(':optname' => $key));
 
 		if (!$this->doAction()) {return false;}
 
@@ -28,14 +28,14 @@ class HostSettings extends Database {
 
 	// Получаем все указанные настройки по указанному массиву 
 
-	public function getSettings(array $option_key): ?array{
+	public function getSettings(array $settings_keys): ?array{
 
 		$sql = 'SELECT option_value as value 
 				FROM website_options WHERE option_name LIKE :optname LIMIT 1';
 
         $row = array();
 
-        foreach ($option_key as $key => $value) {
+        foreach ($settings_keys as $key => $value) {
 
         	if (!$this->settingExist($key)) { continue; }
 
@@ -55,17 +55,17 @@ class HostSettings extends Database {
 
 	// Добавляем новые настройки или обновляем при включенном флаге старые
 
-	function addSettings(string $settings): bool { 
+	protected function addSettings(string $key, string $value): bool { 
 
-		if (empty($settings) || $this->settingsExist($key)) { return false; }
+		if (empty($key) || $this->settingsExist($key)) { return false; }
 
 		$sql = 'INSERT INTO website_options (option_name, option_value) 
 						VALUES (:optname, optvalue)';
 
 		$this->preAction($sql, array(
-									':optname' 	=>	$key), 
-									':optvalue'	=>	$value;
-									);
+									':optname' 	=>	$key, 
+									':optvalue'	=>	$value
+									));
 		if(!$this->doAction()) { return false; }
 
 		return true;
@@ -73,15 +73,30 @@ class HostSettings extends Database {
 
 	// редактирует указанный список настроек для хоста
 
-	function editSettings(string $settings): bool {
+	function editSettings(string $key, string $value): bool {
 
-		if 
+		if(!$this->settingExist($key)) { return false; }
 
+		$sql = 'UPDATE website_options SET option_name=:optname, option_value=:optvalue WHERE option_name = :optname';
+
+		$this->preAction($sql, array(':optname' => $key, ':optvalue' => $value));
+
+		if (!$this->doAction()) { return false; }
+
+		return true;
 	}
 
-	function removeSettings(string $option_key): bool {
+	function removeSettings(string $key): bool {
 
+		if(!$this->settingExist($key)) { return false; }
 
+		$sql = 'DELETE FROM website_options WHERE option_name LIKE :optname';
+		
+		$this->preAction($sql, array(':optname' => $key));
+
+		if(!$this->doAction()) { return false; }
+
+		return true;
 	}
 
 }

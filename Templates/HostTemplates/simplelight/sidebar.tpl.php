@@ -25,9 +25,6 @@
 <div id="site_content">
   <div class="sidebar">
 
-    <h2><b> Административная часть</b></h2>
-    <h3>Тут ссылка на статические страницы администратора</h3>
-
     <h1>Поиск по сайту</h1>
     <form method="get" action="" id="search_form">
       <p>
@@ -49,9 +46,67 @@
       ?>
 
     </ul>
+
+<!--  html code for widget -->
+
       <h1>Последние новости</h1>
       <h4>New Website Launched</h4>
       <h5>January 1st, 2010</h5>
       <p>2010 sees the redesign of our website. Take a look around and let us know what you think.<br />
-        <a href="#">Read more</a></p>
+      <a href="#">Read more</a></p>
+
+<!--  html code for widget -->
+
+
+<?php  
+
+$tempLinkMap = array(
+
+      'Профиль'     => array(
+
+          '/users'  => 'Список пользователей',
+
+      ),
+      'Пользователи'=> array(
+
+          '/users'  => 'Список пользователей',
+      ),
+      'Страницы'    => array(
+
+
+          '/users'  => 'Список пользователей',
+      ),
+      'Настройки'   => array(
+
+          '/users'  => 'Список пользователей',
+      )
+);
+
+?>
+
+
+
+<!--================ DYNAMIC DRIVE SOURCE ===============--->
+
+     <div class="arrowlistmenu">
+          <h3 class="menuheader" style="cursor: default">Вы: (Гость)</h3>
+          <?php 
+
+            foreach ($tempLinkMap as $k1 => $v1) {
+                
+                echo ' <h3 class="menuheader expandable">'.$k1.'</h3>
+                        <ul class="categoryitems">';
+
+                foreach ($v1 as $k2 => $v2) {
+                   
+                  echo '<li><a href="'.$k2.'">'.$v2.'</a></li>';
+                }
+
+                echo '</ul>';
+            }
+          ?>
+      </div>
+<!--================ DYNAMIC DRIVE SOURCE ===============--->
+
+   
   </div>

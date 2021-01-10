@@ -37,7 +37,11 @@ class CookieJob {
 
 	public function setCookies(array $cookies): void {
 
-		if(empty($cookies)) { return; }
+		if(empty($cookies)) { 
+
+			// throw new Exception('Установка куки не удалась');
+
+			return; }
 
 		foreach ($cookies as $key => $value) {
 			
@@ -56,7 +60,11 @@ class CookieJob {
 
 	public function setCookieTime(string $cookieName, string $time, bool $gotopast=false): void {
 
-		if(!$this->existPrepCookie($cookieName)) { return; }	
+		if(!$this->existPrepCookie($cookieName)) { 
+
+			//throw new Exception('Установка время для куки не удалась!');
+
+			return; }	
 
 		$this->cookie[$cookieName]['ctime'] = strtotime($time);
 
@@ -65,7 +73,11 @@ class CookieJob {
 
 	function setPathDomenCookie(string $cookieName, string $path = '/', string $domen = 'localhost'): void {
 
-		if(!$this->existPrepCookie($cookieName)) { return; }	
+		if(!$this->existPrepCookie($cookieName)) { 
+
+			// throw new Exception('Установка куки по определенному пути не удалась!');
+
+			return; }	
 
 		$this->cookie[$cookieName]['cpath'] = $path;
 		$this->cookie[$cookieName]['cdomen'] = $domen;
@@ -137,7 +149,12 @@ class CookieJob {
 
 	function clearCookie(string $cookieName): void {
 
-		if(!$this->existPrepCookie($cookieName)) { return; }
+		if(!$this->existPrepCookie($cookieName)) { 
+
+			// throw new Exception('Ошибка удаления куки!');
+
+			return;
+		}
 
 		//return ;	
 

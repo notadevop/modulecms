@@ -1,5 +1,7 @@
 <?php 
 
+(defined('ROOTPATH') && defined('DS')) or die('something wrong!');
+
 define('sqliteFolder', 'sqlitefolder');
 define('sqlitefile', 'sqlitedb.sql');
 
@@ -22,8 +24,8 @@ define('DEFROUTEPATH', 'Routes' . DS);
 define('HOST', 'http://'.$_SERVER['HTTP_HOST']);
 
 // нужно для того, чтобы отдельно указывать другой путь шаблону
-define('TPLDEFAULTFOLDER', ROOTPATH . 'Templates'.DS); 
-define('TPLDEFAULTTEMPLATE', 'default'.DS);
+define('TPLDEFAULTFOLDER', ROOTPATH.'Templates'.DS.'HostTemplates'.DS); 
+define('TPLDEFTEMPLATE', 'default'.DS);
 
 define('REDIRECTLOGIN', array(
 			

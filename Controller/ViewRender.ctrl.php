@@ -19,7 +19,7 @@ class ViewRender {
 		$this->curRouteName 	= Router::getCurrentRouteParams();
 		$this->replaceParams 	= array();
 
-		$this->currentTpl 		= TPLDEFAULTTEMPLATE;
+		$this->currentTpl 		= TPLDEFTEMPLATE;
 		$this->tplDir 			= TPLDEFAULTFOLDER;
 		$this->htmlRenderRes	= NULL;
 	}
@@ -149,12 +149,5 @@ class ViewRender {
 		print($this->htmlRenderRes);
 	}
 
-	function __desctructor(){
-
-		debugger('DEstructor is working',__CLASS__);
-
-		//unset($this->curRouteName);
-		//unset($this->replaceParams);
-		//unset($this->htmlRenderRes);
-	}
+	function __desctructor(){}
 }

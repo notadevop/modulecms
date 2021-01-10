@@ -4,33 +4,38 @@
 
 class ViewRender {
 
-
+	/*
 	private $defaultTpl;
 	private $defaultTplDir;
 	private $currentActiveTpl;
+	*/
 
-	protected $hostSettings; 
+	private $templateSettings; // array
 
-	private $viewContent;
+	private $hostSettings; // array
 
-	private $reservedPages;
+	private $viewContent; // string -> content
+
+	private $reservedPages; 
 
 
 	function __constructor() {
 
 		$this->hostSettings = array(
 
-				'%websiteTitle%' 	=> 'Заголовок вебсайта',
-				'%websiteDesc%'		=> 'Пояснение вебсайта',
-				'%username%'		=> 'Имя пользователя'
+				'/%websiteTitle%/i' 	=> 'Заголовок вебсайта',
+				'/%websiteDesc%/i'		=> 'Пояснение вебсайта',
+				'/%username%/i'			=> PROFILE['username']
+				'/%CurActiveTemplate%/i'=> TPLDEFTEMPLATE
 		);
 	}
+
+	// Получаем все настройки 
 
 	function initRenderSettings():void {
 
 		$hostTmp = $this->hostSettings;
 
-		// Получаем сразу все настройки из указанных по умолчанию
 		$tmp = new hostSettings()->getSettings($hostTmp);
 
 		$hostTmp= array_replace(array_intersect_key($hostTmp, $tmp), $tmp);
@@ -41,10 +46,16 @@ class ViewRender {
 	function initSpecPages(array $listSpecPages): ?string {
 
 		$pages = array(
+					// Административная часть
+					'admin' => 
+						array(	
+							'tplName'		=> 'adminDefault',
+							'folderName' 	=> '/adminTpl',
+							'link'	 		=> '/administrator'
+					 	)  	
+				);
 
-					'/admin', // Административная 
-		);
-
+		$pages = $listSpecPages
 
 		// сделать механизм выбора специальных шаблонов для определенных страниц 
 		// Например для адимнистратора указывается свой шаблон
@@ -53,27 +64,29 @@ class ViewRender {
 	}
 
 
-	function setActiveTemplate(string $tplName='', ):void {
+	function activateTemplate(string $tplName=''):void {
 
-		
+		// -> TPLDEFAULTFOLDER <- 
+
+
 
 	}
 
-	function replaceContent(array $params=''):void{
+	// Заменяет маску ключа и его значением => %mask% - %replacement%
+
+	function replaceContent(array $params):void{
 
 		if (empty($params)) { return; }
 
-		$html = $this->viewContent;
-
-		foreach ($params as $key => $value) {
-			
-			$html = preg_replace($key, $value, $html);
-		}
-
-		$this->viewContent = $html;
+		$this->viewContent = preg_replace(
+									array_keys($params), 
+									array_values($params), $this->viewContent
+							);
 	}
 
 	function prepareRender():void {
+
+		// Сканируем все файлы *.tpl.php в указаной папке с шаблона
 
 
 
@@ -85,7 +98,7 @@ class ViewRender {
 
 		if(!HOSTENABLED) {
 
-			die('Sorry, host temporary closed');
+			die('Sorry, host temporary closed/Веб хост временно закрыт!');
 		} 
 
 		echo $this->viewContent;

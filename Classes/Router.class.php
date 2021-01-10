@@ -68,7 +68,7 @@ final class Router {
 		$files = $fileObj->listFolder();
 
 		$noRoutes = function(){
-			die('<h1>Фатальная Ошибка! Не могу найти ни одного пути!</h1>');
+			die('<h1>Fatal, no routes found!</h1>');
 		};
 
 		if(count($files) <= 1 ) {

@@ -42,6 +42,9 @@ foreach ($files as $key => $value) {
 	require_once ROOTPATH . $value;
 }
 
+// Точка запуска вебсайта
+//Main::runScript();
+
 
 /*
 	Класс разделения контента на страницы Pagination (break to pages)
@@ -74,17 +77,10 @@ $mem = convert(memory_get_usage(true));
 $viewRender->replace(
 	array(
 
-		'%loadtime%' 	=> $load = 'Загрузка: ' . $total_time . ' cекунд.',
-		'%username%' 	=> PROFILE['username'], 
-		'%memused%'		=> 'Использованная память: '. $mem
+		'/%loadtime%/i' 	=> $load = 'Загрузка: ' . $total_time . ' cекунд.',
+		'/%username%/i' 	=> PROFILE['username'], 
+		'/%memused%/i'		=> 'Использованная память: '. $mem
 	)
 );
 // в конечном итоге вывидим все.
 $viewRender->viewRender();
-
-
-
-function par(string $name, bool $booler): void {
-
-
-}

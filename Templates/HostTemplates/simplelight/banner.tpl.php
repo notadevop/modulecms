@@ -12,19 +12,19 @@ $alerts = array(
 
 	'warnings'    => array(
 		'css_class'		=> 'alert',
-		'description' 	=> 'Возникли проблемы указанные ниже:',
+		'description' 	=> 'Ошибка!',
 	),	
 	'attentions'  => array(
 		'css_class'		=> 'alert warning',
-		'description'  	=> 'Внимание, есть определенные проблемы',
+		'description'  	=> 'Внимание!',
 	),
 	'information' => array(
 		'css_class'		=> 'alert info',
-		'description' 	=>'Есть определенная информация:',
+		'description' 	=>'Информация!',
 	),
 	'success'		=> array(
 		'css_class' 	=> 'alert success',
-		'description' 	=> 'Все ОК!',
+		'description' 	=> 'Успешно!',
 	)
 );
 
