@@ -48,8 +48,7 @@ a, a:hover
   text-decoration: underline;
   color: #A4AA04;}
 
-a:hover
-{ text-decoration: none;}
+
 
 .left
 { float: left;
@@ -118,7 +117,7 @@ ol li
 #logo h1, #logo h1 a, #logo h1 a:hover 
 { padding: 22px 0 0 0;
   color: #FFF;
-  text-decoration: none;}
+  text-decoration: underline;}
 
 #logo h1 a .logo_colour
 { color: #888;}
@@ -150,11 +149,14 @@ ul#menu li a
   text-align: center;
   color: #000;
   text-decoration: none;
-  background: #E0E0E0;} 
+  background: #E0E0E0;
+} 
 
 ul#menu li.selected a, ul#menu li.selected a:hover
 { background: #FFF;
-  color: #B60000;}
+  color: #B60000;
+  text-decoration: underline;
+}
 
 ul#menu li a:hover
 { color: #B60000;}
@@ -184,7 +186,9 @@ ul#menu li a:hover
 .sidebar li a, .sidebar li a:hover
 { padding: 0 0 0 25px;
   display: block;
-  background: transparent url(link.png) no-repeat left center;} 
+  background: transparent url(link.png) no-repeat left center;
+  text-decoration: underline;
+} 
 
 .sidebar li a.selected
 { color: #444;
@@ -212,7 +216,7 @@ ul#menu li a:hover
   text-decoration: underline;}
 
 #footer a:hover
-{ text-decoration: none;}
+{ text-decoration: underline;}
 
 #footer p
 { line-height: 22px;

@@ -35,63 +35,37 @@
     <p>Вы вошли на сайт как:(<?=$name; ?>), <?=$logout;?></p>
     <p>Пользователей онлайн: <?=$online;?> <br /> <?=$notifs;?></p>
 
-    <h1>Категории</h1>
-    <ul>
-      <?php
-      // тут использовать луп for 
-      foreach ($tempLinkMap as $key => $value) {
-        
-        echo '<li><a href="'.$key.'">'.$value.'</a></li>';
-      }
-      ?>
 
-    </ul>
-
-<!--  html code for widget -->
-
-      <h1>Последние новости</h1>
-      <h4>New Website Launched</h4>
-      <h5>January 1st, 2010</h5>
-      <p>2010 sees the redesign of our website. Take a look around and let us know what you think.<br />
-      <a href="#">Read more</a></p>
-
-<!--  html code for widget -->
-
-
-<?php  
+    <?php  
 
 $tempLinkMap = array(
 
       'Профиль'     => array(
-
-          '/users'  => 'Список пользователей',
+          '/viewprofile'  => 'Мой профиль',
+          '/editpass'     => 'Редактировать Профиль',
+          '/editpass'     => 'Изменить пароль',
+          '#'             => 'Активные сесии',
+      ),
+      'Пользователи'    => array(
+          '/users'      => 'Список пользователей',
+          '/editusers'  => 'Редактировать привелегии',
 
       ),
-      'Пользователи'=> array(
-
-          '/users'  => 'Список пользователей',
-      ),
-      'Страницы'    => array(
-
-
-          '/users'  => 'Список пользователей',
+      'Страницы'      => array(
+          '/addpage'    => 'Добавить страницу',
+          '/listpages'  => 'Список страниц',
       ),
       'Настройки'   => array(
-
-          '/users'  => 'Список пользователей',
+          '/settingsgeneral'=> 'Общие',
+          '/settingsauth'   => 'Авторизация',
       )
 );
 
 ?>
 
-
-
 <!--================ DYNAMIC DRIVE SOURCE ===============--->
-
      <div class="arrowlistmenu">
-          <h3 class="menuheader" style="cursor: default">Вы: (Гость)</h3>
           <?php 
-
             foreach ($tempLinkMap as $k1 => $v1) {
                 
                 echo ' <h3 class="menuheader expandable">'.$k1.'</h3>
@@ -108,5 +82,32 @@ $tempLinkMap = array(
       </div>
 <!--================ DYNAMIC DRIVE SOURCE ===============--->
 
+
+
+    <!--
+
+    <h1>Категории</h1>
+    <ul>
+      <?php
+      // тут использовать луп for 
+      foreach ($tempLinkMap as $key => $value) {
+        
+        echo '<li><a href="'.$key.'">'.$value.'</a></li>';
+      }
+      ?>
+
+    </ul>
+
+    -->
+
+<!--  html code for widget -->
+
+      <h1>Последние новости</h1>
+      <h4>New Website Launched</h4>
+      <h5>January 1st, 2010</h5>
+      <p>2010 sees the redesign of our website. Take a look around and let us know what you think.<br />
+      <a href="#">Read more</a></p>
+
+<!--  html code for widget -->
    
   </div>
