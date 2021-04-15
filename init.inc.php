@@ -2,6 +2,8 @@
 
 (defined('ROOTPATH') && defined('DS')) or die('something wrong');
 
+class ClassNotFoundException extends Exception { }
+
 // Обьявить пространство имен для защиты от запуска из любого класа из любой точки
 
 spl_autoload_register(function ($class_name) {
@@ -33,14 +35,14 @@ spl_autoload_register(function ($class_name) {
 		}
 		
 		if (!$flag) {
-			throw new Exception('Класс => <b style="color: red;">'. $class_name .'</b> не найден. Невозможно продолжить, исправь это!');
+			throw new ClassNotFoundException('Класс <b>'. $class_name .'</b> не найден!', 1);
 		}
 
 		require_once ( $path );	
 	
-	} catch (Exception $e) {
+	} catch (ClassNotFoundException $e) {
 
-		die(debugger($e->getMessage(), 'spl_autoload_register'));
+		die(debugger($e->getMessage(), __FUNCTION__));
 	}
 }); 
 

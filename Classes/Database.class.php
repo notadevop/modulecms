@@ -52,7 +52,7 @@ class Database {
 			}
 
 		} catch (Exception $e) {
-			die("Error! " . debugger($e->getMessage(), __METHOD__));
+			die("Error! " . $e->getMessage());
 		}
 
 		//echo 'do connected<br>';
@@ -90,14 +90,14 @@ class Database {
 		
 		try {
 			if (empty($this->sql)) 
-				throw new RuntimeException('SQL query empty! No SQL.');
+				throw new RuntimeException('Not Set SQL Query, Empty Var!');
 			
 			$this->stmt = $this
-				->get_con()
-				->prepare($this->sql);
+							->get_con()
+							->prepare($this->sql);
 
 			if (!$this->stmt) 
-				throw new RuntimeException('SQL preparing failure! '.$stmt->errorCode());
+				throw new RuntimeException('Preparing SQL Failure! '.$this->stmt->errorCode());
 
 			if (!empty($this->prepared)) {
 				
@@ -110,10 +110,8 @@ class Database {
 				}
 			} 
 
-			$check = $this->stmt->execute();
-
-			if (!$check) 
-				throw new RuntimeException('SQL execution failure! '.$stmt->errorCode());
+			if (!$this->stmt->execute()) 
+				throw new RuntimeException('Execute SQL Query Failure! '.$this->stmt->errorCode());
 		
 			$r = true;
 

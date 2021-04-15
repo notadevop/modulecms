@@ -20,8 +20,7 @@ final class Main extends ViewRender {
 		$this->ViewRender();
 	}
 
-
-	protected static $initObj;
+	public static $initObj;
 
 	// Функция, точка входа 
 
