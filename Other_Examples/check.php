@@ -4,8 +4,8 @@
 
 
 
-$pattern ='/^[-a-zA-Z0-9_\x{30A0}-\x{30FF}'
-         .'\x{3040}-\x{309F}\x{4E00}-\x{9FBF}\s]*$/u';
+$pattern ='/^[-a-zA-Z0-9_\x{30A0}-\x{30FF}'.'\x{3040}-\x{309F}\x{4E00}-\x{9FBF}\s]*$/u';
+         
 $match_string = '印刷最安 ニキビ跡除去 ゲームボーイ';
 
 if (preg_match($pattern, $match_string)) {

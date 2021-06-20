@@ -23,28 +23,21 @@ error_reporting(E_ALL);
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOTPATH', dirname(__FILE__) . DS);
 
-
 // header( "refresh:1; url=index.php" );
-
 // Указываем все необходимые файлы для загрузки
 
-$files = array(
+foreach (
 
-	'settings.inc.php',
-	'config.inc.php',
-	'init.inc.php',
-	'extended.func.php'
-);
-
-
-foreach ($files as $key => $value) {
+	array(
+		'settings.inc.php',
+		'config.inc.php',
+		'init.inc.php',
+		'extended.func.php'
+	) 
+	as $key => $value) {
 	
 	require_once ROOTPATH . $value;
 }
-
-// Точка запуска вебсайта
-//Main::runScript();
-
 
 /*
 	Класс разделения контента на страницы Pagination (break to pages)
@@ -67,7 +60,7 @@ $viewRender->prepareRender($result);
 
 $time = microtime();
 $time = explode(' ', $time);
-$time = $time[1] + $time[0];
+$time = $time[1] + $time[0]; 
 $finish = $time;
 $total_time = round(($finish - $start), 4);
 

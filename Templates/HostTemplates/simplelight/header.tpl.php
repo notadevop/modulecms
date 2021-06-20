@@ -84,8 +84,15 @@ ddaccordion.init({
 	color: #A70303;
 }
 .arrowlistmenu ul li a:hover{ /*hover state CSS*/
-	color: #A70303;
-	background-color: #F3F3F3;
+	color: #FF4500;
+	background: url(../../Templates/HostTemplates/simplelight/img/arrowbullet-active.png) no-repeat center left; /*custom bullet list image*/
+	display: block;
+	padding: 2px 0;
+	padding-left: 19px; /*link text is indented 19px*/
+	text-decoration: none;
+	font-weight: bold;
+	border-bottom: 1px solid #dadada;
+	font-size: 90%;
 }
 </style>
 

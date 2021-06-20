@@ -16,24 +16,10 @@ class Users extends Database {
    	// Получаем список всех пользователей зарегестрированных на сайте
    	function getListUsers(bool $all=false): ?array {
 
-         /*
-         $sql = 'SELECT 
-         `user_id`, `user_name`, `user_email`, `user_password`, `user_last_visit`, `user_registration_date`, `user_activated`, `user_picture`  FROM `users` 
-         WHERE `user_last_visit` != :lastv AND `user_activated` = :uact';
-
-         $binder = array(
-            ':lastv' => 0,
-            ':uact'  => 1
-         );
-
-         $this->preAction($sql, $binder); 
-         */
-
          $sql = 'SELECT 
          `user_id`, `user_name`, `user_email`, `user_password`, `user_last_visit`, `user_registration_date`, `user_activated`, `user_picture`  FROM `users` ';
 
          $this->preAction($sql); 
-
 
          if(!$this->doAction()) { return null; }
 
