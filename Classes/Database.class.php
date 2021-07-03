@@ -52,7 +52,8 @@ class Database {
 			}
 
 		} catch (Exception $e) {
-			die("Error! " . $e->getMessage());
+			//die("Error! " . $e->getMessage());
+			die('Error! Database Connection impossible, for more info, contact with administrator!');
 		}
 
 		//echo 'do connected<br>';
