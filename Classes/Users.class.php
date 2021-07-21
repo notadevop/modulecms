@@ -17,7 +17,8 @@ class Users extends Database {
    	function getListUsers(bool $all=false): ?array {
 
          $sql = 'SELECT 
-         `user_id`, `user_name`, `user_email`, `user_password`, `user_last_visit`, `user_registration_date`, `user_activated`, `user_picture`  FROM `users` ';
+         `user_id`, `user_name`, `user_email`, `user_password`, `user_last_visit`, `user_registration_date`, `user_activated`, `user_picture`  
+         FROM `users` ';
 
          $this->preAction($sql); 
 

@@ -5,6 +5,8 @@ $time = explode(' ', $time);
 $time = $time[1] + $time[0];
 $start = $time;
 
+
+
 if (version_compare(phpversion(), '7.0.0') <= 0) {
 	
 	die('PHP 7.0 or newer Only! Your version PHP is: '.phpversion());
@@ -26,6 +28,9 @@ define('ROOTPATH', dirname(__FILE__) . DS);
 // header( "refresh:1; url=index.php" );
 // Указываем все необходимые файлы для загрузки
 
+
+define('DEBUG', true);
+
 foreach (
 
 	array(
@@ -38,6 +43,7 @@ foreach (
 	
 	require_once ROOTPATH . $value;
 }
+
 
 /*
 	Класс разделения контента на страницы Pagination (break to pages)
@@ -77,3 +83,6 @@ $viewRender->replace(
 );
 // в конечном итоге вывидим все.
 $viewRender->viewRender();
+
+
+// Конец Исполнения кода 

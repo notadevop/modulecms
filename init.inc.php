@@ -67,55 +67,58 @@ function genCallTrace(){
 }
 
 
- // Для определения: 
-
-/*
-__FILE__ – The full path and filename of the file.
-__DIR__ – The directory of the file.
-__FUNCTION__ – The function name.
-__CLASS__ – The class name.
-__METHOD__ – The class method name.
-__LINE__ – The current line number of the file.
-__NAMESPACE__ – The name of the current namespace
-*/
 
 
-function debugger($input='no input', $param=__FUNCTION__, $debug=false, $where=__FILE__): void {
 
-	?>
+function debugger($input='emptyOutput', $category=DEBUG, $params=array()): void {
 
-	<div style="margin: 15px; padding: 10px">
-	<p>Файл запущен из: <?=basename( $_SERVER['PHP_SELF'] ); ?></p>
-		<p>Объект или доп. информация: <b style="color: red;"> <?=$param; ?></b></p>	
-		<p>Исполнитель: 
-	<?php 
+	// Для массива  array $params использовать ниже указанные параметры: 
 
-	if (empty($input)) {
+	/*
+	__FILE__ – The full path and filename of the file.
+	__DIR__ – The directory of the file.
+	__FUNCTION__ – The function name.
+	__CLASS__ – The class name.
+	__METHOD__ – The class method name.
+	__LINE__ – The current line number of the file.
+	__NAMESPACE__ – The name of the current namespace
+	*/
 
-		echo 'переменная пустая или не указанна: <br/>';
-		var_dump($input);
+	//$category = DEBUG;
+	
+	$preb = '<h3><pre style="margin: 45px; padding: 40px; color: blue;">';
+	$pree = '</pre></h3>';
 
-	} else {
-		?><br /><pre style='margin: 5px'><?php print_r($input); ?></pre></p><hr/><?php	
-	}
+	echo $preb;	
 
-	echo '</div>';
+	$userfunc = !true;
+
+	if ($category) {
+		$debug = debug_backtrace();
+		//debug_print_backtrace();
+		if (!empty($debug)){
+			for ($i=0; $i < count($debug); $i++) { 
+				if($debug[$i]['function'] == 'debugger' ) {
+					echo 'Debug Line: '. $debug[$i]['line'].'<br/>';
+					echo 'File: '.$debug[$i]['file'].'<br/>';
+					echo '<span style="color: red;">Variable OUTPUT: </span><br/>';
+					print_r($debug[$i]['args']);
+				} 
+			}
+			
+			if($userfunc) {
+				echo '<span style="color: red;">Пользовательские функции: </span><br/>';
+				$functions = get_defined_functions();
+				$r = array_keys($functions['user']);
+				print_r(array_values($functions['user']));
+			}
+
+		} else { echo 'debug is empty!'; }
+		
+	} else { print_r($input); }
+
+	echo $pree;
+	//echo '<hr/ style="color: black;">';
+
 	return;
-	?>
-
-	<h4>
-		<?php 
-			echo 'Определенные пользователем функции:';
-
-			$functions = get_defined_functions();
-			$r = array_keys($functions['user']);
-
-			echo '<pre>';
-			print_r($r);
-			echo '</pre>';
-		?>
-
-
-	</h4>
-	<?php
 }

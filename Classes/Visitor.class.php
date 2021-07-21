@@ -258,7 +258,7 @@ final class Visitor extends Database {
 		$p = array(
 			'session' 	=> session_id(),
 			'vistime' 	=> time(),
-			'outtime' 	=> (time() - 60),
+			'outtime' 	=> (time() - 60), //
 			'userip'  	=> $this->get_ip(),
 			'uagent' 	=> serialize($this->get_userspecs())
 		);
