@@ -8,20 +8,22 @@ class GlobalParams {
 	
 	function __construct($param='') { 
 
-		if (!empty($param)) { $this->setGlobParam($param); }
+		if (!empty($param)) { 
+			$this->setGlobParam($param); 
+		}
 	}
 
-	private $globtype; 
+	private $gp; 
 
 	public function setGlobParam(string $param='na'): void {
 
 		switch ($param) {
-			case '_POST': 		$this->globtype = $_POST;		break;  
-			case '_FILES': 		$this->globtype = $_FILES; 		break;
-			case '_GET':		$this->globtype = $_GET;		break;
-			case '_COOKIE':		$this->globtype = $_COOKIE; 	break;
-			case '_SESSION': 	$this->globtype = $_SESSION; 	break;
-			default: 			$this->globtype = null;			break;
+			case '_POST': 		$this->gp = $_POST;		break;  
+			case '_FILES': 		$this->gp = $_FILES; 	break;
+			case '_GET':		$this->gp = $_GET;		break;
+			case '_COOKIE':		$this->gp = $_COOKIE; 	break;
+			case '_SESSION': 	$this->gp = $_SESSION; 	break;
+			default: 			$this->gp = null;		break;
 		}
 	}
 
@@ -29,9 +31,9 @@ class GlobalParams {
 
 	public function isExist(string $key): bool {
 
-		if(empty($this->globtype)) { return false; } 
+		if(empty($this->gp)) { return false; } 
 
-		return array_key_exists($key, $this->globtype);
+		return array_key_exists($key, $this->gp);
 	}
 
 	// получаем 
@@ -46,7 +48,7 @@ class GlobalParams {
 		} else return $this->globtype[$key];
 		*/
 
-		return $this->isExist($key) ? $this->globtype[$key] : null;
+		return $this->isExist($key) ? $this->gp[$key] : null;
 	}
 }
 

@@ -1,0 +1,12 @@
+
+// include all errors of website
+
+
+{
+	"database errors": { 
+		{"connection error": 		"no connection"},
+		{"connection interupted": 	"connection is broken"},	 
+	}
+}
+
+

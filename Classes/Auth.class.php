@@ -16,8 +16,6 @@ class Auth extends Database {
 
 		$this->modifier = new Modifier();
 		$this->visitor 	= new Visitor();
-
-
 		$this->users = new Users();
 
 		// Временно!!!!! проверяем по времени разницу будет заменен на класс
