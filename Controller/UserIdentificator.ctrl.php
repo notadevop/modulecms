@@ -51,13 +51,9 @@ class UserIdentificator {
 					$temp[$key] = $value;
 				}
 
-				$this
-					->granter
-					->initUser($profile['userid']);
+				$this->granter->initUser($profile['userid']);
 
-				$uperms = $this
-							->granter
-							->getPermsOfUser();
+				$uperms = $this->granter->getPermsOfUser();
 
 				$temp['priveleges'] = implode(', ', $uperms);
 				$auth = true;
@@ -131,12 +127,10 @@ class UserIdentificator {
 			)
 		);
 
-		$p = array(); 				// Тут будет результат
-		$prof = $this->defineUser; 	// Устанавливаем сразу анонимного пользователя 
+		$p 		= array(); 				// Тут будет результат
+		$prof 	= $this->defineUser; 	// Устанавливаем сразу анонимного пользователя 
 
-		$this
-			->glob
-			->setGlobParam('_POST');
+		$this->glob->setGlobParam('_POST');
 
 		foreach ($param as $key => $value) {
 			
@@ -164,12 +158,8 @@ class UserIdentificator {
 			$p[$key] = $this->filter->getKey($key);
 		}
 
-		$ue = $this
-				->users
-				->userExist($p['loginmail']);
-		$ub = $this
-				->auth
-				->userActivated($p['loginmail']);
+		$ue = $this->users->userExist($p['loginmail']);
+		$ub = $this->auth->userActivated($p['loginmail']);
 
 		if (!$ue) {
 
@@ -183,9 +173,7 @@ class UserIdentificator {
 			return $prof();
 		}
 
-		$profile = $this
-						->auth
-						->findUser($p['loginmail'], $p['loginpasswd']);
+		$profile = $this->auth->findUser($p['loginmail'], $p['loginpasswd']);
 
 		if(empty($profile)) {
 
@@ -208,9 +196,7 @@ class UserIdentificator {
 			$redirection['redirectpath'] = str_replace('%userid%', $profile['userid'], $redirection['redirectpath']);
 		}
 
-		$profile['tokenHash'] = $this
-									->auth
-									->updateUserHash($profile['userid'], false);
+		$profile['tokenHash'] = $this->auth->updateUserHash($profile['userid'], false);
 
 		if(empty($profile['tokenHash'])) {
 
@@ -299,24 +285,16 @@ class UserIdentificator {
 			$p[$key] = $this->filter->getKey($key);
 		}
 
-		$ue = $this
-					->users
-					->userExist($p['mailhash']);
-		$ub = $this
-					->auth
-					->userActivated($p['mailhash']);
+		$ue = $this->users->userExist($p['mailhash']);
+		$ub = $this->auth->userActivated($p['mailhash']);
 
 		if (!$ue || !$ub) { return $prof(); }
 
-		$profile = $this
-						->auth
-						->authUser($p['mailhash'], $p['tokenhash']);
+		$profile = $this->auth->authUser($p['mailhash'], $p['tokenhash']);
 
 		if(!empty($profile)) {
 
-			$profile['tokenHash'] = $this
-										->auth
-										->updateUserHash($profile['userid'], false);
+			$profile['tokenHash'] = $this->auth->updateUserHash($profile['userid'], false);
 
 			$this->saveAuthAction($profile['useremail'], $profile['tokenHash']);
 
@@ -341,23 +319,15 @@ class UserIdentificator {
 			'mailhash' => $email,
 			'tokenhash' => $hash,
 		);
-		$this
-			->cjob
-			->setCookies($authParams);
+		$this->cjob->setCookies($authParams);
 
 		$errors = array();
 
 		foreach ($authParams as $key => $value) {
 
-			$this
-				->cjob
-				->setCookieTime($key, $time);
-			$this
-				->cjob
-				->setPathDomenCookie($key, $this->AuthParams['host'], $this->AuthParams['domain']);
-			$r = $this
-					->cjob
-					->saveCookie($key);
+			$this->cjob->setCookieTime($key, $time);
+			$this->cjob->setPathDomenCookie($key, $this->AuthParams['host'], $this->AuthParams['domain']);
+			$r = $this->cjob->saveCookie($key);
 
 			if (!$r && $showerr) {
 
@@ -419,12 +389,8 @@ class UserIdentificator {
 			$p[$key] = $this->filter->getKey($key);
 		}
 
-		$mr = $this
-				->users
-				->userExist($p['restoremail']); 
-		$ms = $this
-				->auth
-				->userActivated($p['restoremail']);
+		$mr = $this->users->userExist($p['restoremail']); 
+		$ms = $this->auth->userActivated($p['restoremail']);
 
 		if (!$mr || !$ms) {
 
@@ -433,9 +399,7 @@ class UserIdentificator {
 			return null;
 		}
 
-		$meta = $this
-			->auth
-			->generateActivations($p['restoremail']);
+		$meta = $this->auth->generateActivations($p['restoremail']);
 
 		if (empty($meta)) {return null;}
 
@@ -497,9 +461,7 @@ class UserIdentificator {
 		$p = array(); 				// Тут будет результат
 		$prof = $this->defineUser; 	// Устанавливаем сразу анонимного пользователя 
 
-		$this
-			->glob
-			->setGlobParam('_GET');
+		$this->glob->setGlobParam('_GET');
 
 		foreach ($param as $key => $value) {
 			
@@ -527,9 +489,7 @@ class UserIdentificator {
 			$p[$key] = $this->filter->getKey($key);
 		}
 
-		$sp = $this
-				->auth
-				->verifyActivations($p['userid'], $p['token'], $p['confirm']);
+		$sp = $this->auth->verifyActivations($p['userid'], $p['token'], $p['confirm']);
 
 		if (!$sp) {
 
@@ -583,9 +543,7 @@ class UserIdentificator {
 			),
 		);
 
-		$this
-			->glob
-			->setGlobParam('_POST');
+		$this->glob->setGlobParam('_POST');
 
 		foreach ($param as $key => $value) {
 			
@@ -621,9 +579,7 @@ class UserIdentificator {
 			return false;
 		}
 
-		$r = $this
-				->users
-				->updateUserPassword($v['userid'], $p['newpassword1'], true);
+		$r = $this->users->updateUserPassword($v['userid'], $p['newpassword1'], true);
 
 		if (!$r) {
 
@@ -643,7 +599,7 @@ class UserIdentificator {
 	// добавляет нового пользователя в базу данных
 	// ----------------------------------------------
 
-	function regAction():  ?string{
+	function regAction(): ?string{
 
 		$param = array(
 
@@ -691,14 +647,15 @@ class UserIdentificator {
 			)
 		);
 
-		$this
-			->glob
-			->setGlobParam('_POST');
+		$this->glob->setGlobParam('_POST');
 
 		foreach ($param as $key => $value) {
 			
 			// если нету параметра устанавливаем анонимного пользователя
-			if(!$this->glob->isExist($key)) { return false; }
+			if(!$this->glob->isExist($key)) { 
+
+				return null; 
+			}
 
 			$param[$key]['value'] = $this->glob->getGlobParam($key);
 
@@ -715,7 +672,7 @@ class UserIdentificator {
 					Logger::collectAlert('warnings', $errValue);
 				}
 
-				return false;
+				return null;
 			} 
 
 			$p[$key] = $this->filter->getKey($key);
@@ -724,12 +681,10 @@ class UserIdentificator {
 		if ($p['userregpassword1'] !== $p['userregpassword2']) {
 
 			Logger::collectAlert('warnings', 'Ошибка! пароли не совпадают.');
-			return false;
+			return null;
 		}
 
-		$e = $this
-				->users
-				->userExist($p['userregemail']);
+		$e = $this->users->userExist($p['userregemail']);
 
 		if ($e) {
 
@@ -737,22 +692,20 @@ class UserIdentificator {
 			return null;
 		}
 
-		$insert = $this
-					->users
-					->insertNewUser($p['userregemail'], $p['userregpassword1'], $p['userregname']);
+		$insert = $this->users->insertNewUser($p['userregemail'], $p['userregpassword1'], $p['userregname']);
 
 		if (!$insert) {
 
 			Logger::collectAlert('warnings', 'Не получилось зарегестрироваться!'); 
-			Logger::collectAlert('warnings', 'Проверьте еще раз ваши данные.При повторной ошибке обратитесь к администратору!');
 			return null;
 		}
 
-		$meta = $this
-					->auth
-					->generateActivations($p['userregemail']);
+		$meta = $this->auth->generateActivations($p['userregemail']);
 
-		if (empty($meta)) {return false;}
+		if (empty($meta)) {
+
+			return null;
+		}
 
 		// TODO: Отправка емайла пользователю для восстановления пароля
 		// TODO: сделать генерацию ссылок
@@ -760,7 +713,7 @@ class UserIdentificator {
 		$link = HOST . '/verifreg/?userid=' . $meta['id'] . '&confirm=' . $meta['cofirm'] . '&token=' . $meta['token'];
 
 		Logger::collectAlert('information', $link);
-		return true;
+		return $link;
 	}
 
 	function verifyRegistration(): bool{
@@ -770,11 +723,12 @@ class UserIdentificator {
 
 		$p = $this->verifyUserModifications();
 
-		if (!$p || empty($p)) {return false;}
+		if (!$p || empty($p)) {
+			
+			return false;
+		}
 
-		$astatus = $this
-						->auth
-						->activateRegisteredUser($p['userid']);
+		$astatus = $this->auth->activateRegisteredUser($p['userid']);
 
 		if (!$astatus) {
 
@@ -782,9 +736,7 @@ class UserIdentificator {
 			return false;
 		}
 
-		$this
-			->auth
-			->clearActivations($p['userid']);
+		$this->auth->clearActivations($p['userid']);
 
 		Logger::collectAlert('success', 'Аккаунт активирован!');
 		return true;

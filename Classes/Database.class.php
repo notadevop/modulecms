@@ -54,7 +54,7 @@ class Database {
 		} catch (Exception $e) {
 
 			if (DEBUG) {
-				echo $e->getMessage();
+				debugger($e->getMessage());
 			}
 			die('Error! Database Connection impossible, for more info, contact with administrator!');
 		}

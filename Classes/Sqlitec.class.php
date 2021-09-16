@@ -34,7 +34,6 @@ class Sqlitec {
 		return $this->sqlite->lastInsertRowID();
 	}
 
-
 	// TODO: Как то использвовать или удалить
 
 	function query(string $query ): bool {
@@ -52,7 +51,6 @@ class Sqlitec {
 		$stmt = bindValue('');
 		return ;
 	}
-
 
 	function queryRow( $query ) {
 
@@ -76,7 +74,4 @@ class Sqlitec {
 		}
 		return $rows;
 	}
-
-
-
 }

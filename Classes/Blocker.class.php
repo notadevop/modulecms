@@ -8,15 +8,12 @@ class Blocker {
 
 		if (!$id || empty($id) || session_id() == '') { return false; }
 
-
-
 		return false;
 	}
 
 	// Получаем уникальный ключ для формы
 
 	function getFormUniqId(): string {
-
 
 		return '';
 	}
@@ -25,12 +22,16 @@ class Blocker {
 
 		switch($param) {
 			case'_GET':
+			
 			break;
 			case'_POST':
+			
 			break;
 			case'_COOKIE':
+			
 			break;
 			default:
+			
 			break;
 		} 
 	} 
@@ -42,5 +43,4 @@ class Blocker {
 
 		return false;
 	}
-
 }

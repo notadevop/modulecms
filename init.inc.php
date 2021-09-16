@@ -15,9 +15,11 @@ spl_autoload_register(function ($class_name) {
 	// Указанна папка => префикс файла
 
 	$folders = array(
-		'Includes' 	 => '.inc.',
-		'Classes' 	 => '.class.',
-		'Controller' => '.ctrl.'
+		'Includes' 	 	=> '.inc.',
+		'Classes' 	 	=> '.class.',
+		'Controller' 	=> '.ctrl.',   // Удалить поже!!!
+		'bin'			=> '.bin.',
+		'viewController'=> '.contr.'
 	);
 
 	try {

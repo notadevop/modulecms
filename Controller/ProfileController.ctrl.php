@@ -18,7 +18,6 @@ class ProfileController {
     private function filtration(string $input, array $options) {
 
         $this->filter->setVariables(
-
             array(
                 'key' => array(
                     'value'     => $input,
@@ -34,28 +33,20 @@ class ProfileController {
 
     function getUserProfile($uid = 0): ?array {
 
-                // TODO: Проверяем привелегии пользователя который запрашивает профиль указанного юзера
+        // TODO: Проверяем привелегии пользователя который запрашивает профиль указанного юзера
         // Если привелегии не достаточно, выводим только базовую информацию
         // TODO: Сделать отключение показа социальных данных или профиля пользователям у которых нету привелегий смотреть профиль
 
         // Указываем в массиве кто имеет право смотреть профиль по определенным привелегиям
         $perms = array(
 
-            $this
-                ->granter
-                ->getAllPerms()[0]['perm_desc'],
-            $this
-                ->granter
-                ->getAllPerms()[1]['perm_desc'],
+            $this->granter->getAllPerms()[0]['perm_desc'],
+            $this->granter->getAllPerms()[1]['perm_desc'],
         );
 
-        $this
-            ->granter
-            ->initUser();
+        $this->granter->initUser();
 
-        $checkPerm = $this
-                        ->granter
-                        ->verifyRest($perms);
+        $checkPerm = $this->granter->verifyRest($perms);
 
         // Проверяем  есть у даннго пользователя привелегии
         if (!$checkPerm) {
@@ -75,9 +66,7 @@ class ProfileController {
             return null;
         }
 
-        $users = $this
-                    ->users
-                    ->getUserProfile($userid);
+        $users = $this->users->getUserProfile($userid);
 
         if (!$users) {
 
@@ -104,41 +93,26 @@ class ProfileController {
             'users'         => null
         );
 
-
         $perms = array(
 
-            $this
-                ->granter
-                ->getAllPerms()[0]['perm_desc'],
-            $this
-                ->granter
-                ->getAllPerms()[1]['perm_desc'],
+            $this->granter->getAllPerms()[0]['perm_desc'],
+            $this->granter->getAllPerms()[1]['perm_desc'],
         );
 
-        $this
-            ->granter
-            ->initUser();
+        $this->granter->initUser();
 
-        $checkPerm = $this
-                        ->granter
-                        ->verifyRest($perms);
+        $checkPerm  = $this->granter->verifyRest($perms);
 
-        $users = $this
-                    ->users
-                    ->getListUsers();
+        $users      = $this->users->getListUsers();
 
         if (!$users) {
 
             Logger::collectAlert('warnings', '<b>Не могу вывести список пользователей</b>');
         }
 
-        $this
-            ->granter
-            ->initUser();
+        $this->granter->initUser();
 
-        $checkPerm = $this
-                        ->granter
-                        ->verifyRest($perms);
+        $checkPerm = $this->granter->verifyRest($perms);
 
         // Проверяем  есть у даннго пользователя привелегии
         if (!$checkPerm) {
@@ -147,8 +121,8 @@ class ProfileController {
             return null;
         } else {
 
-            $arrUsers['allowEditing'] = true;
-            $arrUsers['allowRemoving'] = true;
+            $arrUsers['allowEditing']   = true;
+            $arrUsers['allowRemoving']  = true;
         }
 
         $arrUsers['users'] = $users;

@@ -79,9 +79,7 @@ class Users extends Database {
 
          if (empty($profile)) { return false; }
 
-         $userpass = $this
-                     ->modifier
-                     ->strToHash($userpass);
+         $userpass = $this->modifier->strToHash($userpass);
 
          $sql = 'UPDATE users SET user_password = :userpass WHERE user_id = :uid';
 
@@ -93,7 +91,6 @@ class Users extends Database {
          $this->preAction($sql, $binder);
 
          return !$this->doAction() ? false : true;
-
       }
 
       function insertNewUser(string $useremail, string $userpass, string $username): bool {

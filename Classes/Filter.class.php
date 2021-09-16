@@ -127,8 +127,6 @@ class Filter {
 		return preg_match('|^(http(s)?://)?[a-z0-9-]+\.(.[a-z0-9-]+)+(:[0-9]+)?(/.*)?$|i', $input);
 	}
 	
-
-
 	public function validator(string $key, string $category): bool{
 
 		if (!$this->keyExist($key)) { return false; }
@@ -291,8 +289,7 @@ class Filter {
 	/*
 		$key 		- ключ по которому фильтруються значения
 		$options 	- это массим значений по которым фильтруються и проверяються данные
-
-								
+					
 		itsMail = true
 		itsEmpty = true
 		itsUrl = true

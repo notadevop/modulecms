@@ -14,6 +14,8 @@ if (version_compare(phpversion(), '7.0.0') <= 0) {
 
 if (session_id() == '') { session_start(); }
 
+setlocale(LC_CTYPE, 'en_US.UTF-8');
+
 header('Content-Type: text/html; charset=utf-8');
 header('X-Powered-By: PHP Application');
 ini_set('error_reporting', 'E_ALL');
