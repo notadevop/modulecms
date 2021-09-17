@@ -66,10 +66,13 @@ $viewRender = new ViewRender();
 $viewRender->setActiveTemplate('simplelight');
 $viewRender->prepareRender($result);
 
-$time = microtime();
-$time = explode(' ', $time);
-$time = $time[1] + $time[0]; 
-$finish = $time;
+new Filter123();
+
+
+$time 		= microtime();
+$time 		= explode(' ', $time);
+$time 		= $time[1] + $time[0]; 
+$finish 	= $time;
 $total_time = round(($finish - $start), 4);
 
 

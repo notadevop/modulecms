@@ -9,10 +9,9 @@ class ClassNotFoundException extends Exception { }
 spl_autoload_register(function ($class_name) {
 
 	// TODO: Использовать замыкание для отловки ошибки
-
-	$flag = false;
-
 	// Указанна папка => префикс файла
+
+	$found = false;
 
 	$folders = array(
 		'Includes' 	 	=> '.inc.',
@@ -30,17 +29,24 @@ spl_autoload_register(function ($class_name) {
 			// delete???
 			$path = str_replace('\\', DIRECTORY_SEPARATOR, $path);
 
-			if (file_exists($path)) {
-				$flag = true; 
-				break;
+			// Проверяет все варианты указанные выше в переменной $folders 
+			// и после этого только когда находит файл тогда проверяет класс
+
+			if (file_exists($path)) { 
+
+				require_once ($path);
+
+				if (class_exists($class_name)) { 
+
+					$found = true;
+					break; 
+				}
 			} 
 		}
-		
-		if (!$flag) {
-			throw new ClassNotFoundException('Класс <b>'. $class_name .'</b> не найден!', 1);
-		}
 
-		require_once ( $path );	
+		if (!$found) {
+			throw new ClassNotFoundException('Не могу загрузить класс именем: <b>'. $class_name .'</b>!', 1);
+		}
 	
 	} catch (ClassNotFoundException $e) {
 

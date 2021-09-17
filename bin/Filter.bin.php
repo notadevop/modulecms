@@ -9,7 +9,10 @@
 
 class Filter {
 	
-	function __construct() { }
+	function __construct() {
+
+		print('this is bin filter!');
+	}
 	function __destruct() { }
 
 	// Провеоряем существует ли переменная и находиться в ней что нибуть
@@ -51,11 +54,11 @@ class Filter {
 
 	// Нужно проверить, что он возвращает должен вроде bool
 
-	function urlValidation(string $param): bool {
+	function urlValidation(string $param):bool {
 
-		if(!$this->isNotEmpty($param) {return false;}
+		if(!$this->isNotEmpty($param)) {return false;}
 
-		return preg_match('|^(http(s)?://)?[a-z0-9-]+\.(.[a-z0-9-]+)+(:[0-9]+)?(/.*)?$|i', $param);
+		return !preg_match('|^(http(s)?://)?[a-z0-9-]+\.(.[a-z0-9-]+)+(:[0-9]+)?(/.*)?$|i', $param)? false : true;
 	}
 
 	function mainValidator($param, string $category): bool {
@@ -98,7 +101,7 @@ class Filter {
 		return filter_var($param, $validator);
 	}
 
-	function ejectedWords(string $param, array $catWords): ?string {
+	function ejectedWords(string $param, $catWords='all'): ?string {
 
 		if(!$this->isNotEmpty($param)) {return null;}
 
@@ -184,9 +187,14 @@ class Filter {
 			)
 		);
 
+		$catWords = $catWords == 'all' ? array_keys($blockedWords) : array_keys($blockedWords, $catWords);
+
+		if(empty($catWords) || !is_array($catWords)) { throw new Exception("Указанн неправильно параметр", 1);
+		 }
+
 		$cleaner = function (array $patterns, string $input) {
 
-			return preg_replace($patterns, '', $input);
+			return preg_replace($patterns, '"'.$input.'"', $input);
 		};
 
 		foreach ($catWords as $k => $v) {
@@ -199,13 +207,11 @@ class Filter {
 				case 'antishell': 	$param = $cleaner($antishell, $param); break;
 			}
 		}
-		*/
+		
 		return $param;
 	}
 
 	function shieldingData($param): string {
-
-
 
 		return $param;
 	}

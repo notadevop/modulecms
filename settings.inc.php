@@ -42,6 +42,9 @@ define('LOGOUT',array(
 		'redirectpath' 	=> HOST	
 ));
 
+
+// Это отправить в Website settings в базу данных при установке выташить сперва с файла настроек при установке CMS
+
 define('AUTHUPDATE', array(
 
 		'updateAuthCookieInterval' 	=> 7, 			// Обновление хеша при аутентификации
