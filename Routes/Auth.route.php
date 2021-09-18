@@ -4,7 +4,8 @@
 return array(
 
 	'/login' 		=> array( 
-			'action' 	=> 'UserIdentificator/loginAction',
+			//'action' 	=> 'UserIdentificator/loginAction',
+			'action' 	=> 'Identificator/loginAction',
 			'template'	=> 'login.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
@@ -13,7 +14,8 @@ return array(
 	),
 
 	'auth' 			=> array(
-			'action' 	=> 'UserIdentificator/authAction',
+			//'action' 	=> 'UserIdentificator/authAction',
+			'action' 	=> 'Identificator/authAction',
 			'template'	=> 'infopage.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> true, // Permanent or not if yes, !!!
@@ -64,7 +66,8 @@ return array(
 	// /logout/user_token_as_:any attack protection
 
 	'/logout' 		=> array(
-			'action' 	=> 'UserIdentificator/logout/true/false',
+			//'action' 	=> 'UserIdentificator/logout/true/false',
+			'action' 	=> 'Identificator/logout/true/false',
 			'template'	=> 'infopage.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!

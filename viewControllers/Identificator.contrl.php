@@ -6,13 +6,14 @@ class Identificator extends Filter {
 	
 	function __construct() {
 		
-
 		$this->authParams = array(
+
+			// Для куки параметры по умолчанию
 
 			'future' 	=> '+2 Hours',
 			'past' 		=> '-2 Hours',
 			'host' 		=> '/',
-			'domain' 	=> HOST	
+			'domain' 	=> HOST,	
 
 			// Параметры пользователя по умолчанию
 
@@ -21,20 +22,41 @@ class Identificator extends Filter {
 			'priveleges'=> false,
 
 
-			// Использовать из базы сохраненные параметры
+			// Использовать из базы сохраненные параметры !!! 
 
-			'loginEmailMaxSym'=> 32,
+			// Данные при входе, так же для регистрации, и восстановления пароля
+
+			'loginEmailMaxSym'=> 55,
 			'loginEmailMinSym'=> 7,
-			
-			'loginPasswordMax'=> 32,
-			'loginPasswordMin'=> 6
 
-			''
+			'loginPasswordMax'=> 55,
+			'loginPasswordMin'=> 6,
+
+			// Данные из куки
+
+			'tokenMailMaxSym' => 500,
+			'tokenMailMinSym' => 7,
+
+			'tokenHashMaxSym' => 500,
+			'tokenHashMinSym' => 7
+
+			// Данные с проверки подтверждения авторизации
 		);
+
+		$this->cjob 	= new Cookies();
+		$this->auth 	= new Auth();
+		$this->glob 	= new GlobalParams();
+		$this->users 	= new Users();
+		$this->granter 	= new PrivelegesController();
 	}
 
-	private $authParams;
+	private $cjob;
+	private $auth;
+	private $glob;
 	private $users;
+	private $granter;
+	private $authParams;
+
 
 	function setUserProfile($profile=''): bool {
 
@@ -48,7 +70,7 @@ class Identificator extends Filter {
 			'priveleges'=> $this->authParams['priveleges']
 		);
 
-		if($this->isNotEmpty($profile)) { 
+		if($this->isNotEmpty($profile) && array_key_exists('userid', $profile)) { 
 
 			foreach ($profile as $key => $value) {
 				
@@ -56,7 +78,6 @@ class Identificator extends Filter {
 			}
 
 			$this->granter->initUser($profile['userid']);
-
 			$perms = $this->granter->getPermsOfUser();
 
 			if ($this->isNotEmpty($perms)) {
@@ -68,12 +89,38 @@ class Identificator extends Filter {
 		}
 
 		if(!defined('PROFILE')) {
-
 			define('PROFILE',$userProfile);
 		}
 
 		return $profileStatusInit;
 	}
+
+	// переменная это принудительный выход из системы, если даже нету _GET => logout параметра!
+
+	function logout(bool $redirect=false, bool $permQuit=false): bool {
+
+		$this->glob->setGlobParam('_GET');
+
+		if(!$this->glob->isExist('logout') && !$permQuit) { return false; }
+
+		$this->saveAuthAction('','',true,true);
+
+		if(!$redirect && !defined('LOGOUT')) { return true; }
+
+		if(LOGOUT['redirectuser']) {
+
+			if (LOGOUT['timeout'] > 0) {
+				header('refresh:'.LOGOUT['timeout'].'; url=' . LOGOUT['redirectpath']); 
+			} else {
+				header('Location: '. LOGOUT['redirectpath']);
+			}
+		}
+		return true;
+	}
+
+
+
+	// МЕТОД ДЛЯ ВХОДА В СИСТЕМУ ------------------------
 
 	function loginAction(): bool {
 
@@ -87,27 +134,31 @@ class Identificator extends Filter {
 
 		$loginParams = array(
 
-			'loginmail',
-			'loginpasswd'
+			'loginmail' 	=> false,
+			'loginpasswd' 	=> false
 		);
 
 		foreach ($loginParams as $key => $value) {
 			
 			// Фильтруем основные веши!
 
+
+			// Это условие отрабатывает всегда!! -------
 			if(!$this->glob->isExist($key)) { 
 
+				//Logger::collectAlert('warnings', 'Параметр: '.$key.' отсутсвует!');
 				return $this->setUserProfile(false); 
 			}
 
-			$value = $this->glob->getGlobParam($key)
+			$value = $this->glob->getGlobParam($key);
 
 			if(!$this->isNotEmpty($value)) { 
 
+				Logger::collectAlert('warnings', 'есть пустые поля!');
 				return $this->setUserProfile(false);  
 			}
 
-			$value = $this->mainSanitizer($value, 'encoding');
+			//$value = $this->mainSanitizer($value, 'encoding');
 			$value = $this->mainSanitizer($value, 'magicquotes');
 			$value = $this->mainSanitizer($value, 'fullspecchars');
 			$value = $this->mainSanitizer($value, 'string');
@@ -117,25 +168,34 @@ class Identificator extends Filter {
 				$this->ejectedWords($value);
 			} catch (Exception $e) {
 				Logger::collectAlert('warnings', $e->getMessage());
-			}finaly{
-				$loginParams[$key] = $value;
-			}	
+			}
+
+			if ($key == 'loginmail') {
+				$max = $this->authParams['loginEmailMaxSym'];
+				$min = $this->authParams['loginEmailMinSym'];
+			} else {
+				$max = $this->authParams['loginPasswordMax'];
+				$min = $this->authParams['loginPasswordMin'];
+			}
+
+			if ($this->isMoreThan($key, $max)) {
+
+				Logger::collectAlert('warnings', 'Ошибка! В одном из полей превышенно максимальное кол-во символов! :'.$key.' '.$value.' '.$max);
+				return $this->setUserProfile(false);
+			}
+
+			if($this->isLessThen($key, $min)) {
+
+				Logger::collectAlert('warnings', 'Ошибка! В одном из полей количество символов меньше разрешенного!');
+				return $this->setUserProfile(false); 
+			}
+
+			$loginParams[$key] = $value;
 		}
 
-		// фильтруем по уникальности 
 
-		if($this->isMoreThan($loginParams['loginmail'],$authParams['loginEmailMaxSym']) || $this->isMoreThan($loginParams['loginpasswd'],$authParams['loginPasswordMaxSym'])) {
 
-			Logger::collectAlert('warnings', 'Проверьте ваши поля в одном из поле преувеличенно число символов!');
-
-			return $this->setUserProfile(false); 
-		}
-
-		if($this->isLessThen($loginParams['loginmail'],$authParams['loginEmailMinSym']) || $this->isLessThen($loginParams['loginpasswd'],$authParams['loginPasswordMin'])) {
-
-			Logger::collectAlert('warnings', 'Проверьте ваши поля в одном из полей количество символов меньше разрешенного!');
-			return $this->setUserProfile(false); 
-		}
+		// фильтруем по уникальности -----------------
 
 		if(!$this->mainValidator($loginParams['loginmail'], 'email')) {
 
@@ -159,15 +219,15 @@ class Identificator extends Filter {
 			return $this->setUserProfile(false);
 		}
 
-		$findUser = $this->auth->findUser($p['loginmail'], $p['loginpasswd']);
+		$findUser = $this->auth->findUser($loginParams['loginmail'], $loginParams['loginpasswd']);
 
-		if(empty($findUser)) {
+		if(empty($findUser) || !array_key_exists('userid', $findUser)) {
 
 			Logger::collectAlert('warnings', 'Неправильные имя или пароль!');
 			return $this->setUserProfile(false);
 		}
 
-		$findUser['tokenHash'] = $this->auth->updateUserHash($profile['userid'], false);
+		$findUser['tokenHash'] = $this->auth->updateUserHash($findUser['userid'], false);
 
 		if(empty($findUser['tokenHash'])) {
 
@@ -175,12 +235,199 @@ class Identificator extends Filter {
 			return $this->setUserProfile(false);
 		}
 
+		$isItSaved = $this->saveAuthAction($findUser['useremail'], $findUser['tokenHash'], false, true);
 
+		if(!$isItSaved) {
 
+			Logger::collectAlert('warnings', 'Ошибка! немогу сохранить данные, возможно у вас отключены куки!');
+			return $this->setUserProfile(false);
+		} 
 
+		$this->setUserProfile($findUser);
 
+		Logger::collectAlert('success', 'Вы вошли в свой аккаунт!');
 
-		// Перенаправление пользователя при определенном действии
+		if(defined('REDIRECTLOGIN') && REDIRECTLOGIN['redirectuser']) {
 
+			$redirect = REDIRECTLOGIN;
+
+			$redirect['redirectpath'] = str_replace('%userid%', $findUser['userid'], $redirection['redirectpath']);
+
+			if($redirect['timeout'] > 0) {
+				header('refresh: '.$redirect['timeout'].'; url='.$redirect['redirectpath']);
+			} else {
+				header('Location: '.$redirect['redirectpath']);
+			}
+		}
+
+		return true;
 	}
+
+	private function saveAuthAction(string $email, string $hash, bool $gopast=false, bool $showerr=false): bool {
+
+		$authParams = array(
+
+			'emailhash' => $email,
+			'tokenhash'	=> $hash
+		);
+
+		foreach ($authParams as $key => $value) {
+
+			// Выходим при условии, что если мы пытаемся сохраниться в будущее, а не выйти 
+			// переменная указывает на удаление или сохранение
+			
+			if(!$this->isNotEmpty($value) && !$gopast) { return false; }
+
+			$time = !$gopast ? $this->authParams['future'] : $this->authParams['past'];
+
+			try {
+				$this->cjob->initCookie($key);
+				$this->cjob->setCookieValue($key, $value);
+				$this->cjob->setCookieTime($key, $time);
+				$this->cjob->setCookiePath($key, $this->authParams['host']);
+				$this->cjob->setCookieDomen($key, $this->authParams['domain']);
+				$this->cjob->saveCookie($key);
+				$this->cjob->cleanMapArray($key);
+			} catch (Exception $e) {
+				
+				if($showerr) {
+					Logger::collectAlert('warning', $e->getMessage());
+				}		
+			}
+		}
+
+		return true;
+	}
+
+	function AuthAction(): bool {
+
+		if(!defined('AUTHENTIFCATIONALLOW') || !AUTHENTIFCATIONALLOW) {
+
+			Logger::collectAlert('warnings', 'Авторизация в системе отключена администратором!');
+			return $this->setUserProfile(false);
+		}
+
+		$authParams = array(
+
+			'mailHash' 	=> false,
+			'tokenHash' => false
+		);
+
+		$this->glob->setGlobParam('_COOKIE');
+
+		foreach ($authParams as $key => $value) {
+			
+			if(!$this->glob->isExist($key)) { 
+
+				return $this->setUserProfile(false); 
+			}
+
+			$value = $this->glob->getGlobParam($key);
+
+			if(!$this->isNotEmpty($value)) { 
+
+				return $this->setUserProfile(false);  
+			}
+
+			$value = $this->mainSanitizer($value, 'encoding');
+			$value = $this->mainSanitizer($value, 'magicquotes');
+			$value = $this->mainSanitizer($value, 'fullspecchars');
+			$value = $this->mainSanitizer($value, 'string');
+			$value = $this->mainSanitizer($value, 'stripped');
+
+			try {
+				$this->ejectedWords($value);
+			} catch (Exception $e) {
+				Logger::collectAlert('warnings', $e->getMessage());
+			}
+				
+			if ($key == 'mailHash') {
+				$max = $authParams['tokenMailMaxSym'];
+				$min = $authParams['tokenMailMinSym'];
+			} else {
+				$max = $authParams['tokenHashMaxSym'];
+				$min = $authParams['tokenHashMinSym'];
+			}
+
+			if ($this->isMoreThan($value, $max) || $this->isLessThen($value, $min)) {
+
+				//Logger::collectAlert('warnings', 'Ошибка! В одном из полей превышенно максимальное кол-во символов!');
+				//Logger::collectAlert('warnings', 'Ошибка! В одном из полей количество символов меньше разрешенного!');
+				return $this->setUserProfile(false);
+			}
+
+			$authParams[$key] = $value;
+		}
+
+		// Нужно проверить зашифрован емайл или нет, если да то расшифровываем
+
+		if(!$this->mainValidator($authParams['mailhash'], 'email')) {
+			return $this->setUserProfile(false); 
+		}
+
+		$userExist = $this->users->userExist($authParams['mailhash']);
+
+		if(!$userExist) {
+			return $this->setUserProfile(false); 
+		}
+
+		$userNotBlocked = $this->auth->userActivated($authParams['mailhash']);
+
+		if (!$userNotBlocked) {
+			return $this->setUserProfile(false);
+		}
+
+		$findUser = $this->auth->authUser($authParams['mailhash'], $authParams['tokenhash']);
+
+		if(empty($findUser) || !array_key_exists('userid', $findUser)) {
+			return $this->setUserProfile(false);
+		}
+
+		$findUser['tokenHash'] = $this->auth->updateUserHash($findUser['userid'], false);
+
+		if(empty($findUser['tokenHash'])) {
+			return $this->setUserProfile(false);
+		}
+
+		$isItSaved = $this->saveAuthAction($findUser['loginmail'], $findUser['tokenHash'], false, true);
+
+		if(!$isItSaved) {
+			return $this->setUserProfile(false);
+		} 
+
+		$this->setUserProfile($findUser);
+
+		return true;
+	}
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -7,8 +7,6 @@ class Filter {
 
 	function __construct() { 
 
-		print('Filter.class.php');
-
 		$this->collection 	= array();
 		$this->err 			= array();
 		$this->fOpt 		= array(); 

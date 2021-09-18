@@ -17,8 +17,8 @@ spl_autoload_register(function ($class_name) {
 		'Includes' 	 	=> '.inc.',
 		'Classes' 	 	=> '.class.',
 		'Controller' 	=> '.ctrl.',   // Удалить поже!!!
-		'bin'			=> '.bin.',
-		'viewController'=> '.contr.'
+		'Bin'			=> '.bin.',
+		'viewControllers'=> '.contrl.'
 	);
 
 	try {

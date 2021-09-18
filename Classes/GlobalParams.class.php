@@ -23,7 +23,7 @@ class GlobalParams {
 			case '_GET':		$this->gp = $_GET;		break;
 			case '_COOKIE':		$this->gp = $_COOKIE; 	break;
 			case '_SESSION': 	$this->gp = $_SESSION; 	break;
-			default: 			$this->gp = null;		break;
+			default: 			$this->gp = 'N/A';		break;
 		}
 	}
 
@@ -31,7 +31,11 @@ class GlobalParams {
 
 	public function isExist(string $key): bool {
 
-		if(empty($this->gp)) { return false; } 
+		if(empty($this->gp)) { 
+
+			//throw new Exception('Такого глобального параметра не существует!', 1);
+			return false; 
+		} 
 
 		return array_key_exists($key, $this->gp);
 	}
@@ -40,15 +44,9 @@ class GlobalParams {
 
 	public function getGlobParam(string $key): ?string {
 
-		/*
-		if (!array_key_exists($key, $this->globtype)) {
+		if($this->isExist($key)) { return $this->gp[$key]; }
 
-			throw new Exception('Такого параметра не существует!', 1);
-
-		} else return $this->globtype[$key];
-		*/
-
-		return $this->isExist($key) ? $this->gp[$key] : null;
+		throw new Exception('Такого глобального параметра не существует!', 1);
 	}
 }
 

@@ -66,7 +66,7 @@ $viewRender = new ViewRender();
 $viewRender->setActiveTemplate('simplelight');
 $viewRender->prepareRender($result);
 
-new Filter123();
+
 
 
 $time 		= microtime();

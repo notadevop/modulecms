@@ -2,6 +2,9 @@
 
 (defined('ROOTPATH') && defined('DS')) or die('something wrong!');
 
+
+
+
 define('sqliteFolder', 'sqlitefolder');
 define('sqlitefile', 'sqlitedb.sql');
 
@@ -29,9 +32,9 @@ define('TPLDEFTEMPLATE', 'default'.DS);
 
 define('REDIRECTLOGIN', array(
 			
-			'redirectuser' 	=> true,		// Разрешает перенаправление при авторизации
+			'redirectuser' 	=> false,		// Разрешает перенаправление при авторизации
 			'timeout'		=> 0,			// Через какое время перенаправлять в сек.
-			'redirectpath'	=> '/profile/%userid%', // Куда перенаправлять, по умолчанию
+			'redirectpath'	=> HOST.'/profile/%userid%', // Куда перенаправлять, по умолчанию
 			'reffredirect'	=> false 		// перенаправлять, если пришел с какой то страницы
 ));
 

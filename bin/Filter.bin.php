@@ -33,14 +33,14 @@ class Filter {
 
 	function isMoreThan($param, int $maxScore): bool {
 
-		return (!$this->isNotEmpty($param) || strlen($param) > $maxScore) ? false : true;
+		return (!$this->isNotEmpty($param) || strlen($param) > $maxScore) ? true : false;
 	}
 
 	// Проверяем меньше ли значение чем указанно 
 
 	function isLessThen($param, int $minScore): bool {
 
-		return (!$this->isNotEmpty($param) || strlen($param) < $minScore) ? false : true;
+		return (!$this->isNotEmpty($param) || strlen($param) < $minScore) ? true : false;
 	}
 
 	// Обрезаем стринговое значение
@@ -87,7 +87,7 @@ class Filter {
 
 			case'email': 			$sanitizer = FILTER_SANITIZE_EMAIL; 			break;
 			case'encoding': 		$sanitizer = FILTER_SANITIZE_ENCODED; 			break;
-			case'magicquotes': 		$sanitizer = FILTER_SANITIZE_MAGIC_QUOTES; 		break;
+			case'magicquotes': 		$sanitizer = FILTER_SANITIZE_ADD_SLASHES; 		break;
 			case'float': 			$sanitizer = FILTER_SANITIZE_NUMBER_FLOAT; 		break;
 			case'int': 				$sanitizer = FILTER_SANITIZE_NUMBER_INT; 		break;
 			case'specchars': 		$sanitizer = FILTER_SANITIZE_SPECIAL_CHARS; 	break;
@@ -98,7 +98,7 @@ class Filter {
 			default:  				return;											break;
 		}
 
-		return filter_var($param, $validator);
+		return filter_var($param, $sanitizer);
 	}
 
 	function ejectedWords(string $param, $catWords='all'): ?string {
@@ -200,11 +200,11 @@ class Filter {
 		foreach ($catWords as $k => $v) {
 			
 			switch($v) {
-				case 'antixss': 	$param = $cleaner($antixss, $param); break;
-				case 'antisql': 	$param = $cleaner($antisql, $param); break;
-				case 'antirfi': 	$param = $cleaner($antirfi, $param); break;
-				case 'antilfi': 	$param = $cleaner($antilfi, $param); break;
-				case 'antishell': 	$param = $cleaner($antishell, $param); break;
+				case 'antixss': 	$param = $cleaner($blockedWords['antixss'], $param); break;
+				case 'antisql': 	$param = $cleaner($blockedWords['antisql'], $param); break;
+				case 'antirfi': 	$param = $cleaner($blockedWords['antirfi'], $param); break;
+				case 'antilfi': 	$param = $cleaner($blockedWords['antilfi'], $param); break;
+				case 'antishell': 	$param = $cleaner($blockedWords['antishell'], $param); break;
 			}
 		}
 		
