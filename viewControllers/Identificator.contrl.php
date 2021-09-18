@@ -251,7 +251,7 @@ class Identificator extends Filter {
 
 			$redirect = REDIRECTLOGIN;
 
-			$redirect['redirectpath'] = str_replace('%userid%', $findUser['userid'], $redirection['redirectpath']);
+			$redirect['redirectpath'] = str_replace('%userid%', $findUser['userid'], $redirect['redirectpath']);
 
 			if($redirect['timeout'] > 0) {
 				header('refresh: '.$redirect['timeout'].'; url='.$redirect['redirectpath']);
@@ -322,8 +322,6 @@ class Identificator extends Filter {
 			
 			if(!$this->glob->isExist($key)) { 
 
-				debugger($key . ' not exist');
-
 				return $this->setUserProfile(false); 
 			}
 
@@ -356,8 +354,6 @@ class Identificator extends Filter {
 
 			if ($this->isMoreThan($value, $max) || $this->isLessThen($value, $min)) {
 
-				//Logger::collectAlert('warnings', 'kdjhfkjhgkhsdkh');
-				//Logger::collectAlert('warnings', 'Ошибка! В одном из полей количество символов меньше разрешенного!');
 				return $this->setUserProfile(false);
 			}
 
@@ -367,47 +363,45 @@ class Identificator extends Filter {
 		// Нужно проверить зашифрован емайл или нет, если да то расшифровываем
 
 		if(!$this->mainValidator($authParams['emailhash'], 'email')) {
-			debugger('mail not verfified');
+
 			return $this->setUserProfile(false); 
 		}
 
 		$userExist = $this->users->userExist($authParams['emailhash']);
 
 		if(!$userExist) {
-			debugger('not exist');
+
 			return $this->setUserProfile(false); 
 		}
 
 		$userNotBlocked = $this->auth->userActivated($authParams['emailhash']);
 
 		if (!$userNotBlocked) {
-			debugger('blocked');
+
 			return $this->setUserProfile(false);
 		}
 
 		$findUser = $this->auth->authUser($authParams['emailhash'], $authParams['tokenhash']);
 
-		debug($authParams);
+		//debug($authParams);
 
 		if(empty($findUser) || !array_key_exists('userid', $findUser)) {
-			debugger('not found user!');
+
 			return $this->setUserProfile(false);
 		}
-
-		// Че это за хрень?????
 
 		$findUser['tokenhash'] = $this->auth->updateUserHash($findUser['userid'], false);
 
 
 		if(empty($findUser['tokenhash'])) {
-			debugger('no token hash');
+
 			return $this->setUserProfile(false);
 		}
 
 		$isItSaved = $this->saveAuthAction($findUser['useremail'], $findUser['tokenhash'], false, true);
 
 		if(!$isItSaved) {
-			debugger('not saved');
+
 			return $this->setUserProfile(false);
 		} 
 

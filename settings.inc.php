@@ -32,7 +32,7 @@ define('TPLDEFTEMPLATE', 'default'.DS);
 
 define('REDIRECTLOGIN', array(
 			
-			'redirectuser' 	=> false,		// Разрешает перенаправление при авторизации
+			'redirectuser' 	=> true,		// Разрешает перенаправление при авторизации
 			'timeout'		=> 0,			// Через какое время перенаправлять в сек.
 			'redirectpath'	=> HOST.'/profile/%userid%', // Куда перенаправлять, по умолчанию
 			'reffredirect'	=> false 		// перенаправлять, если пришел с какой то страницы
