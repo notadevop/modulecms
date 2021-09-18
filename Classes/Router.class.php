@@ -285,7 +285,7 @@ final class Router {
 		}
 
 		return array(
-									// Отрабатывает по указанному пути
+			// Отрабатывает по указанному пути
 			'templateCtrlResult' 	=> self::dispatch(),
 			'permanetCtrlResult'	=> $result
 		);

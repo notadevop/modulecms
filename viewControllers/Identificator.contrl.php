@@ -13,7 +13,7 @@ class Identificator extends Filter {
 			'future' 	=> '+2 Hours',
 			'past' 		=> '-2 Hours',
 			'host' 		=> '/',
-			'domain' 	=> HOST,	
+			'domain' 	=> 'localhost',//HOST,	
 
 			// Параметры пользователя по умолчанию
 
@@ -193,8 +193,6 @@ class Identificator extends Filter {
 			$loginParams[$key] = $value;
 		}
 
-
-
 		// фильтруем по уникальности -----------------
 
 		if(!$this->mainValidator($loginParams['loginmail'], 'email')) {
@@ -226,6 +224,8 @@ class Identificator extends Filter {
 			Logger::collectAlert('warnings', 'Неправильные имя или пароль!');
 			return $this->setUserProfile(false);
 		}
+
+		// тут получаем хеш, если нету то генерируется новый 
 
 		$findUser['tokenHash'] = $this->auth->updateUserHash($findUser['userid'], false);
 
@@ -263,7 +263,7 @@ class Identificator extends Filter {
 		return true;
 	}
 
-	private function saveAuthAction(string $email, string $hash, bool $gopast=false, bool $showerr=false): bool {
+	private function saveAuthAction(string $email, string $hash, bool $goPast=false, bool $showerr=DEBUG): bool {
 
 		$authParams = array(
 
@@ -276,9 +276,12 @@ class Identificator extends Filter {
 			// Выходим при условии, что если мы пытаемся сохраниться в будущее, а не выйти 
 			// переменная указывает на удаление или сохранение
 			
-			if(!$this->isNotEmpty($value) && !$gopast) { return false; }
+			if(!$this->isNotEmpty($value) && !$goPast) { 
 
-			$time = !$gopast ? $this->authParams['future'] : $this->authParams['past'];
+				return false; 
+			}
+
+			$time = !$goPast ? $this->authParams['future'] : $this->authParams['past'];
 
 			try {
 				$this->cjob->initCookie($key);
@@ -309,8 +312,8 @@ class Identificator extends Filter {
 
 		$authParams = array(
 
-			'mailHash' 	=> false,
-			'tokenHash' => false
+			'emailhash' => false,
+			'tokenhash' => false
 		);
 
 		$this->glob->setGlobParam('_COOKIE');
@@ -318,6 +321,8 @@ class Identificator extends Filter {
 		foreach ($authParams as $key => $value) {
 			
 			if(!$this->glob->isExist($key)) { 
+
+				debugger($key . ' not exist');
 
 				return $this->setUserProfile(false); 
 			}
@@ -329,7 +334,7 @@ class Identificator extends Filter {
 				return $this->setUserProfile(false);  
 			}
 
-			$value = $this->mainSanitizer($value, 'encoding');
+			//$value = $this->mainSanitizer($value, 'encoding');
 			$value = $this->mainSanitizer($value, 'magicquotes');
 			$value = $this->mainSanitizer($value, 'fullspecchars');
 			$value = $this->mainSanitizer($value, 'string');
@@ -342,16 +347,16 @@ class Identificator extends Filter {
 			}
 				
 			if ($key == 'mailHash') {
-				$max = $authParams['tokenMailMaxSym'];
-				$min = $authParams['tokenMailMinSym'];
+				$max = $this->authParams['tokenMailMaxSym'];
+				$min = $this->authParams['tokenMailMinSym'];
 			} else {
-				$max = $authParams['tokenHashMaxSym'];
-				$min = $authParams['tokenHashMinSym'];
+				$max = $this->authParams['tokenHashMaxSym'];
+				$min = $this->authParams['tokenHashMinSym'];
 			}
 
 			if ($this->isMoreThan($value, $max) || $this->isLessThen($value, $min)) {
 
-				//Logger::collectAlert('warnings', 'Ошибка! В одном из полей превышенно максимальное кол-во символов!');
+				//Logger::collectAlert('warnings', 'kdjhfkjhgkhsdkh');
 				//Logger::collectAlert('warnings', 'Ошибка! В одном из полей количество символов меньше разрешенного!');
 				return $this->setUserProfile(false);
 			}
@@ -361,37 +366,48 @@ class Identificator extends Filter {
 
 		// Нужно проверить зашифрован емайл или нет, если да то расшифровываем
 
-		if(!$this->mainValidator($authParams['mailhash'], 'email')) {
+		if(!$this->mainValidator($authParams['emailhash'], 'email')) {
+			debugger('mail not verfified');
 			return $this->setUserProfile(false); 
 		}
 
-		$userExist = $this->users->userExist($authParams['mailhash']);
+		$userExist = $this->users->userExist($authParams['emailhash']);
 
 		if(!$userExist) {
+			debugger('not exist');
 			return $this->setUserProfile(false); 
 		}
 
-		$userNotBlocked = $this->auth->userActivated($authParams['mailhash']);
+		$userNotBlocked = $this->auth->userActivated($authParams['emailhash']);
 
 		if (!$userNotBlocked) {
+			debugger('blocked');
 			return $this->setUserProfile(false);
 		}
 
-		$findUser = $this->auth->authUser($authParams['mailhash'], $authParams['tokenhash']);
+		$findUser = $this->auth->authUser($authParams['emailhash'], $authParams['tokenhash']);
+
+		debug($authParams);
 
 		if(empty($findUser) || !array_key_exists('userid', $findUser)) {
+			debugger('not found user!');
 			return $this->setUserProfile(false);
 		}
 
-		$findUser['tokenHash'] = $this->auth->updateUserHash($findUser['userid'], false);
+		// Че это за хрень?????
 
-		if(empty($findUser['tokenHash'])) {
+		$findUser['tokenhash'] = $this->auth->updateUserHash($findUser['userid'], false);
+
+
+		if(empty($findUser['tokenhash'])) {
+			debugger('no token hash');
 			return $this->setUserProfile(false);
 		}
 
-		$isItSaved = $this->saveAuthAction($findUser['loginmail'], $findUser['tokenHash'], false, true);
+		$isItSaved = $this->saveAuthAction($findUser['useremail'], $findUser['tokenhash'], false, true);
 
 		if(!$isItSaved) {
+			debugger('not saved');
 			return $this->setUserProfile(false);
 		} 
 

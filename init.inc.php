@@ -74,7 +74,14 @@ function genCallTrace(){
     return "\t" . implode("\n\t", $result);
 }
 
+function debug($string) {
 
+	echo '<pre>';
+
+	print_r($string);
+
+	echo '</pre>';
+}
 
 
 

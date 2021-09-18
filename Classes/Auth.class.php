@@ -26,11 +26,8 @@ class Auth extends Database {
 
 			// TODO: Не работает сравнение даты никак вообще 
 
-			$current 	= strtotime($time1);
-			$tomorrow 	= strtotime($time2);
-
-			$current 	= new DateTime($current);
-			$tomorrow 	= new DateTime($tomorrow);
+			$current 	= new DateTime(strtotime($time1));
+			$tomorrow 	= new DateTime(strtotime($time2));
 
 			$interval 	= $current->diff($tomorrow);
 
@@ -70,7 +67,7 @@ class Auth extends Database {
 
 	// Устанавливаем или обновляем хеш пользователя и возвр. для сохранения
 
-	public final function updateUserhash(int $userid, bool $newLogin=false): ?string{
+	public final function updateUserhash(int $userid, bool $newLogin=false, bool $updateHash=false): ?string{
 
 		$sql = 'SELECT `token_hash` as token, `token_created` as tcreated, 
 				`token_expires` as texpires FROM `user_tokens` 
@@ -90,11 +87,13 @@ class Auth extends Database {
 					->modifier
 					->randomHash(rand(30, 100), false);
 
-		$updateHash = $newHash;
+		$oldHash = $result['token'];
+
+		$setNewHash = false;
 
 		if (empty($result['token']) || $newLogin) {
 
-			//$updateHash = $newHash; // не обновляет, а устанавливает новый хеш !!!!
+			$setNewHash = true;
 
 			$sql = 'INSERT INTO user_tokens 
 					(token_user_id, token_user_agent, token_hash, token_created, token_expires) 
@@ -109,30 +108,24 @@ class Auth extends Database {
 
 			$dateClass = $this->dateClass;
 
-			// Проверяем даты, если просроченно больше указанного то обновляем хеш на новый 
-			// и возвращаем результат на сохранение пользователю в куки
-
 			if ($dateClass($result['tcreated'],$result['texpires'],'%d', UPDATEAUTHINTERVAL)) {
 
-				$updateHash = $newHash; // устанавлваем новый хеш, старый уже просрочен
-
-			} else {
-
-				$updateHash = $result['token'];
-			}
+			//if ($updateHash) {
+				$setNewHash = true;
+			} 
 		}	
 
 		$binder = array(
 					':userid' 			=> $userid,
 					':uagent' 			=> serialize($this->visitor->get_data()),
-					':thash'			=> $updateHash,
+					':thash'			=> ($setNewHash ? $newHash : $oldHash),
 					':tcreated'			=> time(),
 					':texpires' 		=> strtotime('+'.UPDATEAUTHINTERVAL.' Days') // time() +3600*24
 		);
 
 		$this->preAction($sql, $binder);
 
-		if(!$this->doAction()) { return null; }
+		if(!$this->doAction()) { return $oldHash; }
 
 		$sql = 'UPDATE users SET user_last_visit = :lastime WHERE user_id = :uid';
 
@@ -144,7 +137,7 @@ class Auth extends Database {
 		$this->preAction($sql, $binder);
 		$this->doAction();
 
-		return $updateHash;
+		return $setNewHash ? $newHash : $oldHash;
 	}
 
 	// Проверяем авторизация по паролю и емайлу, возвращаем массив с данными
@@ -194,7 +187,10 @@ class Auth extends Database {
 
 		$this->preAction($sql, $binder);
 
-		if(!$this->doAction()) { return null; }
+		if(!$this->doAction()) { 
+
+			return null; 
+		}
 
 		$profile = $this
 						->postAction()
@@ -214,7 +210,9 @@ class Auth extends Database {
 						->modifier
 						->createFingerprint($userhash, $uagent);
 
-		if ($dbfinger !== $userfinger) { return null; }
+		if ($dbfinger !== $userfinger) { 
+			return null; 
+		}
 
 		// Обновляем время посещения! =======
 		$time = intval(time());
@@ -238,7 +236,8 @@ class Auth extends Database {
 			'username' 	=> $profile['name'],
 			'useremail' => $useremail,
 			'userregd' 	=> $profile['regdate'],
-			'userlastv'	=> $time
+			'userlastv'	=> $time,
+			'tokenhash' => $profile['thash']
 		);
 	}
 

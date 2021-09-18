@@ -67,7 +67,9 @@ $viewRender->setActiveTemplate('simplelight');
 $viewRender->prepareRender($result);
 
 
+//debugger($_COOKIE['tokenhash']);
 
+//debugger(PROFILE);
 
 $time 		= microtime();
 $time 		= explode(' ', $time);

@@ -117,7 +117,10 @@ final class Cookies{
 
 		if (!$this->cookieKeyExist($cookie_name)) { return false; }
 
+
 		$cookie = $this->cookies[$cookie_name];
+		$cookie['name'] = $cookie_name;
+		//debugger($cookie);
 
 		$result = setcookie($cookie_name, $cookie['cookieValue'], $cookie['cookieTime'], $cookie['cookiePath'], $cookie['cookieDomen']);
 

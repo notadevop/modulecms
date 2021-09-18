@@ -9,10 +9,8 @@
 
 class Filter {
 	
-	function __construct() {
-
-		print('this is bin filter!');
-	}
+	function __construct() { }
+	
 	function __destruct() { }
 
 	// Провеоряем существует ли переменная и находиться в ней что нибуть
