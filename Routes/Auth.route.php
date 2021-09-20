@@ -31,7 +31,8 @@ return array(
 			'priority'	=> 4
 	),
 	'/restore' 		=> array(
-			'action' 	=> 'UserIdentificator/resAction',
+			//'action' 	=> 'UserIdentificator/resAction',
+			'action' 	=> 'Identificator/restoreAction',
 			'template'	=> 'restore.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!

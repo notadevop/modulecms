@@ -65,6 +65,8 @@ class Auth extends Database {
 		return $prev == 0 ? false : true;
 	}
 
+	
+
 	// Устанавливаем или обновляем хеш пользователя и возвр. для сохранения
 
 	public final function updateUserhash(int $userid, bool $newLogin=false, bool $updateHash=false): ?string{
@@ -87,8 +89,6 @@ class Auth extends Database {
 					->modifier
 					->randomHash(rand(30, 100), false);
 
-		$oldHash = $result['token'];
-
 		$setNewHash = false;
 
 		if (empty($result['token']) || $newLogin) {
@@ -108,9 +108,9 @@ class Auth extends Database {
 
 			$dateClass = $this->dateClass;
 
-			if ($dateClass($result['tcreated'],$result['texpires'],'%d', UPDATEAUTHINTERVAL)) {
+			//if ($dateClass($result['tcreated'],$result['texpires'],'%d', UPDATEAUTHINTERVAL)) {
 
-			//if ($updateHash) {
+			if ($updateHash) {
 				$setNewHash = true;
 			} 
 		}	
@@ -118,14 +118,14 @@ class Auth extends Database {
 		$binder = array(
 					':userid' 			=> $userid,
 					':uagent' 			=> serialize($this->visitor->get_data()),
-					':thash'			=> ($setNewHash ? $newHash : $oldHash),
+					':thash'			=> ($setNewHash ? $newHash : $result['token']),
 					':tcreated'			=> time(),
 					':texpires' 		=> strtotime('+'.UPDATEAUTHINTERVAL.' Days') // time() +3600*24
 		);
 
 		$this->preAction($sql, $binder);
 
-		if(!$this->doAction()) { return $oldHash; }
+		if(!$this->doAction()) { return $result['token']; }
 
 		$sql = 'UPDATE users SET user_last_visit = :lastime WHERE user_id = :uid';
 
@@ -137,8 +137,12 @@ class Auth extends Database {
 		$this->preAction($sql, $binder);
 		$this->doAction();
 
-		return $setNewHash ? $newHash : $oldHash;
+		return $setNewHash ? $newHash : $result['token'];
 	}
+
+
+
+
 
 	// Проверяем авторизация по паролю и емайлу, возвращаем массив с данными
 
