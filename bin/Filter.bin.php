@@ -192,9 +192,11 @@ class Filter {
 
 		$cleaner = function (array $patterns, string $input) {
 
-			return preg_replace($patterns, '"'.$input.'"', $input);
+			//return preg_replace($patterns, '"'.$input.'"', $input);
+			return preg_replace($patterns, '', $input);
 		};
 
+		/*
 		foreach ($catWords as $k => $v) {
 			
 			switch($v) {
@@ -205,6 +207,7 @@ class Filter {
 				case 'antishell': 	$param = $cleaner($blockedWords['antishell'], $param); break;
 			}
 		}
+		*/
 		
 		return $param;
 	}

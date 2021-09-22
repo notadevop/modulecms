@@ -27,6 +27,18 @@ class GlobalParams {
 		}
 	}
 
+	function getElements(array $paramKeys=array()): ?array {
+
+		foreach ($paramKeys as $key => $value) {
+			
+
+
+			$paramKeys[$key] = $value;
+		}
+
+	}
+
+
 	// Проверяем существует ли параметр
 
 	public function isExist(string $key): bool {

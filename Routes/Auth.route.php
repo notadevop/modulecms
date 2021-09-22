@@ -4,7 +4,6 @@
 return array(
 
 	'/login' 		=> array( 
-			//'action' 	=> 'UserIdentificator/loginAction',
 			'action' 	=> 'Identificator/loginAction',
 			'template'	=> 'login.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
@@ -14,7 +13,6 @@ return array(
 	),
 
 	'auth' 			=> array(
-			//'action' 	=> 'UserIdentificator/authAction',
 			'action' 	=> 'Identificator/authAction',
 			'template'	=> 'infopage.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
@@ -22,16 +20,21 @@ return array(
 			'decript'	=> 'Аутентификация',
 			'priority'	=> 1
 	),
+
+	// Регистрация пользователя
+
 	'/register' 	=> array(
-			'action' 	=> 'UserIdentificator/regAction',
+			'action' 	=> 'Identificator/registrationAction',
 			'template'	=> 'register.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Регистрация',
 			'priority'	=> 4
 	),
+
+	// Восстановление пароля
+
 	'/restore' 		=> array(
-			//'action' 	=> 'UserIdentificator/resAction',
 			'action' 	=> 'Identificator/restoreAction',
 			'template'	=> 'restore.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
@@ -39,16 +42,16 @@ return array(
 			'decript'	=> 'Восстановить аккаунт',
 			'priority'	=> 4
 	),
-	'/verifres' 	=> array(
-			'action' 	=> 'UserIdentificator/verifyUserModifications',
+	'/verifyrestorerequest' => array(
+			'action' 	=> 'Identificator/verifyUserActivation',
 			'template'	=> 'updatepass.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Проверить восстановление',
 			'priority'	=> 2
 	),
-	'/confpass' 	=> array(
-			'action' 	=> 'UserIdentificator/updatePassword',
+	'/updatepassword' 	=> array(
+			'action' 	=> 'Identificator/updateUserPassword',
 			'template'	=> 'infopage.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
@@ -56,7 +59,7 @@ return array(
 			'priority'	=> 2
 	),
 	'/verifreg' 	=> array(
-			'action' 	=> 'UserIdentificator/verifyRegistration',
+			'action' 	=> 'Identificator/verifyUserRegistration',
 			'template'	=> 'infopage.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
@@ -67,7 +70,6 @@ return array(
 	// /logout/user_token_as_:any attack protection
 
 	'/logout' 		=> array(
-			//'action' 	=> 'UserIdentificator/logout/true/false',
 			'action' 	=> 'Identificator/logout/true/false',
 			'template'	=> 'infopage.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',

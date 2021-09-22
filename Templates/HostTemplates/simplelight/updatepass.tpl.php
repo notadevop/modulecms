@@ -5,7 +5,7 @@
 
   $query = http_build_query($result['templateCtrlResult']['result']);
 
-  $action = '/confpass/?'.$query;
+  $action = '/updatePassword/?'.$query;
 ?>
 
 
