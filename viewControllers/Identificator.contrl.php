@@ -21,64 +21,34 @@ class Identificator extends Filter {
 			'username'	=> 'Анонимный пользователь',
 			'priveleges'=> false,
 
-
 			// Использовать из базы сохраненные параметры !!! 
 
 			// Данные при входе, так же для регистрации, и восстановления пароля
 
-			/*	
-	
-				'useridMaxSym'		 => 255,
-				'useridMinSym'		 =>1,
+			'transport' => array( 
 
-				'userNameMaxSym'	 => 100,
-				'userNameMinSym' 	 => 2,
+				'useridValue'  => 'userid',
+				'useridMaxSym' => 255,
+				'useridMinSym' => 1,
 
-				'userEmailMaxSym' 	 => 100,
-				'userEmailMinSym' 	 => 6,
+				'userNameValue' => 'username',
+				'userNameMaxSym' => 50,
+				'userNameMinSym' => 2,
 
-				'userPasswordMaxSym' => 55,
-				'userPasswordMaxSym' => 8,
+				'userEmailValue' => 'useremail',
+				'userEmailMaxSym' => 50,
+				'userEmailMinSym' => 7,
 
-				'tokensHashMaxSym' 	 => 100,
-				'tokensHashMinSym'	 => 8				
-	
-				'confirmHashMaxSym'  => 100,
-				'confirmHashMinSym'  => 8,
+				'userPassword1Value' => 'userpassword1',
+				'userPassword2Value' => 'userpassword2',
+				'userPasswordMaxSym' => 20,
+				'userPasswordMinSym' => 8,
 
-				'recoveryHashMaxSym' => 100,
-				'recoveryHashMinSym' => 8,
-
-			*/
-
-			'loginEmailMaxSym'=> 55,
-			'loginEmailMinSym'=> 7,
-
-			'loginPasswordMax'=> 55,
-			'loginPasswordMin'=> 8,
-
-			// Данные из куки
-
-			'tokenMailMaxSym' => 55,
-			'tokenMailMinSym' => 7,
-
-			'tokenHashMaxSym' => 500,
-			'tokenHashMinSym' => 8,
-
-			// Данные
-
-			'useridMaxSym'	  => 255,
-			'useridMinSym'	  => 1,
-
-			'confirmKeyMaxSym'=> 500,
-			'confirmKeyMinSym'=> 8,
-
-			'recovTokenMaxSym'=> 500,
-			'recovTokenMinSym'=> 8,
-
-			'usernameMaxSym'  => 20,
-			'usernameMinSym'  => 2
-
+				'userTokenHashValue' => 'token',
+				'userConfirmHashValue' => 'confirm',
+				'userTokenHashMaxSym' => 255,
+				'userTokenHashMinSym' => 4,
+			)
 			// Данные с проверки подтверждения авторизации
 		);
 
@@ -103,7 +73,6 @@ class Identificator extends Filter {
 
 		// Достаем дефольтные данные (статичные)
 		$userProfile = array(
-
 			'userid' 	=> $this->authParams['userid'],
 			'username' 	=> $this->authParams['username'],
 			'priveleges'=> $this->authParams['priveleges']
@@ -169,73 +138,19 @@ class Identificator extends Filter {
 			return false;
 		}
 
-		$this->glob->setGlobParam('_POST');
-
 		$loginParams = array(
 
-			'loginmail' 	=> false,
-			'loginpasswd' 	=> false
+			$this->authParams['transport']['userEmailValue'] 	 => false,
+			$this->authParams['transport']['userPassword1Value'] => false
 		);
 
-		foreach ($loginParams as $key => $value) {
-			
-			// Фильтруем основные веши!
-
-			// Это условие отрабатывает всегда!! -------
-			if(!$this->glob->isExist($key)) { return false; }
-
-			$value = $this->glob->getGlobParam($key);
-
-			if(!$this->isNotEmpty($value)) { 
-
-				Logger::collectAlert('warnings', 'У вас есть пустые поля!');
-				return false;  
-			}
-
-			//$value = $this->mainSanitizer($value, 'encoding');
-			$value = $this->mainSanitizer($value, 'magicquotes');
-			$value = $this->mainSanitizer($value, 'fullspecchars');
-			$value = $this->mainSanitizer($value, 'string');
-			$value = $this->mainSanitizer($value, 'stripped');
-
-			try {
-				$value = $this->ejectedWords($value);
-			} catch (Exception $e) {
-				Logger::collectAlert('warnings', $e->getMessage());
-			}
-
-			if ($key == 'loginmail') {
-				$max = $this->authParams['loginEmailMaxSym'];
-				$min = $this->authParams['loginEmailMinSym'];
-			} else {
-				$max = $this->authParams['loginPasswordMax'];
-				$min = $this->authParams['loginPasswordMin'];
-			}
-
-			if ($this->isMoreThan($value, $max)) {
-
-				Logger::collectAlert('warnings', 'Ошибка! В одном из полей превышенно максимальное кол-во символов!');
-				return false;
-			}
-
-			if($this->isLessThen($value, $min)) {
-
-				Logger::collectAlert('warnings', 'Ошибка! В одном из полей количество символов меньше разрешенного!');
-				return false; 
-			}
-
-			$loginParams[$key] = $value;
+		$loginParams = $this->getInputParams($loginParams, '_POST');
+		
+		if(!$this->isNotEmpty($loginParams)) {
+			return false;
 		}
 
-		// фильтруем по уникальности -----------------
-
-		if(!$this->mainValidator($loginParams['loginmail'], 'email')) {
-
-			Logger::collectAlert('warnings', 'Указан некорректный емайл!');
-			return false; 
-		}
-
-		$userExist = $this->users->userExist($loginParams['loginmail']);
+		$userExist = $this->users->userExist($loginParams[$this->authParams['transport']['userEmailValue']]);
 
 		if(!$userExist) {
 
@@ -243,7 +158,7 @@ class Identificator extends Filter {
 			return false; 
 		}
 
-		$userNotBlocked = $this->auth->userActivated($loginParams['loginmail']);
+		$userNotBlocked = $this->auth->userActivated($loginParams[$this->authParams['transport']['userEmailValue']]);
 
 		if (!$userNotBlocked) {
 
@@ -251,9 +166,9 @@ class Identificator extends Filter {
 			return false;
 		}
 
-		$findUser = $this->auth->findUser($loginParams['loginmail'], $loginParams['loginpasswd']);
+		$findUser = $this->auth->findUser($loginParams[$this->authParams['transport']['userEmailValue']], $loginParams[$this->authParams['transport']['userPassword1Value']]);
 
-		if(empty($findUser) || !array_key_exists('userid', $findUser)) {
+		if(!$this->isNotEmpty($findUser) || !array_key_exists('userid', $findUser)) {
 
 			Logger::collectAlert('warnings', 'Неправильные имя или пароль!');
 			return false;
@@ -263,7 +178,7 @@ class Identificator extends Filter {
 
 		$findUser['tokenHash'] = $this->auth->updateUserHash($findUser['userid'], false);
 
-		if(empty($findUser['tokenHash'])) {
+		if(!$this->isNotEmpty($findUser['tokenHash'])) {
 
 			Logger::collectAlert('warnings', 'Ошибка генерации хеш кода!');
 			return false;
@@ -276,10 +191,6 @@ class Identificator extends Filter {
 			Logger::collectAlert('warnings', 'Ошибка! не могу сохранить данные, возможно у вас отключены куки!');
 			return false;
 		} 
-
-
-		Logger::collectAlert('success', 'Вы вошли в свой аккаунт!');
-
 
 		if(defined('REDIRECTLOGIN') && REDIRECTLOGIN['redirectuser']) {
 
@@ -294,6 +205,8 @@ class Identificator extends Filter {
 			}
 		}
 
+		Logger::collectAlert('success', 'Вы вошли в свой аккаунт!');
+
 		return true;
 	}
 
@@ -302,8 +215,8 @@ class Identificator extends Filter {
 
 		$authParams = array(
 
-			'emailhash' => $email,
-			'tokenhash'	=> $hash
+			$this->authParams['transport']['userEmailValue'] 	 => $email,
+			$this->authParams['transport']['userTokenHashValue'] => $hash 
 		);
 
 		foreach ($authParams as $key => $value) {
@@ -325,10 +238,9 @@ class Identificator extends Filter {
 				$this->cjob->cleanMapArray($key);
 			} catch (Exception $e) {
 				
-				if($showerr) { Logger::collectAlert('warning', $e->getMessage()); }		
+				if($showerr) { Logger::collectAlert('warning', $e->getMessage()); }	
 			}
 		}
-
 		return true;
 	}
 
@@ -341,63 +253,26 @@ class Identificator extends Filter {
 			return $this->setUserProfile(false);
 		}
 
-		$authParams = array(
-
-			'emailhash' => false,
-			'tokenhash' => false
+		$authParam = array(
+			$this->authParams['transport']['userEmailValue'] 	 => false,
+			$this->authParams['transport']['userTokenHashValue'] => false
 		);
 
-		$this->glob->setGlobParam('_COOKIE');
+		$authParam = $this->getInputParams($authParam, '_COOKIE');
 
-		foreach ($authParams as $key => $value) {
-			
-			if(!$this->glob->isExist($key)) { return $this->setUserProfile(false); }
-
-			$value = $this->glob->getGlobParam($key);
-
-			if(!$this->isNotEmpty($value)) { return $this->setUserProfile(false); }
-
-			//$value = $this->mainSanitizer($value, 'encoding');
-			$value = $this->mainSanitizer($value, 'magicquotes');
-			$value = $this->mainSanitizer($value, 'fullspecchars');
-			$value = $this->mainSanitizer($value, 'string');
-			$value = $this->mainSanitizer($value, 'stripped');
-
-			try {
-				$value = $this->ejectedWords($value);
-			} catch (Exception $e) {
-				Logger::collectAlert('warnings', $e->getMessage());
-			}
-				
-			if ($key == 'mailHash') {
-				$max = $this->authParams['tokenMailMaxSym'];
-				$min = $this->authParams['tokenMailMinSym'];
-			} else {
-				$max = $this->authParams['tokenHashMaxSym'];
-				$min = $this->authParams['tokenHashMinSym'];
-			}
-
-			if ($this->isMoreThan($value, $max) || $this->isLessThen($value, $min)) { 
-
-				return $this->setUserProfile(false); 
-			}
-
-			$authParams[$key] = $value;
+		if(!$this->isNotEmpty($authParam)) {
+			return $this->setUserProfile(false);
 		}
 
-		// Нужно проверить зашифрован емайл или нет, если да то расшифровываем
-
-		if(!$this->mainValidator($authParams['emailhash'], 'email')) { return $this->setUserProfile(false); }
-
-		$userExist = $this->users->userExist($authParams['emailhash']);
+		$userExist = $this->users->userExist($authParam[$this->authParams['transport']['userEmailValue']]);
 
 		if(!$userExist) { return $this->setUserProfile(false); }
 
-		$userNotBlocked = $this->auth->userActivated($authParams['emailhash']);
+		$userNotBlocked = $this->auth->userActivated($authParam[$this->authParams['transport']['userEmailValue']]);
 
 		if (!$userNotBlocked) { return $this->setUserProfile(false); }
 
-		$findUser = $this->auth->authUser($authParams['emailhash'], $authParams['tokenhash']);
+		$findUser = $this->auth->authUser($authParam[$this->authParams['transport']['userEmailValue']], $authParam[$this->authParams['transport']['userTokenHashValue']]);
 
 		if(!$this->isNotEmpty($findUser) || !array_key_exists('userid', $findUser)) { return $this->setUserProfile(false); }
 
@@ -405,8 +280,7 @@ class Identificator extends Filter {
 
 		$findUser['tokenhash'] = $this->auth->updateUserHash($findUser['userid'], false);
 
-
-		if(empty($findUser['tokenhash'])) { return $this->setUserProfile(false); }
+		if(!$this->isNotEmpty($findUser['tokenhash'])) { return $this->setUserProfile(false); }
 
 		$isItSaved = $this->saveAuthAction($findUser['useremail'], $findUser['tokenhash'], false, true);
 
@@ -428,67 +302,18 @@ class Identificator extends Filter {
 			return false;
 		}
 
-		$this->glob->setGlobParam('_POST');
-
 		$restoreParams = array(
 
-			'restoremail' => false
+			$this->authParams['transport']['userEmailValue'] => false
 		);
 
-		foreach ($restoreParams as $key => $value) {
-			
-			// Фильтруем основные веши!
-			// Это условие отрабатывает всегда!! -------
-			if(!$this->glob->isExist($key)) { return false; }
+		$restoreParams = $this->getInputParams($restoreParams, '_POST');
 
-			$value = $this->glob->getGlobParam($key);
-
-			if(!$this->isNotEmpty($value)) { 
-
-				Logger::collectAlert('warnings', 'У вас есть пустые поля!');
-				return false;  
-			}
-
-			//$value = $this->mainSanitizer($value, 'encoding');
-			$value = $this->mainSanitizer($value, 'magicquotes');
-			$value = $this->mainSanitizer($value, 'fullspecchars');
-			$value = $this->mainSanitizer($value, 'string');
-			$value = $this->mainSanitizer($value, 'stripped');
-
-			try {
-				$value = $this->ejectedWords($value);
-			} catch (Exception $e) {
-				Logger::collectAlert('warnings', $e->getMessage());
-			}
-
-			$max = $this->authParams['loginEmailMaxSym'];
-			$min = $this->authParams['loginEmailMinSym'];
-		
-
-			if ($this->isMoreThan($value, $max)) {
-
-				Logger::collectAlert('warnings', 'Ошибка! В одном из полей превышенно максимальное кол-во символов!');
-				return false;
-			}
-
-			if($this->isLessThen($value, $min)) {
-
-				Logger::collectAlert('warnings', 'Ошибка! В одном из полей количество символов меньше разрешенного!');
-				return false; 
-			} 
-
-			$restoreParams[$key] = $value;
+		if(!$this->isNotEmpty($restoreParams)) {
+			return false;
 		}
 
-		// фильтруем по уникальности -----------------
-
-		if(!$this->mainValidator($restoreParams['restoremail'], 'email')) {
-
-			Logger::collectAlert('warnings', 'Указан некорректный емайл!');
-			return false; 
-		}
-
-		$userExist = $this->users->userExist($restoreParams['restoremail']);
+		$userExist = $this->users->userExist($restoreParams[$this->authParams['transport']['userEmailValue']]);
 
 		if(!$userExist) {
 
@@ -496,7 +321,7 @@ class Identificator extends Filter {
 			return false; 
 		}
 
-		$userNotBlocked = $this->auth->userActivated($restoreParams['restoremail']);
+		$userNotBlocked = $this->auth->userActivated($restoreParams[$this->authParams['transport']['userEmailValue']]);
 
 		if (!$userNotBlocked) {
 
@@ -504,7 +329,7 @@ class Identificator extends Filter {
 			return false;
 		}
 
-		$genResult = $this->auth->generateActivations($restoreParams['restoremail']);
+		$genResult = $this->auth->generateActivations($restoreParams[$this->authParams['transport']['userEmailValue']]);
 
 		if(!$genResult) {
 
@@ -515,11 +340,11 @@ class Identificator extends Filter {
 		// TODO: Отправка емайла пользователю для восстановления пароля
 		// TODO: сделать генерацию ссылок
 
-		$link = HOST.'/verifyrestorerequest/?userid=' . $genResult['id'] . '&confirm=' . $genResult['cofirm'] . '&token=' . $genResult['token'];
+		$link = HOST.'/verifyrestorerequest/?userid=' . $genResult['id'] . '&'.$this->authParams['transport']['userConfirmHashValue'].'=' . $genResult['cofirm'] . '&'.$this->authParams['transport']['userTokenHashValue'].'=' . $genResult['token'];
 
 		Logger::collectAlert('information', $link);	
 
-		return null;
+		return true;
 	}
 
 
@@ -531,79 +356,29 @@ class Identificator extends Filter {
 			return null;
 		}
 
-		$this->glob->setGlobParam('_GET');
-
 		$restoreParams = array(
 
-			'userid' => false,
-			'confirm'=> false,
-			'token'	 => false
+			$this->authParams['transport']['useridValue'] 			=> false,
+			$this->authParams['transport']['userConfirmHashValue']  => false,
+			$this->authParams['transport']['userTokenHashValue'] 	=> false,
 		);
 
-		foreach ($restoreParams as $key => $value) {
-			
-
-			// Фильтруем основные веши!
-
-			// Это условие отрабатывает всегда!! -------
-			if(!$this->glob->isExist($key)) { return null; }
-
-			$value = $this->glob->getGlobParam($key);
-
-			if(!$this->isNotEmpty($value)) { 
-
-				Logger::collectAlert('warnings', 'Один из активационных параметров пустой!');
-				return null;  
-			}
-
-			//$value = $this->mainSanitizer($value, 'encoding');
-			$value = $this->mainSanitizer($value, 'magicquotes');
-			$value = $this->mainSanitizer($value, 'fullspecchars');
-			$value = $this->mainSanitizer($value, 'string');
-			$value = $this->mainSanitizer($value, 'stripped');
-
-			try {
-				$value = $this->ejectedWords($value);
-			} catch (Exception $e) {
-				Logger::collectAlert('warnings', $e->getMessage());
-			}
-
-			if ($key == 'userid') {
-				$max = $this->authParams['useridMaxSym'];
-				$min = $this->authParams['useridMinSym'];
-			} else if ($key == 'confirm') {
-				$max = $this->authParams['confirmKeyMaxSym'];
-				$min = $this->authParams['confirmKeyMinSym'];
-			} else {
-				$max = $this->authParams['recovTokenMaxSym'];
-				$min = $this->authParams['recovTokenMinSym'];
-			}
-
-			if ($this->isMoreThan($value, $max)) {
-
-				Logger::collectAlert('warnings', 'Ошибка! В одном из полей превышенно максимальное кол-во символов!');
-				return null;
-			}
-
-			if($this->isLessThen($value, $min)) {
-
-				Logger::collectAlert('warnings', 'Ошибка! В одном из полей количество символов меньше разрешенного!');
-				return null;
-			}
-
-			$restoreParams[$key] = $value;
+		$restoreParams = $this->getInputParams($restoreParams, '_GET');
+		
+		if(!$this->isNotEmpty($restoreParams)) {
+			return null;
 		}
 
-		if(!$this->auth->verifyActivations($restoreParams['userid'], $restoreParams['token'], $restoreParams['confirm'])) {
-			
+		if(!$this->auth->verifyActivations($restoreParams[$this->authParams['transport']['useridValue']], $restoreParams[$this->authParams['transport']['userTokenHashValue']],$restoreParams[$this->authParams['transport']['userConfirmHashValue']] )) {
+
 			Logger::collectAlert('warnings', 'Ошибка параметров подтверждения пользователя!');
 			return null;
 		}
 
 		return array(
-			'userid' => $restoreParams['userid'],
-			'token'	 => $restoreParams['token'],
-			'confirm'=> $restoreParams['confirm']
+			$this->authParams['transport']['useridValue'] 			=> $restoreParams['userid'],
+			$this->authParams['transport']['userConfirmHashValue'] 	=> $restoreParams['token'],
+			$this->authParams['transport']['userConfirmHashValue'] 	=> $restoreParams['confirm']
 		);
 	}
 
@@ -618,211 +393,106 @@ class Identificator extends Filter {
 			return false;
 		}
 
-		// Это условие
+		// Это условие удалить???
 
 		if ($verifbyid) {
-
 			$verified = $this->verifyUserActivation();
 			if (!$this->isNotEmpty($verified)) { 
-
 				Logger::collectAlert('warnings', 'Проверка не пройдена!');
 				return false;
 			}
 		}
 
 		$updateParams = array(
-
-			'newpassword1' => false,
-			'newpassword2' => false
+			$this->authParams['transport']['userPassword1Value'] = false,
+			$this->authParams['transport']['userPassword2Value'] = false
 		);
 
-		$this->glob->setGlobParam('_POST');
+		$updateParams = $this->getInputParams($updateParams, '_POST');
 
-		foreach ($updateParams as $key => $value) {
-			
-			// Фильтруем основные веши!
-
-			// Это условие отрабатывает всегда!! -------
-			if(!$this->glob->isExist($key)) { return false; }
-
-			$value = $this->glob->getGlobParam($key);
-
-			if(!$this->isNotEmpty($value)) { 
-
-				Logger::collectAlert('warnings', 'У вас есть пустые поля!');
-				return false;  
-			}
-
-			//$value = $this->mainSanitizer($value, 'encoding');
-			$value = $this->mainSanitizer($value, 'magicquotes');
-			$value = $this->mainSanitizer($value, 'fullspecchars');
-			$value = $this->mainSanitizer($value, 'string');
-			$value = $this->mainSanitizer($value, 'stripped');
-
-			try {
-				$value = $this->ejectedWords($value);
-			} catch (Exception $e) {
-				Logger::collectAlert('warnings', $e->getMessage());
-			}
-
-			$max = $this->authParams['loginPasswordMax'];
-			$min = $this->authParams['loginPasswordMin'];
-			
-			if ($this->isMoreThan($value, $max)) {
-
-				Logger::collectAlert('warnings', 'Ошибка! В одном из полей превышенно максимальное кол-во символов!');
-				return false;
-			}
-
-			if($this->isLessThen($value, $min)) {
-
-				Logger::collectAlert('warnings', 'Ошибка! В одном из полей количество символов меньше разрешенного!');
-				return false; 
-			}
-
-			$updateParams[$key] = $value;
-		}
-
-		if ($updateParams['newpassword1'] !== $updateParams['newpassword2']) {
-
-			Logger::collectAlert('warnings', 'Ошибка! пароли не совпадают.');
-
+		if(!$this->isNotEmpty($updateParams)) {
 			return false;
 		}
 
-		$result = $this->users->updateUserPassword($verified['userid'], $updateParams['newpassword1'], true);
+		if ($updateParams[$this->authParams['transport']['userPassword1Value']] !== $updateParams[$this->authParams['transport']['userPassword2Value']]) {
+			Logger::collectAlert('warnings', 'Ошибка! пароли не совпадают.');
+			return false;
+		}
+
+		$result = $this->users->updateUserPassword($verified['userid'], $updateParams[$this->authParams['transport']['userPassword2Value']], true);
 
 		if (!$result) {
-
 			Logger::collectAlert('warnings', 'Ошибка обновления пароля!');
 			return false;
 		}
 
 		$r = $this->auth->clearActivations($verified['userid']);
 
-		debugger($r);
+		if (!$r) {
+
+			Logger::collectAlert('attentions', 'Не смог удалить активационные данные!');
+		}
 
 		Logger::collectAlert('success', 'Пароль обновлен!');
-
 		return true;
 	}
 
 
-	function registrationAction(): ?string {
+	function registrationAction(): bool {
 
 		if(!defined('REGISTRATIONALLOW') || !REGISTRATIONALLOW) {
 
 			Logger::collectAlert('warnings', 'Регистрация отключено администратором!');
-			return null;
+			return false;
 		}
 
 		$registrationParams = array(
-
-			'userregemail' 		=> false,
-			'userregname'		=> false,
-			'userregpassword1'	=> false,
-			'userregpassword2'	=> false
+			$this->authParams['transport']['userNameValue'] => false,
+			$this->authParams['transport']['userEmailValue'] => false,
+			$this->authParams['transport']['userPassword1Value'] => false,
+			$this->authParams['transport']['userPassword2Value'] => false
 		);
 
-		$this->glob->setGlobParam('_POST');
+		$registrationParams = $this->getInputParams($registrationParams, '_POST');
 
-		foreach ($registrationParams as $key => $value) {
-			
-			// Фильтруем основные веши!
-
-			// Это условие отрабатывает всегда!! -------
-			if(!$this->glob->isExist($key)) { return null; }
-
-			$value = $this->glob->getGlobParam($key);
-
-			if(!$this->isNotEmpty($value)) { 
-
-				Logger::collectAlert('warnings', 'У вас есть пустые поля!');
-				return null;  
-			}
-
-			//$value = $this->mainSanitizer($value, 'encoding');
-			$value = $this->mainSanitizer($value, 'magicquotes');
-			$value = $this->mainSanitizer($value, 'fullspecchars');
-			$value = $this->mainSanitizer($value, 'string');
-			$value = $this->mainSanitizer($value, 'stripped');
-
-			try {
-				$value = $this->ejectedWords($value);
-			} catch (Exception $e) {
-				Logger::collectAlert('warnings', $e->getMessage());
-			}
-
-			if($key == 'userregemail') {
-				$max = $this->authParams['loginEmailMaxSym'];
-				$min = $this->authParams['loginEmailMinSym'];
-			} else if ($key == 'userregname') {
-				$max = $this->authParams['usernameMaxSym'];
-				$min = $this->authParams['usernameMinSym'];
-			} else {
-				$max = $this->authParams['loginPasswordMax'];
-				$min = $this->authParams['loginPasswordMin'];
-			}
-
-			if ($this->isMoreThan($value, $max)) {
-
-				Logger::collectAlert('warnings', 'Ошибка! В одном из полей превышенно максимальное кол-во символов!');
-				return null;
-			}
-
-			if($this->isLessThen($value, $min)) {
-
-				Logger::collectAlert('warnings', 'Ошибка! В одном из полей количество символов меньше разрешенного!');
-				return null; 
-			}
-
-			$registrationParams[$key] = $value;
+		if(!$this->isNotEmpty($registrationParams)) {
+			return false;
 		}
 
-		if(!$this->mainValidator($registrationParams['userregemail'], 'email')) {
-
-			Logger::collectAlert('warnings', 'Указан некорректный емайл!');
-			return null; 
-		}
-
-
-		if ($registrationParams['userregpassword1'] !== $registrationParams['userregpassword2']) {
+		if ($registrationParams[$this->authParams['transport']['userPassword1Value']] !== $registrationParams[$this->authParams['transport']['userPassword2Value']]) {
 
 			Logger::collectAlert('warnings', 'Ошибка! пароли не совпадают.');
-			return null;
+			return false;
 		}
 
-
-		$userExist = $this->users->userExist($registrationParams['userregemail']);
+		$userExist = $this->users->userExist($registrationParams[$this->authParams['transport']['userEmailValue']]);
 
 		if($userExist) {
-
 			Logger::collectAlert('warnings', 'Такой пользователь уже зарегестрирован!');
-			return null; 
+			return false; 
 		}
 
-		$insert = $this->users->insertNewUser($registrationParams['userregemail'], $registrationParams['userregpassword1'], $registrationParams['userregname']);
+		$insert = $this->users->insertNewUser($registrationParams[$this->authParams['transport']['userEmailValue']], $registrationParams[$this->authParams['transport']['userPassword1Value']], $registrationParams[$this->authParams['transport']['userNameValue']]);
 
 		if (!$insert) {
-
 			Logger::collectAlert('warnings', 'Ошибка регистрации пользователя! Не могу добавить пользователя.'); 
-			return null;
+			return false;
 		}
 
-		$meta = $this->auth->generateActivations($registrationParams['userregemail']);
+		$meta = $this->auth->generateActivations($registrationParams[$this->authParams['transport']['userEmailValue']]);
 
 		if(!$meta) {
 			Logger::collectAlert('warnings', 'Ошибка генерации ccылки для активации! Внимание обратитесь к администратору!!!');
-			return null;
+			return false;
 		}
 
 		// TODO: Отправка емайла пользователю для восстановления пароля
 		// TODO: сделать генерацию ссылок
 
-		$link = HOST . '/verifreg/?userid=' . $meta['id'] . '&confirm=' . $meta['cofirm'] . '&token=' . $meta['token'];
+		$link = HOST . '/verifreg/?'.$this->authParams['transport']['useridValue'].'=' . $meta['id'] . '&'.$this->authParams['transport']['userConfirmHashValue'].'=' . $meta['cofirm'] . '&'.$this->authParams['transport']['userTokenHashValue'].'=' . $meta['token'];
 
 		Logger::collectAlert('information', $link);
-		return $link;
+		return true;
 
 	}
 
@@ -842,7 +512,7 @@ class Identificator extends Filter {
 			return false;
 		}
 
-		$status = $this->auth->activateRegisteredUser($registrationConfirm['userid']);
+		$status = $this->auth->activateRegisteredUser($registrationConfirm[$this->authParams['transport']['useridValue']]);
 
 		if (!$status) {
 
@@ -850,7 +520,7 @@ class Identificator extends Filter {
 			return false;
 		}
 
-		$this->auth->clearActivations($registrationConfirm['userid']);
+		$this->auth->clearActivations($registrationConfirm[$this->authParams['transport']['useridValue']]);
 
 		Logger::collectAlert('success', 'Аккаунт активирован!');
 		return true;
@@ -859,9 +529,111 @@ class Identificator extends Filter {
 
 	// Функция которая возвращает данные из вне чтобы не дублировать код впихнул все сюда 
 
-	function getInputParams(): ?array {
+	function getInputParams(array $params, string $method, bool $silence=false): ?array {
 
+		if(!$this->isNotEmpty($params) || !$this->isNotEmpty($method)) { 
+			return null;
+		}
 
+		// Замыкание для фильтрации массива !!!! ----
+
+		$filterOut = function($key, $silence) {
+
+			if(!$this->glob->isExist($key)) {
+				return false;
+			}
+
+			$value = $this->glob->getGlobParam($key);
+
+			if (!$this->isNotEmpty($value)) {
+				if(!$silence)
+					Logger::collectAlert('warnings', 'У вас есть пустые поля!');
+				return false;
+			}
+			try {
+				//$value = $this->mainSanitizer($value, 'encoding');
+				$value = $this->mainSanitizer($value, 'magicquotes');
+				$value = $this->mainSanitizer($value, 'fullspecchars');
+				$value = $this->mainSanitizer($value, 'string');
+				$value = $this->mainSanitizer($value, 'stripped');
+				$value = $this->ejectedWords($value);
+			} catch (Exception $e) {
+				if(!$silence)
+					Logger::collectAlert('warnings', $e->getMessage());
+			}
+
+			switch($key) {
+				case $this->authParams['transport']['userEmailValue']:
+				//case 'loginmail':
+				//case 'emailhash':
+				//case 'restoreemail':
+				//case 'userregemail':
+					$max = $this->authParams['transport']['userEmailMaxSym'];
+					$min = $this->authParams['transport']['userEmailMinSym'];
+				break;
+				case $this->authParams['transport']['userPassword1Value']:
+				case $this->authParams['transport']['userPassword2Value']:
+				//case 'loginpasswd':
+				//case 'newpassword1':
+				//case 'newpassword2':
+				//case 'userregpassword1':
+				//case 'userregpassword2':
+					$max = $this->authParams['transport']['userPasswordMaxSym'];
+					$min = $this->authParams['transport']['userPasswordMinSym'];
+				break;
+				case $this->authParams['transport']['userTokenHashValue']:
+				case $this->authParams['transport']['userConfirmHashValue']:
+				//case 'tokenhash':
+				//case 'confirm':
+				//case 'token':
+					$max = $this->authParams['transport']['userTokenHashMaxSym'];
+					$min = $this->authParams['transport']['userTokenHashMinSym'];
+				break;
+				case $this->authParams['transport']['userNameValue']:
+				//case 'userregname':
+					$max = $this->authParams['transport']['userNameMaxSym'];
+					$min = $this->authParams['transport']['userNameMinSym'];
+				break;
+				case $this->authParams['transport']['useridValue']:
+				//case 'userid':
+					$max = $this->authParams['transport']['useridMaxSym'];
+					$min = $this->authParams['transport']['useridMinSym'];
+				break;
+				default:
+					//$max = 0;
+					//$min = 0;
+				break;
+			}
+
+			if ($this->isMoreThan($value, $max)) {
+				if(!$silence)
+					Logger::collectAlert('warnings', 'Ошибка! В одном из полей превышенно максимальное кол-во символов!');
+				return false;
+			}
+
+			if($this->isLessThen($value, $min)) {
+				if(!$silence)
+					Logger::collectAlert('warnings', 'Ошибка! В одном из полей количество символов меньше разрешенного!');
+				return false; 
+			}
+
+			if($key == $this->authParams['transport']['userEmailValue'] &&  !$this->mainValidator($value, 'email')) {
+				if(!$silence)
+					Logger::collectAlert('warnings', 'Указан некорректный емайл!');
+				return false; 
+			}
+
+			return $value;
+		};
+
+		$this->glob->setGlobParam($method);
+
+		foreach ($params as $key => $value) {
+			$params[$key] = $filterOut($key, $silence);
+			if(!$params[$key]) return null;
+		}
+
+		return $params;
 	}
 }
 

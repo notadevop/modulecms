@@ -5,4 +5,6 @@
   <br />
   <br />
   <p><b>%loadtime%</b> <br/> <b>%memused%</b></p>
+
+  <p><a href="<?=HOST;?>/phpMyAdmin5/" target="_blank" >PHPMYADMIN</a></p>
 </div>

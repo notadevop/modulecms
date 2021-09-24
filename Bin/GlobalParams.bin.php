@@ -13,7 +13,7 @@ class GlobalParams {
 		}
 	}
 
-	private $gp; 
+	private $gp = null; 
 
 	public function setGlobParam(string $param='na'): void {
 
@@ -23,19 +23,15 @@ class GlobalParams {
 			case '_GET':		$this->gp = $_GET;		break;
 			case '_COOKIE':		$this->gp = $_COOKIE; 	break;
 			case '_SESSION': 	$this->gp = $_SESSION; 	break;
-			default: 			$this->gp = 'N/A';		break;
+			default: 			$this->gp = null;		break;
 		}
 	}
 
-	function getElements(array $paramKeys=array()): ?array {
+	function getBulkParams(array $paramKeys=array()): ?array {
 
-		foreach ($paramKeys as $key => $value) {
-			
+		if(!$this->gb || empty($paramKeys)) {return null;}
 
-
-			$paramKeys[$key] = $value;
-		}
-
+		return array_intersect_assoc($paramKeys, $this->gb);
 	}
 
 

@@ -4,7 +4,6 @@
   <table style="width:100%" >
   <tr>
     <th colspan="5">Список пользователей</th> 
-
   </tr>
 
   <?php 
@@ -59,7 +58,5 @@
   ?>
 
 </table>
-
-  <p><br /><br /></p>
 </div>
 </div>
