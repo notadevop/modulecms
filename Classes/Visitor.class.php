@@ -319,12 +319,12 @@ final class Visitor extends Database {
 
 		//SQLite 
 		// Cпециально для SQLite базы создаем папку и в ней базу
-		$files = new FilesManipulator();
+		$files = new Filemanipulator();
 
 		$workinDir = ROOTPATH.SQLITEJOB['sqlitefolder'];
 
-		$files->set_dir_name($workinDir);
-		$files->create_dir();
+		$files->setDirName($workinDir);
+		$files->createDir();
 
 		if (session_id() == '') 
 			session_start();
@@ -338,9 +338,9 @@ final class Visitor extends Database {
 			'sqlfile' => ($workinDir.DIRECTORY_SEPARATOR.SQLITEJOB['sqlitefile'])
 		);
 
-		$sqlite = new Sqlitedbase($p['sqlfile']);
+		$sqlite = new Sqlitec($p['sqlfile']);
 
-		$sqlite->exec('CREATE TABLE IF NOT EXISTS tmp_users_online (
+		$sqlite->query_exec('CREATE TABLE IF NOT EXISTS tmp_users_online (
 			`session` 	varchar(255) NOT NULL,
 			`usertime` 	varchar(255) NOT NULL,
 			`ip` 		varchar(255) NOT NULL,
@@ -390,6 +390,8 @@ final class Visitor extends Database {
 
 	// storage: mysql, sqlite <= для получения статистики даже когда сайт упал
 	public function users_online(string $storage='mysql'): int {
+
+		$storage = 'mysql';
 
 		return $storage == 'mysql' ? $this->usersOnlineStorageMysql() : $this->usersOnlineStorageSqlite();
 	}

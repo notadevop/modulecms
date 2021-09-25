@@ -17,12 +17,12 @@
 	/*
 	$routes = array(
 	  // 'url' => 'контроллер/действие/параметр1/параметр2/параметр3'
-	  '/'               => 'MainController/index', // главная страница
-	  '/contacts'       => 'MainController/contacts', // страница контактов
+	  '/'               => 'BlogController/index', // главная страница
+	  '/contacts'       => 'BlogController/contacts', // страница контактов
 	  '/blog'           => 'BlogController/index', // список постов блога
 	  '/blog/:num'      => 'BlogController/viewPost/$1' // просмотр отдельного поста, например, /blog/123
 	  '/blog/:any/:num' => 'BlogController/$1/$2' // действия над постом, например, /blog/edit/123 или /blog/dеlete/123
-	  '/:any'           => 'MainController/anyAction' // все остальные запросы обрабатываются здесь
+	  '/:any'           => 'BlogController/anyAction' // все остальные запросы обрабатываются здесь
 	));
 
 	// добавляем все маршруты за раз
@@ -34,134 +34,15 @@
 	// непосредственно запуск обработки
 	Routing::dispatch();
 
-	//  ДЛЯ НОРМАЛЬНОГО ИСПОЛЬЗОВАНИЯ РОУТЕРА НУЖНО ИСПОЛЬЗОВАТЬ ЭТО  
+	// для нормального использования роутера 
+	// нужно добавить в .htaccess параметры  
 
-	// ----> добавить в .htaccess
-
-	this router working only with this
 	Options -MultiViews
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [QSA,L]
 	*/
 
-
-final class Router {
-
-
-	private static $routes = array();
-	private static $params = array();
-	private static $requestedUrl;
-
-	public static $defaultRoutesDir = ROOTPATH.DEFROUTEPATH;
-
-	public static $defaultRoutes = array();
-
-	// Инициализирует пути с их параметрами
-
-	public static function initDefaultRoutes(): void{
-
-		$fileObj = new Filemanipulator();
-
-		$fileObj->setDirName(self::$defaultRoutesDir);
-
-		$files = $fileObj->listFolder();
-
-		$noRoutes = function(){
-			die('<h1>Fatal, no routes found!</h1>');
-		};
-
-		if(count($files) <= 1 ) {
-			$noRoutes();
-		}
-
-		$files = preg_grep('/.route.php/i', $files);
-
-		if(count($files) <= 1 ) {
-			$noRoutes();
-		}
-
-		foreach ($files as $key => $value) {
-			
-			$result = self::$defaultRoutesDir.$value;
-
-			if (!file_exists($result)) { continue; }
-
-			$result = require_once $result;
-
-			if (is_array($result) && count($result) > 0) {
-
-				self::addRoute($result);
-			}
-		}
-	}
-
-	// Добавить новый путь
-
-	public static function addRoute(array $route): void {
-
-		if (empty($route) || !is_array($route)) { return; }
-
-		$newArr = array();
-
-		foreach ($route as $key => $value) {
-
-			if (!array_key_exists($key, self::$defaultRoutes)) {
-
-				$newArr[$key] = $value;
-			}
-		}
-
-		if (count($newArr) < 1) { return; }
-
-		self::$defaultRoutes = array_merge(self::$defaultRoutes, $newArr);
-	}
-
-	// Возвращает все пути с их параметрами 
-
-	public static function getSavedRoutes(): array {
-
-		return self::$defaultRoutes;
-	}
-
-	// Очищаем путь роутера
-
-	public static function cleanRoute(string $routeName): bool {
-
-		if (array_key_exists($routeName, self::$defaultRoutes)) {
-
-			unset(self::$defaultRoutes[$routeName]);
-
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Разделить переданный URL на компоненты
-	 	https://google.ru/index.php?var=123  = array=>( https:, google, index.php?var=123); 
-	 */
-	public static function splitUrl(string $url) {
-
-		return preg_split('/\//', $url, -1, PREG_SPLIT_NO_EMPTY);
-	}
-
-	// Возвращает массив с array('uri' => '', 'params' => 'controller')
-
-	public static function getCurrentRouteParams(): ?array {
-
-		foreach(self::$defaultRoutes as $reg => $controller) {
-
-			$regex = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $reg));
-
-			if ( preg_match('#^' .$regex. '$#', self::getCurrentUri()) ) {
-		    
-		    	return array('uri' => $reg, 'params' => $controller['action']);
-		  	}
-		}
-
-		return array('uri' =>'', 'params' =>'');
-	}
 
 	/**
 	 * // /search/something/is/here/ -> Возвращает массив всех путей
@@ -184,18 +65,126 @@ final class Router {
 	}
 	*/
 
-	public static function getCurrentUri() {
 
+final class Router {
+
+	//private static 	$routes 			= array();
+	private static 	$params 			= array();
+	private static 	$requestedUrl;
+	public static 	$defaultRoutesDir 	= ROOTPATH.DEFROUTEPATH;
+	public static 	$defaultRoutes 		= array();
+
+
+
+	// Инициализирует все пути по умолчанию
+	// Которые не обходимы для базовой работы 
+	// Если в пути не найдены убиваем процесс die();
+
+	public static function initDefaultRoutes(): void{
+
+		$noRoutes 	= function(){
+			die('<h1>Fatal, no routes found!</h1>');
+		};
+
+		$fileObj 	= new Filemanipulator();
+		$fileObj->setDirName(self::$defaultRoutesDir);
+		$files 		= $fileObj->listFolder();
+
+		if(count($files) < 1) {
+			$noRoutes();
+		}
+
+		$files = preg_grep('/.route.php/i', $files);
+
+		if(count($files) < 1 ) {
+			$noRoutes();
+		}
+
+		foreach ($files as $key => $value) {
+			$result = self::$defaultRoutesDir.$value;
+			if (!file_exists($result)) { continue; }
+			$result = require_once $result;
+			if (is_array($result) && count($result) > 0) {
+				self::addRoute($result);
+			}
+		}
+	}
+
+	// Добавить новый путь
+
+	public static function addRoute(array $route): void {
+		if (empty($route) || !is_array($route)) { return; }
+		$newArr = array();
+		foreach ($route as $key => $value) {
+			if (!array_key_exists($key, self::$defaultRoutes)) {
+				$newArr[$key] = $value;
+			}
+		}
+		if (count($newArr) < 1) { return; }
+		self::$defaultRoutes = array_merge(self::$defaultRoutes, $newArr);
+	}
+
+	/**
+	 * Разделить переданный URL на компоненты
+	 	https://google.ru/index.php?var=123  = array=>( https:, google, index.php?var=123); 
+	 */
+	public static function splitUrl(string $url) {
+		return preg_split('/\//', $url, -1, PREG_SPLIT_NO_EMPTY);
+	}
+
+	// Очищаем путь роутера
+
+	public static function cleanRoute(string $routeName): bool {
+		if (array_key_exists($routeName, self::$defaultRoutes)) {
+			unset(self::$defaultRoutes[$routeName]);
+			return true;
+		}
+		return false;
+	}
+
+
+	// Метод возвращает массив с параметрами одного пути
+	// Либо все сохраненные пути 
+
+	public static function getRoute(bool $getAllRoutes=false): ?array {
+
+		if ($getAllRoutes) {return self::$defaultRoutes;}
+
+		foreach(self::$defaultRoutes as $key => $controller) {
+			$regex = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $key));
+			if ( preg_match('#^' .$regex. '$#', self::getCurrentUri()) ) {
+
+				$path = array(
+					'uri' 		=> self::splitUrl($key),
+					'uri' 		=> $key,
+					'action' 	=> self::splitUrl($controller['action']),
+					'params'	=> self::$defaultRoutes[$key]
+				);
+				return $path;
+		  	}
+		}
+		return null;
+	}
+
+
+	public static function getCurrentUri() {
 		$scriptName = $_SERVER['SCRIPT_NAME'];
 		$basepath 	= implode('/', array_slice(explode('/', $scriptName), 0, -1)) . '/';
 		$uri 		= substr($_SERVER['REQUEST_URI'], strlen($basepath));
-
 		if (strstr($uri, '?')) { 
 			$uri = substr($uri, 0, strpos($uri, '?')); 
 		}
-
 		return strtolower('/' . trim($uri, '/'));
 	}
+
+
+
+
+
+
+
+
+
 
 
 	/**
@@ -249,36 +238,54 @@ final class Router {
 	 */
 	public static function executeAction() {
 
+		//debugger(self::$params);
+
 		$controller = isset(self::$params[0]) ? self::$params[0] : 'MainController';
 		$action 	= isset(self::$params[1]) ? self::$params[1] : 'defaultMethod';
 		$params 	= array_slice(self::$params, 2);
+		$obj 		= new $controller();
 
-		$obj = new $controller();
 		$cresult = call_user_func_array(array($obj, $action), $params);
+
+		/*
 
 		foreach ($params as $key => $value) {
 			
 			if(method_exists($controller, $value)) {
 
 				$params[$key] = call_user_func(array($obj, $value));
+
+				debugger('skdjfksdfhjsdhfkjhsdf');
 			}
 		}
+		*/
 
 		return array(
 			'result' => $cresult,
 		);
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+	// Метод достает все пути сохраненные в переменной self::defaultRoutes
+	// 1. Отрабатывает все пути которые не имеют URI, постоянные типа авторизации 
+	// 2. Отрабатывает один путь который указан в URI 
+	// 3. Возвращает результат постоянных исполнителей в виде массива $result 
+	// 4. И путь по которому зашел пользователь self::dispatch()
+
 	public static function getResult() {
-
 		$result = array();
-
 		foreach (self::$defaultRoutes as $key => $value) {
-
-			// Отрабатывает только перманентные роуты
-
 			if ($value['skipUri']) { 
-
 				$result[$key] = self::dispatch($key);
 				//self::cleanRoutes($key);
 			}
@@ -286,6 +293,9 @@ final class Router {
 
 		return array(
 			// Отрабатывает по указанному пути
+			//'tplControllerResult' => self::dispatch(),
+			//'perControllerResult' => $result
+
 			'templateCtrlResult' 	=> self::dispatch(),
 			'permanetCtrlResult'	=> $result
 		);

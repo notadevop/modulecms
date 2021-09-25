@@ -20,7 +20,7 @@ return array(
 					5. Не показывать вообще эти ссылки и использовать по умолчанию страницу
 			*/
 	
-	'/' 			=> array( 
+	'/' 		=> array( 
 			'action' 	=> 'MainController/defaultMethod',
 			'template'	=> 'infopage.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
@@ -29,7 +29,7 @@ return array(
 			'priority'	=> 4 // Показывать по при оритету
 	),
 	
-	'/404page' 		=> array(
+	'/404page' 	=> array(
 			'action' 	=> 'MainController/defaultMethod',
 			'template'	=> '404page.tpl.php',
 			'ifRegOk'	=> '404page.tpl.php',

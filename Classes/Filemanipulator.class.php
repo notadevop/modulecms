@@ -26,7 +26,7 @@ class Filemanipulator {
 
 	// Создает папку с указанным именем
 
-	public function createDir(string $dirname): void {
+	public function createDir(): void {
 
 		if (!is_dir($this->pdir)) {
 

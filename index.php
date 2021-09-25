@@ -67,29 +67,40 @@ $viewRender->setActiveTemplate('simplelight');
 $viewRender->prepareRender($result);
 
 
-//debugger($_COOKIE['tokenhash']);
 
-//debugger(PROFILE);
+$timer = function() use ($start){
+	$time 		= microtime();
+	$time 		= explode(' ', $time);
+	$time 		= $time[1] + $time[0]; 
+	$finish 	= $time;
+	$total_time = round(($finish - $start), 4);
+	return 'Загрузка: ' . $total_time . ' cекунд.';
+};
 
-$time 		= microtime();
-$time 		= explode(' ', $time);
-$time 		= $time[1] + $time[0]; 
-$finish 	= $time;
-$total_time = round(($finish - $start), 4);
 
+Router::getRoute();
 
-$mem = convert(memory_get_usage(true));
 
 $viewRender->replace(
 	array(
-
-		'/%loadtime%/i' 	=> $load = 'Загрузка: ' . $total_time . ' cекунд.',
+		'/%loadtime%/i' 	=> $timer(),
 		'/%username%/i' 	=> PROFILE['username'], 
-		'/%memused%/i'		=> 'Использованная память: '. $mem
+		'/%memused%/i'		=> 'Использованная память: '. convert(memory_get_usage(true))
 	)
 );
 // в конечном итоге вывидим все.
 $viewRender->viewRender();
 
-
 // Конец Исполнения кода 
+
+
+
+
+
+
+
+
+
+
+
+

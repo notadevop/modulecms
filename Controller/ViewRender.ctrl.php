@@ -16,7 +16,8 @@ class ViewRender {
 
 	function __construct() { 
 
-		$this->curRouteName 	= Router::getCurrentRouteParams();
+		//$this->curRouteName 	= Router::getCurrentRouteParams();
+		$this->curRouteName 	= Router::getRoute();
 		$this->replaceParams 	= array();
 
 		$this->currentTpl 		= TPLDEFTEMPLATE;
@@ -97,9 +98,9 @@ class ViewRender {
 			$regOk = true; 
 		}
 
-		$routes = Router::getSavedRoutes();
+		$routes = Router::getRoute(true);
 
-		if ( !$this->curRouteName || empty($routes[$this->curRouteName['uri']]) ) {
+		if ( !$this->curRouteName || empty($this->curRouteName) ) {
 
 			$defTpl 	= $routes['/404page']['template'];
 			$ifRegOk 	= $routes['/404page']['ifRegOk'];
