@@ -1,7 +1,7 @@
 
 <?php 
 
-if(empty($result['templateCtrlResult']['result'])) { 
+if(empty($this->result['templateCtrlResult']['result'])) { 
 
   echo '<p> данные не указанны </p>';
   return ; 
@@ -13,7 +13,7 @@ if(empty($result['templateCtrlResult']['result'])) {
 
 <div id="content">
 
-<p><a href="/profile/edit/<?=@$result['templateCtrlResult']['result']['id']; ?>">Редактировать профиль</a>  | <a href="">Активные сессии</a></p>
+<p><a href="/profile/edit/<?=@$this->result['templateCtrlResult']['result']['id']; ?>">Редактировать профиль</a>  | <a href="">Активные сессии</a></p>
 
 <h1>Профиль пользователя</h1>
 
@@ -25,7 +25,7 @@ if(empty($result['templateCtrlResult']['result'])) {
   <tr>
     <td>Постоянный пользователь</td>
     <?php 
-    if ($result['templateCtrlResult']['result']['actstatus'] == 1) {
+    if ($this->result['templateCtrlResult']['result']['actstatus'] == 1) {
       echo '<td style="background-color: #c4f9a6;">Активирован</td>';
     } else {
       echo '<td style="background-color: #f9b5a6;">Не Активирован</td>';
@@ -34,17 +34,17 @@ if(empty($result['templateCtrlResult']['result'])) {
   </tr>
   <tr>
     <td>Аватар пользователя:</td>
-    <td><?=@$result['templateCtrlResult']['result']['userpicture'];?></td>
+    <td><?=@$this->result['templateCtrlResult']['result']['userpicture'];?></td>
   </tr>
 
   <tr>
     <td>Имя пользователя:</td>
-    <td><?=@$result['templateCtrlResult']['result']['name'];?></td>
+    <td><?=@$this->result['templateCtrlResult']['result']['name'];?></td>
   </tr>
   
   <tr>
     <td>Емайл пользователя:</td>
-    <td><?=@$result['templateCtrlResult']['result']['email'];?></td>
+    <td><?=@$this->result['templateCtrlResult']['result']['email'];?></td>
   </tr>
   
   <tr>

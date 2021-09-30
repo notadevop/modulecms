@@ -10,7 +10,5 @@
     </div>
   </form>
   <p><a href="/register">Регистрация</a> | <a href="/restore">Забыл пароль</a></p>
-  <p><br />
-    <br />NOTE: A contact form such as this would require some way of emailing the input to an email address.</p>
 </div>
 </div>

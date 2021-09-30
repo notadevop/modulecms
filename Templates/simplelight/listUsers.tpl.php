@@ -8,7 +8,7 @@
 
   <?php 
 
-    $users = $result['templateCtrlResult']['result'];
+    $users = $this->result['templateCtrlResult']['result'];
 
     //debugger($users);
 

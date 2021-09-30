@@ -58,19 +58,14 @@ foreach ($files as $key => $value) {
 */
 
 
-$v = new vRender();
 
-$v->prepareRender();
+// Инициализация языка пользователя
+
 
 Router::initDefaultRoutes();
 
-$result = Router::getResult();
-
-$viewRender = new ViewRender();
-$viewRender->setActiveTemplate('simplelight');
-//$viewRender->setActiveTemplate('bootstrap');
-$viewRender->prepareRender($result);
-
+$v = new vRender();
+$v->prepareRender();
 
 $timer = function() use ($start){
 	$time 		= microtime();
@@ -81,18 +76,15 @@ $timer = function() use ($start){
 	return 'Загрузка: ' . $total_time . ' cекунд.';
 };
 
-$viewRender->replace(
+$v->replace(
 	array(
 		'/%memused%/i'		=> 'Использованная память: '. convert(memory_get_usage(true)),
 		'/%username%/i' 	=> PROFILE['username'],
 		'/%loadtime%/i' 	=> $timer(), 
 	)
 );
-// в конечном итоге вывидим все.
-$viewRender->viewRender();
 
-// Конец Исполнения кода 
-
+$v->viewRender();
 
 
 

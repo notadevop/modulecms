@@ -26,8 +26,11 @@ return array(
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Главная',  // TODO: ВРЕМЕННО, для указания ссылки, будет использоваться отдельно, в языковом пакете
-			'priority'	=> 4 // Показывать по при оритету
+			'priority'	=> 4, // Показывать по при оритету
+			'userui'  => true
 	),
+
+
 	
 	'/404page' 	=> array(
 			'action' 	=> 'MainController/defaultMethod',

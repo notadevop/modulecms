@@ -1,14 +1,13 @@
 <?php
 
-
 return array(
 
-	'header',
-	'top',
-	'sidebar',
-	'banner',
+	'header.tpl.php',
+	'top.tpl.php',
+	'sidebar.tpl.php',
+	'banner.tpl.php',
 	'content',
-	'footer',
-	'bottom'
+	'footer.tpl.php',
+	'bottom.tpl.php'
 );
 

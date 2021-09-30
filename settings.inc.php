@@ -4,6 +4,8 @@
 
 
 
+define('USERDEFLANG','RUS');
+
 
 define('sqliteFolder', 'sqlitefolder');
 define('sqlitefile', 'sqlitedb.sql');

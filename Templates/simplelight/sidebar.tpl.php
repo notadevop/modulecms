@@ -1,15 +1,15 @@
 <?php 
 
-  if($regOk) {
+  if($this->regOk) {
 
     $name   = '<a href="/profile/'.PROFILE['userid'].'">'.PROFILE['username'].'</a>';
     $logout = '<a href="/logout">Выйти?</a>';
-    $online = '<a href="/usersonline">('.$result['permanetCtrlResult']['online']['result'].')</a>';
+    $online = '<a href="/usersonline">('.$this->result['permanetCtrlResult']['online']['result'].')</a>';
     $notifs = 'Уведомления: <a href="/notifications">(0)</a>';
   } else {
     $name = 'Гость';
     $logout = '<a href="/login">Авторизоваться</a>';
-    $online = '('.$result['permanetCtrlResult']['online']['result'].')';
+    $online = '('.$this->result['permanetCtrlResult']['online']['result'].')';
     $notifs = '';
   }
 
