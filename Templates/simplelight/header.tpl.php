@@ -12,7 +12,7 @@
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 
-<script type="text/javascript" src="../../Templates/HostTemplates/simplelight/js/ddaccordion.js">
+<script type="text/javascript" src="../../Templates/simplelight/js/ddaccordion.js">
 /***********************************************
 * Accordion Content script- (c) Dynamic Drive DHTML code library (www.dynamicdrive.com)
 * Visit http://www.dynamicDrive.com for hundreds of DHTML scripts
@@ -50,7 +50,7 @@ ddaccordion.init({
 .arrowlistmenu .menuheader{ /*CSS class for menu headers in general (expanding or not!)*/
 	font: bold 14px Arial;
 	color: white;
-	background: black url(../../Templates/HostTemplates/simplelight/img/titlebar.png) repeat-x center left;
+	background: black url(../../Templates/simplelight/img/titlebar.png) repeat-x center left;
 	margin-bottom: 10px; /*bottom spacing between header and rest of content*/
 	text-transform: uppercase;
 	padding: 4px 0 4px 10px; /*header text is indented 10px*/
@@ -58,7 +58,7 @@ ddaccordion.init({
 	cursor: pointer;
 }
 .arrowlistmenu .openheader{ /*CSS class to apply to expandable header when it's expanded*/
-	background-image: url(../../Templates/HostTemplates/simplelight/img/titlebar-active.png);
+	background-image: url(../../Templates/simplelight/img/titlebar-active.png);
 }
 .arrowlistmenu ul{ /*CSS for UL of each sub menu*/
 	list-style-type: none;
@@ -71,7 +71,7 @@ ddaccordion.init({
 }
 .arrowlistmenu ul li a{
 	color: #A70303;
-	background: url(../../Templates/HostTemplates/simplelight/img/arrowbullet.png) no-repeat center left; /*custom bullet list image*/
+	background: url(../../Templates/simplelight/img/arrowbullet.png) no-repeat center left; /*custom bullet list image*/
 	display: block;
 	padding: 2px 0;
 	padding-left: 19px; /*link text is indented 19px*/
@@ -85,7 +85,7 @@ ddaccordion.init({
 }
 .arrowlistmenu ul li a:hover{ /*hover state CSS*/
 	color: #FF4500;
-	background: url(../../Templates/HostTemplates/simplelight/img/arrowbullet-active.png) no-repeat center left; /*custom bullet list image*/
+	background: url(../../Templates/simplelight/img/arrowbullet-active.png) no-repeat center left; /*custom bullet list image*/
 	display: block;
 	padding: 2px 0;
 	padding-left: 19px; /*link text is indented 19px*/
@@ -134,7 +134,7 @@ ddaccordion.init({
   <meta name="description" content="website description" />
   <meta name="keywords" content="website keywords, website keywords" />
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="../../Templates/HostTemplates/simplelight/style/style.css" />
+  <link rel="stylesheet" type="text/css" href="../../Templates/simplelight/style/style.css" />
 </head>
 
 <body>

@@ -5,23 +5,21 @@
 
 class HostSettings extends Database {
 
-
 	function __construct() { 
-
 		parent::__construct(true);
 	}
 
-	public function settingExist(string $key): bool {
+	public function settingsExist(string $key): bool {
 
-		$sql = 'SELECT COUNT(*) FROM website_options WHERE option_name LIKE :optname LIMIT 1';
+		$sql = 'SELECT COUNT(*) as count FROM website_options WHERE option_name LIKE :optname LIMIT 1';
 
 		$this->preAction($sql, array(':optname' => $key));
 
-		if (!$this->doAction()) {return false;}
+		if (!$this->doAction()) { return false; }
 
-		$count = $this->postAction()->fetchAll(PDO::FETCH_ASSOC);
+		$count = $this->postAction()->fetchColumn();
 
-		if (count($count['count']) >= 1) { return true; }
+		if ($count > 0) { return true; }
 		
 		return false;
 	}
@@ -36,21 +34,13 @@ class HostSettings extends Database {
         $row = array();
 
         foreach ($settings_keys as $key => $value) {
-
-        	if (!$this->settingExist($key)) { continue; }
-
-        	$this->preAction($sql, array(':optname' => $value));
- 
+        	if (!$this->settingsExist($key)) { continue; }
+        	$this->preAction($sql, array(':optname' => $key));
         	if(!$this->doAction()) { continue; }
-
-        	$row[$value] = $this
-        						->postAction()
-        						->fetchAll(PDO::FETCH_ASSOC); // <---- ????
+        	$settings_keys[$key] = $this->postAction()->fetch()['value'];
         }
 
-        $row = array_filter($row);
-
-        return !empty($row) ? $row : null;
+        return array_filter($settings_keys);
 	}
 
 	// Добавляем новые настройки или обновляем при включенном флаге старые
@@ -76,6 +66,8 @@ class HostSettings extends Database {
 	function editSettings(string $key, string $value): bool {
 
 		if(!$this->settingExist($key)) { return false; }
+
+		// Тут не правильно!!???!? так как ориентировка идет на :optname в коде !!!
 
 		$sql = 'UPDATE website_options SET option_name=:optname, option_value=:optvalue WHERE option_name = :optname';
 

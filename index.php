@@ -6,7 +6,6 @@ $time = $time[1] + $time[0];
 $start = $time;
 
 
-
 if (version_compare(phpversion(), '7.0.0') <= 0) {
 	
 	die('PHP 7.0 or newer Only! Your version PHP is: '.phpversion());
@@ -15,6 +14,7 @@ if (version_compare(phpversion(), '7.0.0') <= 0) {
 if (session_id() == '') { session_start(); }
 
 setlocale(LC_CTYPE, 'en_US.UTF-8');
+date_default_timezone_set('UTC');
 
 header('Content-Type: text/html; charset=utf-8');
 header('X-Powered-By: PHP Application');
@@ -30,22 +30,24 @@ define('ROOTPATH', dirname(__FILE__) . DS);
 // header( "refresh:1; url=index.php" );
 // Указываем все необходимые файлы для загрузки
 
+$files = array(
 
-define('DEBUG', true);
+	'init.inc.php',
+	'config.inc.php',
+	'settings.inc.php',
+	'extended.inc.php',
+	'Debugger.inc.php',
 
-foreach (
+	'meta/Attentions.meta.php',
+	'meta/Info.meta.php',
+	'meta/Errors.meta.php'
+);
 
-	array(
-		'settings.inc.php',
-		'config.inc.php',
-		'init.inc.php',
-		'extended.func.php'
-	) 
-	as $key => $value) {
-	
-	require_once ROOTPATH . $value;
+foreach ($files as $key => $value) {
+	$r = ROOTPATH . $value;
+
+	!file_exists($r) ? die('no file!'. $r) : require_once ($r);
 }
-
 
 /*
 	Класс разделения контента на страницы Pagination (break to pages)
@@ -55,17 +57,19 @@ foreach (
 	url_fixer разрешает конфликты в ссылках
 */
 
-$host = new HostSettings();
+
+$v = new vRender();
+
+$v->prepareRender();
 
 Router::initDefaultRoutes();
 
 $result = Router::getResult();
 
 $viewRender = new ViewRender();
-
 $viewRender->setActiveTemplate('simplelight');
+//$viewRender->setActiveTemplate('bootstrap');
 $viewRender->prepareRender($result);
-
 
 
 $timer = function() use ($start){
@@ -77,15 +81,11 @@ $timer = function() use ($start){
 	return 'Загрузка: ' . $total_time . ' cекунд.';
 };
 
-
-Router::getRoute();
-
-
 $viewRender->replace(
 	array(
-		'/%loadtime%/i' 	=> $timer(),
-		'/%username%/i' 	=> PROFILE['username'], 
-		'/%memused%/i'		=> 'Использованная память: '. convert(memory_get_usage(true))
+		'/%memused%/i'		=> 'Использованная память: '. convert(memory_get_usage(true)),
+		'/%username%/i' 	=> PROFILE['username'],
+		'/%loadtime%/i' 	=> $timer(), 
 	)
 );
 // в конечном итоге вывидим все.

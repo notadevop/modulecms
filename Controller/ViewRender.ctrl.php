@@ -28,7 +28,6 @@ class ViewRender {
 	private function AdminZone(): bool { return false; }
 
 	// Получаем данные из базы данных, какой шаблон используется в данный момент, 
-
 	// Удалить поже, схема не нужна --- 
 
 	function getTemplateSchema() {

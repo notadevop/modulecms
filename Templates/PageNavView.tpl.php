@@ -7,7 +7,6 @@
 */
 
 
-
 class PageNavView {
 
     //     -------- VIEW ----------
@@ -77,8 +76,7 @@ class PageNavView {
         // несколько навигаций на одной странице. к примеру коментарии и еще какой то вывод данных 
         // которые подразумевает разбиение на страницы.
         if (!empty($pageTpl)) {
-            //$this->tpl = str_replace('page/', $pageTpl, $this->tpl).'{page}/'; 
-            echo 'skdhfkdsfkjsdhfksd';
+            $this->tpl = str_replace('page/', $pageTpl, $this->tpl).'{page}/'; 
         }
     }
 
@@ -92,11 +90,14 @@ class PageNavView {
         
         $page = $pageNum > 1 ? str_replace('{page}', $pageNum, $this->tpl) : '';
 
+        return (stripos($this->baseUrl, '{page}') !== false) ? str_replace('{page}', $page, $this->baseUrl) : $this->baseUrl . $page;
+        /*
         if (stripos($this->baseUrl, '{page}') !== false) {
             return str_replace('{page}', $page, $this->baseUrl);
         } else {
             return $this->baseUrl . $page;
         }
+        */
     }
 
     public function NavViewBuild(array $navlist):void { 

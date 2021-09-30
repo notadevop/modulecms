@@ -82,22 +82,12 @@ final class Router {
 
 	public static function initDefaultRoutes(): void{
 
-		$noRoutes 	= function(){
-			die('<h1>Fatal, no routes found!</h1>');
-		};
-
 		$fileObj 	= new Filemanipulator();
 		$fileObj->setDirName(self::$defaultRoutesDir);
 		$files 		= $fileObj->listFolder();
 
-		if(count($files) < 1) {
-			$noRoutes();
-		}
-
-		$files = preg_grep('/.route.php/i', $files);
-
-		if(count($files) < 1 ) {
-			$noRoutes();
+		if(count($files) < 1 || !($files = preg_grep('/.route.php/i', $files))) {
+			die('<h1>Fatal, no routes found!</h1>');
 		}
 
 		foreach ($files as $key => $value) {
@@ -126,7 +116,7 @@ final class Router {
 
 	/**
 	 * Разделить переданный URL на компоненты
-	 	https://google.ru/index.php?var=123  = array=>( https:, google, index.php?var=123); 
+	 	https://google.ru/index.php?var=123  array=>( https:, google, index.php?var=123); 
 	 */
 	public static function splitUrl(string $url) {
 		return preg_split('/\//', $url, -1, PREG_SPLIT_NO_EMPTY);
@@ -155,7 +145,7 @@ final class Router {
 			if ( preg_match('#^' .$regex. '$#', self::getCurrentUri()) ) {
 
 				$path = array(
-					'uri' 		=> self::splitUrl($key),
+					'uriarr' 	=> self::splitUrl($key),
 					'uri' 		=> $key,
 					'action' 	=> self::splitUrl($controller['action']),
 					'params'	=> self::$defaultRoutes[$key]
@@ -177,16 +167,6 @@ final class Router {
 		return strtolower('/' . trim($uri, '/'));
 	}
 
-
-
-
-
-
-
-
-
-
-
 	/**
 	 * отправляем url и получаем результат, но до этого разбиваем урл и сравниваем с путями установлеными в системе
 	 */
@@ -194,7 +174,6 @@ final class Router {
 
 		// Если URL не передан, берем его из REQUEST_URI
 		if ($requestedUrl === null) {
-
 			$cur = self::getCurrentUri();
 			$requestedUrl = $cur == '/' ? '/' : urldecode(rtrim($cur, '/'));
 		}
@@ -203,78 +182,35 @@ final class Router {
 
 		// если URL и маршрут полностью совпадают
 		if (isset(self::$defaultRoutes[$requestedUrl])) {
-
 			self::$params = self::splitUrl(self::$defaultRoutes[$requestedUrl]['action']); // $requestedUrl
 		} else { 
 			foreach (self::$defaultRoutes as $route => $uri) {
-
 				// Заменяем wildcards на рег. выражения
 				if (strpos($route, ':') !== false) {
-
 					$route = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $route));
 				}
 
 				if (preg_match('#^' . $route . '$#', $requestedUrl)) { // $requestedUrl
-					
 					if (strpos($uri['action'], '$') !== false && strpos($route, '(') !== false) {
-
 						$uri['action'] = preg_replace('#^' . $route . '$#', $uri['action'], $requestedUrl);
 					}
 
 					self::$params = self::splitUrl($uri['action']); // разбиваем value роута на параметры и сохраняем
-
 					break; // URL обработан!
 				}
 			}
 		}
-
 		// Возвращает результат отработанно
-
-		return self::executeAction();
-	}
-
-	/**
-	 * 	Запуск соответствующего действия/экшена/метода контроллера
-	 */
-	public static function executeAction() {
-
-		//debugger(self::$params);
 
 		$controller = isset(self::$params[0]) ? self::$params[0] : 'MainController';
 		$action 	= isset(self::$params[1]) ? self::$params[1] : 'defaultMethod';
 		$params 	= array_slice(self::$params, 2);
 		$obj 		= new $controller();
 
-		$cresult = call_user_func_array(array($obj, $action), $params);
-
-		/*
-
-		foreach ($params as $key => $value) {
-			
-			if(method_exists($controller, $value)) {
-
-				$params[$key] = call_user_func(array($obj, $value));
-
-				debugger('skdjfksdfhjsdhfkjhsdf');
-			}
-		}
-		*/
-
 		return array(
-			'result' => $cresult,
+			'result' => call_user_func_array(array($obj, $action), $params),
 		);
 	}
-
-
-
-
-
-
-
-
-
-
-
 
 	// Метод достает все пути сохраненные в переменной self::defaultRoutes
 	// 1. Отрабатывает все пути которые не имеют URI, постоянные типа авторизации 
@@ -296,8 +232,8 @@ final class Router {
 			//'tplControllerResult' => self::dispatch(),
 			//'perControllerResult' => $result
 
-			'templateCtrlResult' 	=> self::dispatch(),
-			'permanetCtrlResult'	=> $result
+			'templateCtrlResult' 	=> self::dispatch(), // Результат от пути 
+			'permanetCtrlResult'	=> $result 			 // Результат перманент.
 		);
 	}
 }

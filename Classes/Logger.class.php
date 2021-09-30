@@ -44,6 +44,10 @@ final class Logger {
 
     	if(array_key_exists($type, self::$alertKeys)) {
 
+            if(isset(self::$alerts[$type]) && in_array($description, self::$alerts[$type])) {
+                return;
+            }
+
     		self::$alerts[$type][] = $description; 
     	} 
     }

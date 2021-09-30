@@ -65,8 +65,6 @@ class Auth extends Database {
 		return $prev == 0 ? false : true;
 	}
 
-	
-
 	// Устанавливаем или обновляем хеш пользователя и возвр. для сохранения
 
 	public final function updateUserhash(int $userid, bool $newLogin=false, bool $updateHash=false): ?string{

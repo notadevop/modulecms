@@ -15,15 +15,7 @@ class Database {
 		unset($sql);
 		unset($sqlData);
 		unset($stmt);
-		//echo 'mysql destruct working';
 	}
-
-	private $username 	= 'jcmax';
-	private $userpass 	= '121212';
-	private $charset 	= 'utf8';
-	private $dbname 	= 'ModuleCMS';
-	private $host 		= 'localhost';
-	private $prefix 	= '_prefx';
 
 	private $sql;		// Хронит SQL запрос с индексами 
 	private $prepared; 	// хранит индексы запроса например :user или :score
@@ -31,8 +23,7 @@ class Database {
 	private $stmt;		// Хронит результат запроса для последущей обр. в виде Object
 
 	private function make_con(): void {
-
-		$dsn = "mysql:host=". $this->host .";dbname=". $this->dbname .";charset=".$this->charset;
+		$dsn = "mysql:host=". DBHOST .";dbname=". DBNAME .";charset=".DBCHAR;
 		$opt = array(
 			PDO::ATTR_PERSISTENT		 	=> true,
 		    PDO::ATTR_ERRMODE            	=> PDO::ERRMODE_EXCEPTION,
@@ -42,47 +33,37 @@ class Database {
 		);
 
 		try {
-
-			$link = new PDO($dsn, $this->username, $this->userpass, $opt);
-
+			$link = new PDO($dsn, DBUSER, DBPASS, $opt);
 			if (!$link) {
-				throw new Exception("Problem with connection to database!", 4);
+				throw new Exception(DBERRCONN, 4);
 			} else {
 				$this->link = $link;
 			}
-
 		} catch (Exception $e) {
 
 			if (DEBUG) {
 				debugger($e->getMessage());
 			}
-			die('Error! Database Connection impossible, for more info, contact with administrator!');
+			die(DBERRINFO);
 		}
-
-		//echo 'do connected<br>';
 	}
 
 	// Возвращает соединение к базе данных в виде обьекта
 
 	public function get_con(): PDO {
-	 
 		return $this->link; 
 	}
-
 
 	// пример: $sql = 'SELECT table_id FROM table WHERE abc LIKE :abc AND a = :a OR b = :b ';
 
 	public function preAction(string $sql, array $prepared=array()): void {
-
 		// TODO: сделать фильтрацию типа mysql_escape_string();
 		$this->sql = $sql;
-
 		if (!empty($prepared))
 			$this->prepared = $prepared;
 	}
 
 	public function resetAction(): void {
-
 		$this->sql 		= null;
 		$this->prepared = null;
 		$this->stmt 	= null;
@@ -94,41 +75,27 @@ class Database {
 		
 		try {
 			if (empty($this->sql)) 
-				throw new RuntimeException('Not Set SQL Query, Empty Var!');
-			
-			$this->stmt = $this
-							->get_con()
-							->prepare($this->sql);
-
+				throw new RuntimeException(DBEMPTYSQL);
+			$this->stmt = $this->get_con()->prepare($this->sql);
 			if (!$this->stmt) 
-				throw new RuntimeException('Preparing SQL Failure! '.$this->stmt->errorCode());
+				throw new RuntimeException(DBERRPREPQUERY.' '.$this->stmt->errorCode());
 
 			if (!empty($this->prepared)) {
-				
 				foreach ($this->prepared as $key => $value) {
-
 					//$this->stmt->bindParam($key, $value);
-					$this
-						->stmt
-						->bindValue($key, $value);
+					$this->stmt->bindValue($key, $value);
 				}
 			} 
-
 			if (!$this->stmt->execute()) 
-				throw new RuntimeException('Execute SQL Query Failure! '.$this->stmt->errorCode());
-		
+				throw new RuntimeException(DBERRQUERY.' - '.$this->stmt->errorCode());
 			$r = true;
-
 		} catch (Exception $e) {
-
 			debugger($e->getMessage());
 		}
-
 		return $r;
 	}
 
 	function postAction() {
-
 		return $this->stmt;
 	}
 

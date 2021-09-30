@@ -7,9 +7,7 @@ class Users extends Database {
       private $modifier;
 
    	function __construct(){ 
-
          parent::__construct(true);
-
          $this->modifier = new Modifier();
       }
 
@@ -118,5 +116,8 @@ class Users extends Database {
       }
 
       // Обновляем существующую информацию пользователя 
-      function updateUserProfile(int $userid, array $userparams): bool {return false;}
+      function updateUserProfile(int $userid, array $userparams): bool {
+
+         return false;
+      }
 }

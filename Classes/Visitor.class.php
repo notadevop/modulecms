@@ -242,7 +242,7 @@ final class Visitor extends Database {
 		$sql = 'SELECT `session`, `visitime`, `uagent` FROM `users_online`';
 
 		$this->preAction($sql);
-		$this->doAction();
+		if(!$this->doAction()) return -1;
 
 		return $this
 				->postAction()
@@ -387,11 +387,10 @@ final class Visitor extends Database {
 	    return $result['count'];
 	}
 
-
 	// storage: mysql, sqlite <= для получения статистики даже когда сайт упал
 	public function users_online(string $storage='mysql'): int {
 
-		$storage = 'mysql';
+		//$storage = 'mysql';
 
 		return $storage == 'mysql' ? $this->usersOnlineStorageMysql() : $this->usersOnlineStorageSqlite();
 	}
