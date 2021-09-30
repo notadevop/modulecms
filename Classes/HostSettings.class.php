@@ -10,17 +10,11 @@ class HostSettings extends Database {
 	}
 
 	public function settingsExist(string $key): bool {
-
 		$sql = 'SELECT COUNT(*) as count FROM website_options WHERE option_name LIKE :optname LIMIT 1';
-
 		$this->preAction($sql, array(':optname' => $key));
-
 		if (!$this->doAction()) { return false; }
-
 		$count = $this->postAction()->fetchColumn();
-
 		if ($count > 0) { return true; }
-		
 		return false;
 	}
 

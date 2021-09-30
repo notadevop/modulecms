@@ -28,6 +28,9 @@ class vRender {
 
 		$this->regOk = false;
 
+		// pages это массив для определения шаблона для определенных страниц 
+		// например чтобы разные страницы имели разные шаблоны
+
 		$pages = array(
 			'user' => null,
 			'admin'=> null,
@@ -47,14 +50,21 @@ class vRender {
 		$this->params = $settings->getSettings($prm);
 	}
 
-	function activeTemplate(string $name='', string $folder=''): bool {
+	function activateTemplate(string $name='', string $folder=''): ?array {
 
 		$folder = !empty($folder) ? ROOTPATH.$folder.DS : $this->currentTplDir;
 
-		$fpath = $folder.$name.'schema.tpl.php';
-		if (!file_exists($fpath)) { return false; }
+		$fpath = $folder.$name.DS.'schema.tpl.php';
+
+		if (!file_exists($fpath)) { return null; }
+
+		$tplarr = require_once($fpath);
+
+		if(empty($tplarr)) { return null; }
+
 		$this->activeTpl = $fpath;
-		return true;	
+
+		return $tplarr;
 	}
 
 	function prepareRender() {
@@ -66,9 +76,12 @@ class vRender {
 
 			//$tplName = $settings->getSettings(['website_template']);
 
-			debugger($this->params);
 
 
+			$r = $this->activateTemplate($this->params['website_template']);
+
+			if (!$r) 
+				echo 'Шаблон не установлен!';
 		//}
 
 		// Определяем что перед нами, 

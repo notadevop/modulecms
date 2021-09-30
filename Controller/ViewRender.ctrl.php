@@ -28,6 +28,7 @@ class ViewRender {
 	private function AdminZone(): bool { return false; }
 
 	// Получаем данные из базы данных, какой шаблон используется в данный момент, 
+
 	// Удалить поже, схема не нужна --- 
 
 	function getTemplateSchema() {
@@ -35,7 +36,9 @@ class ViewRender {
 		$dir	= $this->tplDir;
 		$tpl 	= $this->currentTpl;
 
-		return require_once $dir.$tpl.'schema.tpl.php';
+		$r = require_once $dir.$tpl.'schema.tpl.php';
+
+		return $r;
 	}
 
 	private $activeTemplate;
@@ -115,7 +118,9 @@ class ViewRender {
 
 		ob_start();
 
-		foreach ($this->getTemplateSchema() as $value) {
+		$r = $this->getTemplateSchema();
+
+		foreach ($r as $value) {
 
 			// Если из схемы выходит content то заменяем его шаблоном из route - url
 
