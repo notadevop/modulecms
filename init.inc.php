@@ -2,6 +2,8 @@
 
 (defined('ROOTPATH') && defined('DS')) or die('something wrong');
 
+
+
 class ClassNotFoundException extends Exception { }
 
 // Обьявить пространство имен для защиты от запуска из любого класа из любой точки

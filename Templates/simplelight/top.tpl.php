@@ -7,7 +7,7 @@ $toplinks = array(
 <div id="header">
   <div id="logo">
     <h1><span class="logo_colour"><a href="/"> %sitetitle% </span></a></h1>
-    <h2> %website_description% </h2>
+    <h2> %site_description% </h2>
   </div>
   <div id="menubar">
     <ul id="menu">

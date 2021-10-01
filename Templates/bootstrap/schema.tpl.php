@@ -1,11 +1,13 @@
 <?php 
-
+/*
 return array(
-
 	'header.tpl.php',
-
+	'banner.tpl.php',
+	'body.tpl.php',
+	'sidebar.tpl.php',
+	'footer.tpl.php'
 );
-
+*/
 
 return array(
 
@@ -13,7 +15,8 @@ return array(
 
 		'header.tpl.php',
 		'banner.tpl.php',
-		'body.tpl.php',
+		//'body.tpl.php',
+		'content',
 		'sidebar.tpl.php',
 		'footer.tpl.php'
 	),

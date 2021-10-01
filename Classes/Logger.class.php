@@ -16,10 +16,15 @@ final class Logger {
 
     	self::$alertKeys = array(
 
-    		'warnings' 		=> true,
-    		'attentions' 	=> true,
+            'primary'       => true,
+            'secondary'     => true,
+            'success'       => true,
+            'attentions'    => true,
+            'warnings'      => true,
     		'information' 	=> true,
-    		'success' 		=> true
+            'light'         => true,
+            'dark'          => true
+    		
     	);
     }
 
@@ -53,8 +58,6 @@ final class Logger {
     }
 
     public static function alertKeyExist(string $type): bool {
-
-        //debugger(self::$alertKeys);
 
         if (array_key_exists($type, self::$alertKeys)) {
 

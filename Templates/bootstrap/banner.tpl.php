@@ -7,5 +7,9 @@
 ?>
 
     <section>
-        <strong>Demonstration of a simple page layout using HTML5 tags: header, nav, section, main, article, aside, footer, address.</strong>
+        <strong>
+            <div class="mb-3">
+              <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Поиск по вебсайту">
+            </div>
+        </strong>
     </section>

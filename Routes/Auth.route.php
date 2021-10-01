@@ -5,7 +5,8 @@ return array(
 
 	'/login' 		=> array( 
 			'action' 	=> 'Identificator/loginAction',
-			'template'	=> 'login.tpl.php',
+			//'template'	=> 'authlogin.tpl.php',
+			'template'	=> 'authforms/login.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Логин',
@@ -25,7 +26,7 @@ return array(
 
 	'/register' 	=> array(
 			'action' 	=> 'Identificator/registrationAction',
-			'template'	=> 'register.tpl.php',
+			'template'	=> 'authforms/registration.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Регистрация',
@@ -36,7 +37,8 @@ return array(
 
 	'/restore' 		=> array(
 			'action' 	=> 'Identificator/restoreAction',
-			'template'	=> 'restore.tpl.php',
+			//'template'	=> 'restore.tpl.php',
+			'template'	=> 'authforms/restore.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Восстановить аккаунт',
@@ -44,7 +46,7 @@ return array(
 	),
 	'/verifyrestorerequest' => array(
 			'action' 	=> 'Identificator/verifyUserActivation',
-			'template'	=> 'updatepass.tpl.php',
+			'template'	=> 'authforms/passwords.tpl.php',
 			'ifRegOk'	=> 'infopage.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Проверить восстановление',

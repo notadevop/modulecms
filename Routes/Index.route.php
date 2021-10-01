@@ -27,15 +27,15 @@ return array(
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Главная',  // TODO: ВРЕМЕННО, для указания ссылки, будет использоваться отдельно, в языковом пакете
 			'priority'	=> 4, // Показывать по при оритету
-			'userui'  => true
 	),
 
 
 	
 	'/404page' 	=> array(
 			'action' 	=> 'MainController/defaultMethod',
-			'template'	=> '404page.tpl.php',
-			'ifRegOk'	=> '404page.tpl.php',
+			//'template'	=> '404page.tpl.php',
+			'template'	=> 'errors/404page.tpl.php',
+			'ifRegOk'	=> 'errors/404page.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Страница 404',
 			'priority'	=> 2

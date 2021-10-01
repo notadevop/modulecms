@@ -154,7 +154,7 @@ class Identificator extends Filter {
 
 		if(!$userExist) {
 
-			Logger::collectAlert('warnings', 'Указанный пользователь не найден или удален!');
+			Logger::collectAlert('warnings', 'Неправильные имя/емайл или пароль!');
 			return false; 
 		}
 
@@ -170,7 +170,7 @@ class Identificator extends Filter {
 
 		if(!$this->isNotEmpty($findUser) || !array_key_exists('userid', $findUser)) {
 
-			Logger::collectAlert('warnings', 'Неправильные имя или пароль!');
+			Logger::collectAlert('warnings', 'Неправильные имя/емайл или пароль!');
 			return false;
 		}
 

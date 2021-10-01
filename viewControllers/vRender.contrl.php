@@ -76,7 +76,8 @@ class vRender {
 		$current = $this->currentRoute;
 		$routes  = Router::getRoute(true);
 
-		$r = $this->activateTemplate($this->params['website_template']);
+		//$r = $this->activateTemplate($this->params['website_template']);
+		$r = $this->activateTemplate('bootstrap');
 
 		if (!$r) {
 			$r = $this->activateTemplate(TPLDEFTEMPLATE);
@@ -96,32 +97,40 @@ class vRender {
 
 		$renderTpl = ($this->regOk) ? $ifRegOk : $defTpl;
 
-		ob_start();
-		foreach ($r as $value) {
-
-			// Если из схемы выходит content то заменяем его шаблоном из route - url
+		// TODO: Тут определить тип языка и по нему вывести языковый пакет
 			
+		ob_start();
+		foreach ($r['templates'] as $value) {
+			// Если из схемы выходит content то заменяем его шаблоном из route - url
 			$tmp = $value == 'content' ? $renderTpl : $value; 
-			require_once ($this->activeTpl.$tmp);
+			if (file_exists($this->activeTpl.$tmp))
+				require_once ($this->activeTpl.$tmp);
+			else {
+				echo 'template not found<br />';
+				echo $this->activeTpl.$tmp;
+			} 
+				
+
 		}
 
 		$this->htmlRenderRes = ob_get_contents();
 		ob_end_clean();
 
 		$replaceParams = array(
-			' %title% ' 				=> 'Модульная CMS',
-			' %sitetitle%' 			=> $this->params['website_title'],
-			' %site_description% ' 		=> $this->params['website_title_description'],
+			' %title% ' 			=> 'Модульная CMS',
+			' %sitetitle% ' 			=> $this->params['website_title'],
+			' %site_description% ' 	=> $this->params['website_title_description'],
 		);
 
-		//$this->replace($replaceParams);
+		$this->replace($replaceParams);
 	}
 
 	function replace(array $params): void {
 		if(empty($params)) return;
 		$html = $this->htmlRenderRes;
 		foreach ($params as $key => $value) {
-			$html = preg_replace($key, $value, $html);
+			//$html = preg_replace($key, $value, $html);
+			$html = str_replace($key, $value, $html);
 		}
 		$this->htmlRenderRes = $html;
 	}
