@@ -16,7 +16,6 @@ if(empty($this->result['templateCtrlResult']['result'])) {
 
 <section id="pageContent">
     <main role="main">
-	    <article>
 	    	<h2>Профиль </h2>
 	    	<p><?=@$this->result['templateCtrlResult']['result']['userpicture'];?></p>
 	    	<table class="table">
@@ -42,17 +41,17 @@ if(empty($this->result['templateCtrlResult']['result'])) {
 			    <tr>
 			      <th scope="row"></th>
 			      <td>Пользовательский емайл</td>
-			      <td><?=@$this->result['templateCtrlResult']['result']['email'];?></td>
+			      <td><?=$this->result['templateCtrlResult']['result']['email'];?></td>
 			    </tr>
 			    <tr>
 			      <th scope="row"></th>
 			      <td>Дата регистрации</td>
-			      <td><?=@date('F j, D, Y, g:i a' ,$result['templateCtrlResult']['result']['regdate']);?></td>
+			      <td><?=date('F j, D, Y, g:i a' ,$this->result['templateCtrlResult']['result']['regdate']);?></td>
 			    </tr>
 			    <tr>
 			      <th scope="row"></th>
 			      <td>Последний визит</td>
-			      <td><?=@date('F j, D, Y, g:i a' ,$result['templateCtrlResult']['result']['lastvisit']);?></td>
+			      <td><?=date('F j, D, Y, g:i a' ,$this->result['templateCtrlResult']['result']['lastvisit']);?></td>
 			    </tr>
 			    <tr>
 			      <th scope="row"></th>
@@ -71,5 +70,4 @@ if(empty($this->result['templateCtrlResult']['result'])) {
 			    </tr>
 			  </tbody>
 			</table>
-	    </article>
 	</main>

@@ -5,9 +5,10 @@ body,html {
 }
 header {
     background: #AEC6CF;
-    padding: 20px 30px;
-    max-width: 940px;
+    padding: 10px 15px;
+    max-width: 1000px;
     margin: auto;
+    border-radius: 0px 0px 30px 30px
 }
 nav {
     display: inline-block;
