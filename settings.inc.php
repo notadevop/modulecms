@@ -30,7 +30,7 @@ define('HOST', 'http://'.$_SERVER['HTTP_HOST']);
 
 // нужно для того, чтобы отдельно указывать другой путь шаблону
 define('TPLDEFAULTFOLDER', ROOTPATH.'Templates'.DS); 
-define('TPLDEFTEMPLATE', 'default'.DS);
+define('TPLDEFTEMPLATE', 'bootstrap'.DS);
 
 define('REDIRECTLOGIN', array(
 			

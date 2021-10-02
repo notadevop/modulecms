@@ -1,25 +1,15 @@
 <?php 
-/*
-return array(
-	'header.tpl.php',
-	'banner.tpl.php',
-	'body.tpl.php',
-	'sidebar.tpl.php',
-	'footer.tpl.php'
-);
-*/
 
 return array(
 
 	'templates' => array(
 
-		'header.tpl.php',
-		'banner.tpl.php',
-		//'body.tpl.php',
-		'content',
-		'sidebar.tpl.php',
-		'footer.tpl.php'
+		'header' 	=> 'header.tpl.php',
+		'banner' 	=> 'banner.tpl.php',
+		'sidebar' 	=> 'sidebar.tpl.php',
+		'footer' 	=> 'footer.tpl.php'
 	),
+	
 	'css' => null,
 	'languagePack' => array(
 

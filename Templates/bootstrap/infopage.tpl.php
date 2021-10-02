@@ -3,12 +3,14 @@
  * Тело шаблона
  */
 
+
+require_once($this->activeTpl.$r['templates']['header']);
+require_once($this->activeTpl.$r['templates']['banner']);
+
 ?>
 
   <section id="pageContent">
 		<main role="main">
-
-
 			<article>
 				<h2>Stet facilis ius te</h2>
 				<p>Lorem ipsum dolor sit amet, nonumes voluptatum mel ea, cu case ceteros cum. Novum commodo malorum vix ut. Dolores consequuntur in ius, sale electram dissentiunt quo te. Cu duo omnes invidunt, eos eu mucius fabellas. Stet facilis ius te, quando voluptatibus eos in. Ad vix mundi alterum, integre urbanitas intellegam vix in.</p>
@@ -25,6 +27,9 @@
 				<h2>His at autem inani volutpat</h2>
 				<p>Te has amet modo perfecto, te eum mucius conclusionemque, mel te erat deterruisset. Duo ceteros phaedrum id, ornatus postulant in sea. His at autem inani volutpat. Tollit possit in pri, platonem persecuti ad vix, vel nisl albucius gloriatur no.</p>
 			</article>
-
-			
 		</main>
+
+<?php 
+
+require_once($this->activeTpl.$r['templates']['sidebar']);
+require_once($this->activeTpl.$r['templates']['footer']);

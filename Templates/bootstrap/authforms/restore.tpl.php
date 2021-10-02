@@ -4,6 +4,9 @@
  * Баннер шаблона
  */
 
+require_once($this->activeTpl.$r['templates']['header']);
+require_once($this->activeTpl.$r['templates']['banner']);
+
 ?>
 
 <section id="pageContent">
@@ -21,3 +24,8 @@
           <a href="/login">Вход</a> | <a href="/register">Регистрация</a>
         </p>
     </main>
+
+<?php 
+
+require_once($this->activeTpl.$r['templates']['sidebar']);
+require_once($this->activeTpl.$r['templates']['footer']);

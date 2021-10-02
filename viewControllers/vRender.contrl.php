@@ -71,13 +71,63 @@ class vRender {
 		return $tplarr;
 	}
 
+	function prepareRenderer() {
+
+		$currentRoute 	= $this->currentRoute;
+		$Allroutes  	= Router::getRoute(true);
+
+		if(empty($currentRoute)) {
+			$defTpl = $Allroutes['/404page']['template'];
+		}else{
+			$defTpl = $Allroutes[$this->currentRoute['uri']]['template'];
+		}
+
+		$r = $this->activateTemplate($this->params['website_template']);
+
+		if (!$r) {
+			$r = $this->activateTemplate(TPLDEFTEMPLATE);
+		}
+
+		if(!$r) {
+			die('No Render! Template Not Found!');
+		} else if (!file_exists($this->activeTpl.$defTpl)) {
+			die('Template Not Found -> '.$this->activeTpl.$defTpl);
+		}
+
+		// Тут определить какой тип страницы открыт. 
+		// Админка, окно входа или пользовательский интерфейс
+
+		// TODO: Определить язык пользователя и загрузить тот языковый пакет
+		// 
+		ob_start();
+		if (isset($r['languagePack']['rus'])) {
+			require_once($this->activeTpl.$r['languagePack']['rus']);
+		} else 
+			Logger::collectAlert('warnings', 'Нет языкового пакета!');
+
+		require_once ($this->activeTpl.$defTpl);
+		$this->htmlRenderRes = ob_get_contents();
+		ob_end_clean();
+
+		$replaceParams = array(
+			' %title% ' 			=> 'Модульная CMS',
+			' %sitetitle% ' 		=> $this->params['website_title'],
+			' %site_description% ' 	=> $this->params['website_title_description'],
+		);
+
+		$this->replace($replaceParams);
+	}
+
+	/*
 	function prepareRender() {
 
 		$current = $this->currentRoute;
 		$routes  = Router::getRoute(true);
 
-		//$r = $this->activateTemplate($this->params['website_template']);
-		$r = $this->activateTemplate('bootstrap');
+		// Тут определить какой тип страницы открыт. 
+		// Админка, окно входа или пользовательский интерфейс
+
+		$r = $this->activateTemplate($this->params['website_template']);
 
 		if (!$r) {
 			$r = $this->activateTemplate(TPLDEFTEMPLATE);
@@ -109,8 +159,6 @@ class vRender {
 				echo 'template not found<br />';
 				echo $this->activeTpl.$tmp;
 			} 
-				
-
 		}
 
 		$this->htmlRenderRes = ob_get_contents();
@@ -124,6 +172,7 @@ class vRender {
 
 		$this->replace($replaceParams);
 	}
+	*/
 
 	function replace(array $params): void {
 		if(empty($params)) return;

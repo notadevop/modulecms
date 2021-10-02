@@ -6,6 +6,10 @@
 
 
 $users = $this->result['templateCtrlResult']['result'];
+
+require_once($this->activeTpl.$r['templates']['header']);
+require_once($this->activeTpl.$r['templates']['banner']);
+
 ?>
 
 <section id="pageContent">
@@ -24,7 +28,6 @@ $users = $this->result['templateCtrlResult']['result'];
 		  <tbody>
 
 		  	<?php 
-
 		  	foreach ($users['users'] as $key => $value) {
 		  		?>
 				    <tr>
@@ -47,3 +50,8 @@ $users = $this->result['templateCtrlResult']['result'];
 		  </tbody>
 		</table>
     </main>
+
+ <?php 
+
+require_once($this->activeTpl.$r['templates']['sidebar']);
+require_once($this->activeTpl.$r['templates']['footer']);

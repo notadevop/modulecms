@@ -39,8 +39,8 @@ return array(
 
 	'/profile/:num' => array(
 			'action' 	=> 'ProfileController/getUserProfile/$1',
-			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'viewProfile.tpl.php',
+			'template'	=> 'viewprofile.tpl.php',
+			'ifRegOk'	=> 'viewprofile.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Профиль',
 			'priority'	=> 3

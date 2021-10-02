@@ -45,7 +45,7 @@ foreach ($files as $key => $value) {
 Router::initDefaultRoutes();
 
 $v = new vRender();
-$v->prepareRender();
+$v->prepareRenderer();
 
 $timer = function() use ($start){
 	$time 		= microtime();

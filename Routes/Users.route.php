@@ -21,7 +21,7 @@ return array(
 
 	'/users' => array(
 			'action' 	=> 'ProfileController/getAllUsers',
-			'template'	=> 'infopage.tpl.php',
+			'template'	=> 'listUsers.tpl.php',
 			'ifRegOk'	=> 'listUsers.tpl.php',
 			'skipUri' 	=> false, // Permanent or not if yes, !!!
 			'decript'	=> 'Профиль',

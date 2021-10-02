@@ -3,15 +3,22 @@
  * 
  */
 
-if(empty($this->result['templateCtrlResult']['result'])) { 
+if(!$this->regOk || empty($this->result['templateCtrlResult']['result'])) { 
 
-	echo '<h1> данные не указанны </h1>';
+	require_once($this->activeTpl.$r['templates']['header']);
+	//require_once($this->activeTpl.$r['templates']['banner']);
+	?>
+	<section id="pageContent">
+	    <main role="main"></main>
+
+	<?php 
+	//require_once($this->activeTpl.$r['templates']['sidebar']);
+	require_once($this->activeTpl.$r['templates']['footer']);
 	return; 
 }
 
-
-
-
+require_once($this->activeTpl.$r['templates']['header']);
+require_once($this->activeTpl.$r['templates']['banner']);
 ?>
 
 <section id="pageContent">
@@ -27,16 +34,20 @@ if(empty($this->result['templateCtrlResult']['result'])) {
 			    </tr>
 			  </thead>
 			  <tbody>
-			    <tr>
+
+			  	<?php 
+			  	if ($this->result['templateCtrlResult']['result']['actstatus'] == 1) {
+			  		echo '<tr class="table-success">';
+			  		$stat = 'Активирован!';
+			  	} else {
+			  		echo '<tr class="table-warning">';
+			  		$stat = 'Не Активирован!';
+			  	}
+
+			  	?>
 			      <th scope="row"></th>
-			      <td>Статус пользователя</td>  
-			      	<?php 
-					    if ($this->result['templateCtrlResult']['result']['actstatus'] == 1) {
-					      echo '<td class="table-success">Активирован</td>';
-					    } else {
-					      echo '<td class="table-warning">Не Активирован</td>';
-					    }
-					?>
+			      <td>Cтатус пользователя</td>
+			      <td><?=$stat;?></td>
 			    </tr>
 			    <tr>
 			      <th scope="row"></th>
@@ -71,3 +82,11 @@ if(empty($this->result['templateCtrlResult']['result'])) {
 			  </tbody>
 			</table>
 	</main>
+
+<?php 
+
+require_once($this->activeTpl.$r['templates']['sidebar']);
+require_once($this->activeTpl.$r['templates']['footer']);
+
+
+

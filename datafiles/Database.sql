@@ -113,6 +113,10 @@ ALTER TABLE `users_activation`
 INSERT INTO `users` (`user_id`, `user_name`, `user_email`, `user_password`, `user_registration_date`,`user_activated`,`user_last_visit`) VALUES
 (3, 'jcmax', 'jcmaxuser@gmail.com', '81b177a2704f8beaa40efe62cedb9600d1c14ef916c939647b0e629d378d571df8b5edcd98310662e695f7299543a134e87a79bc2e2016571b676697ac089d91', '9234984584839','1','9234984584839');
 
+INSERT INTO `website_options` (`option_name`, `option_value`) VALUES
+('website_template', 'bootstrap'),
+('website_title', 'ModuleCMS'),
+('website_title_description', 'Simple Module CMS made home');
 
 INSERT INTO `roles` (`role_id`, `role_name`) VALUES
 (1, 'Администратор, главный на сайте, имеет все привелегии'),
