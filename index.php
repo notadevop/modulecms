@@ -23,6 +23,8 @@ header('X-Powered-By: PHP Application');
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOTPATH', dirname(__FILE__) . DS);
 
+// Определитель CSRF аттаку, проверяем существует и соответсвтует уникальный ключ
+
 $files = array(
 
 	'init.inc.php',

@@ -23,6 +23,7 @@ class GlobalParams {
 			case '_GET':		$this->gp = $_GET;		break;
 			case '_COOKIE':		$this->gp = $_COOKIE; 	break;
 			case '_SESSION': 	$this->gp = $_SESSION; 	break;
+			case '_SERVER': 	$this->gp = $_SERVER; 	break;
 			default: 			$this->gp = null;		break;
 		}
 	}

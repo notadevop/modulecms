@@ -22,28 +22,26 @@ return array(
 	'/users' => array(
 			'action' 	=> 'ProfileController/getAllUsers',
 			'template'	=> 'listUsers.tpl.php',
-			'ifRegOk'	=> 'listUsers.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Профиль',
-			'priority'	=> 3
+			'priority'	=> 3,
+			'rendertype'=> 'adminui'
 	),
+
+	// Страница показывает всех пользователей онлайн
 
 	'/usersonline' 	=> array(
 			'action' 	=> 'Visitor/getOnlineUsers',
 			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Пользователи Онлайн',
-			'priority'	=> 3
+			'priority'	=> 3,
+			'rendertype'=> 'adminui'
 	),
 
-	'online' 		=> array(
+	// Отрабатывает для показа счетчика пользователей онлайн и регистрирует новых
+
+	'online' => array(
 			'action' 	=> 'Visitor/users_online',
 			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> true, // Permanent or not if yes, !!!
-			'decript'	=> 'Список пользователей онлайн',
-			'priority'	=> 4
+			'priority'	=> 4,
+			'rendertype'=> null
 	),
 
 );

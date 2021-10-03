@@ -51,7 +51,6 @@ $tmplinks = array(
             foreach ($tmplinks as $key => $value) {
                 echo '<hr /><ul>';
                 foreach ($value as $j => $i) {
-                 
                     echo '<li><a href="'.$j.'">'.$i.'</a></li>';     
                 }
                 echo '</ul>';

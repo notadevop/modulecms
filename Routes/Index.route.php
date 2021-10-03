@@ -1,6 +1,6 @@
 <?php
 
-
+(defined('ROOTPATH') && defined('DS')) || die('something wrong');
 
 return array(
 
@@ -20,24 +20,21 @@ return array(
 					5. Не показывать вообще эти ссылки и использовать по умолчанию страницу
 			*/
 	
-	'/' 		=> array( 
+	// Главная страница или точка входа по умолчанию
+
+	'/' => array( 
 			'action' 	=> 'MainController/defaultMethod',
 			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Главная',  // TODO: ВРЕМЕННО, для указания ссылки, будет использоваться отдельно, в языковом пакете
 			'priority'	=> 4, // Показывать по при оритету
+			'rendertype'=> 'userui'
 	),
 
-
+	// Не найденная страница
 	
 	'/404page' 	=> array(
 			'action' 	=> 'MainController/defaultMethod',
-			//'template'	=> '404page.tpl.php',
 			'template'	=> 'errors/404page.tpl.php',
-			'ifRegOk'	=> 'errors/404page.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Страница 404',
-			'priority'	=> 2
+			'priority'	=> 2,
+			'rendertype'=> 'userui'
 	),
 );

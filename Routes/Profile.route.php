@@ -6,66 +6,39 @@
 
 return array(
 
-	// Страницы без информации -----------
-
-	'/profile' => array(
-			'action' 	=> 'ProfileController/getUserProfile',
-			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Профиль',
-			'priority'	=> 3
-	),
-
-	'/profile/edit' => array(
-			'action' 	=> 'ProfileController/editUserProfile',
-			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Профиль',
-			'priority'	=> 3
-	),
-
-	'/profile/remove' => array(
-			'action' 	=> 'ProfileController/editUserProfile',
-			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Профиль',
-			'priority'	=> 3
-	),
-
-	// Вывод профиля пользователя
-
+	// Вывод указанного пользователя
+	
 	'/profile/:num' => array(
 			'action' 	=> 'ProfileController/getUserProfile/$1',
 			'template'	=> 'viewprofile.tpl.php',
-			'ifRegOk'	=> 'viewprofile.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Профиль',
-			'priority'	=> 3
+			'priority'	=> 3,
+			'rendertype'=> 'adminui'
 	),
 
-	// Редактирование указанного профиля
+	// Редактирование пользователя 
 
 	'/profile/edit/:num' => array(
-			'action' 	=> 'ProfileController/editUserProfile/$1',
+			'action' 	=> 'ProfileController/editUserProfile',
 			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'editProfile.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Профиль',
-			'priority'	=> 3
+			'priority'	=> 3,
+			'rendertype'=> 'adminui'
 	),
 
-	// Удаление указанного пользователя 
+	// Удаление пользователя 
 
 	'/profile/remove/:any' => array(
 			'action' 	=> 'ProfileController/getUserProfile',
 			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'editProfile.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Профиль',
-			'priority'	=> 3
+			'priority'	=> 3,
+			'rendertype'=> 'adminui'
 	),	
 
+	// Заглушка для всех других ссылок
+
+	'/profile/:any' => array(
+			'action' 	=> 'ProfileController/getUserProfile',
+			'template'	=> 'infopage.tpl.php',
+			'priority'	=> 3,
+			'rendertype'=> 'adminui'
+	),
 );

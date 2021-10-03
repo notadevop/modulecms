@@ -87,7 +87,7 @@ final class Router {
 		$files 		= $fileObj->listFolder();
 
 		if(count($files) < 1 || !($files = preg_grep('/.route.php/i', $files))) {
-			die('<h1>Fatal, no routes found!</h1>');
+			die('<h1>'.NOROUTES.'</h1>');
 		}
 
 		foreach ($files as $key => $value) {
@@ -221,7 +221,8 @@ final class Router {
 	public static function getResult() {
 		$result = array();
 		foreach (self::$defaultRoutes as $key => $value) {
-			if ($value['skipUri']) { 
+			
+			if(substr($key, 0, 1) != '/') {
 				$result[$key] = self::dispatch($key);
 				//self::cleanRoutes($key);
 			}

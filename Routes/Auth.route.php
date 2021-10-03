@@ -1,25 +1,25 @@
 <?php 
 
+(defined('ROOTPATH') && defined('DS')) || die('something wrong');
 
 return array(
 
-	'/login' 		=> array( 
+	// Вход в систему
+
+	'/login' => array( 
 			'action' 	=> 'Identificator/loginAction',
-			//'template'	=> 'authlogin.tpl.php',
 			'template'	=> 'authforms/login.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Логин',
-			'priority'	=> 4
+			'priority'	=> 4,
+			'rendertype'=> 'authui'
 	),
+
+	// Авторизация через куки
 
 	'auth' 			=> array(
 			'action' 	=> 'Identificator/authAction',
 			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> true, // Permanent or not if yes, !!!
-			'decript'	=> 'Аутентификация',
-			'priority'	=> 1
+			'priority'	=> 1,
+			'rendertype'=> null
 	),
 
 	// Регистрация пользователя
@@ -27,56 +27,55 @@ return array(
 	'/register' 	=> array(
 			'action' 	=> 'Identificator/registrationAction',
 			'template'	=> 'authforms/registration.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Регистрация',
-			'priority'	=> 4
+			'priority'	=> 4,
+			'rendertype'=> 'authui'
 	),
 
 	// Восстановление пароля
 
 	'/restore' 		=> array(
 			'action' 	=> 'Identificator/restoreAction',
-			//'template'	=> 'restore.tpl.php',
 			'template'	=> 'authforms/restore.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Восстановить аккаунт',
-			'priority'	=> 4
+			'priority'	=> 4,
+			'rendertype'=> 'authui'
 	),
+
+	// Форма для введения нового пароля для пользователя
+
 	'/verifyrestorerequest' => array(
 			'action' 	=> 'Identificator/verifyUserActivation',
 			'template'	=> 'authforms/passwords.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Проверить восстановление',
-			'priority'	=> 2
+			'priority'	=> 2,
+			'rendertype'=> 'authui'
 	),
+
+	// Обработчик данных (новых паролей) для пользователя
+
 	'/updatepassword' 	=> array(
 			'action' 	=> 'Identificator/updateUserPassword',
 			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Обновление пароля',
-			'priority'	=> 2
+			'priority'	=> 2,
+			'rendertype'=> 'authui'
 	),
+
+	// Страница активации зарегестрированного пользователя
+
 	'/verifreg' 	=> array(
 			'action' 	=> 'Identificator/verifyUserRegistration',
 			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Подтверждение регистрации',
-			'priority'	=> 2
+			'priority'	=> 2,
+			'rendertype'=> 'authui'
 	),
 
-	// /logout/user_token_as_:any attack protection
+	// Выход из системы
+
+	// Инициализировать CSRF проверку, чтобы не могли выйти удаленно 
+	// /logout/user_token_as_:any attack protection 
 
 	'/logout' 		=> array(
 			'action' 	=> 'Identificator/logout/true/false',
 			'template'	=> 'infopage.tpl.php',
-			'ifRegOk'	=> 'infopage.tpl.php',
-			'skipUri' 	=> false, // Permanent or not if yes, !!!
-			'decript'	=> 'Выйти',
-			'priority'	=> 3
+			'priority'	=> 3,
+			'rendertype'=> 'authui'
 	),
 );

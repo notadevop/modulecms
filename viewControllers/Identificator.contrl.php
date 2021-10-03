@@ -134,7 +134,7 @@ class Identificator extends Filter {
 
 		if(!defined('LOGINALLOW') || !LOGINALLOW) {
 
-			Logger::collectAlert('warnings', 'Вход в систему отключен администратором!');
+			Logger::collectAlert('warnings', LOGINDISABLED);
 			return false;
 		}
 
@@ -154,7 +154,7 @@ class Identificator extends Filter {
 
 		if(!$userExist) {
 
-			Logger::collectAlert('warnings', 'Неправильные имя/емайл или пароль!');
+			Logger::collectAlert('attentions', ERREMAILWRONG);
 			return false; 
 		}
 
@@ -162,7 +162,7 @@ class Identificator extends Filter {
 
 		if (!$userNotBlocked) {
 
-			Logger::collectAlert('warnings', 'Указанный пользователь отправлен в бан!');
+			Logger::collectAlert('attentions', USERBANNED);
 			return false;
 		}
 
@@ -170,7 +170,7 @@ class Identificator extends Filter {
 
 		if(!$this->isNotEmpty($findUser) || !array_key_exists('userid', $findUser)) {
 
-			Logger::collectAlert('warnings', 'Неправильные имя/емайл или пароль!');
+			Logger::collectAlert('attentions', ERREMAILWRONG);
 			return false;
 		}
 
@@ -180,7 +180,7 @@ class Identificator extends Filter {
 
 		if(!$this->isNotEmpty($findUser['tokenHash'])) {
 
-			Logger::collectAlert('warnings', 'Ошибка генерации хеш кода!');
+			Logger::collectAlert('attentions', ERRGENHASH);
 			return false;
 		}
 
@@ -188,7 +188,7 @@ class Identificator extends Filter {
 
 		if(!$isItSaved) {
 
-			Logger::collectAlert('warnings', 'Ошибка! не могу сохранить данные, возможно у вас отключены куки!');
+			Logger::collectAlert('attentions', ERRSAVEMETA);
 			return false;
 		} 
 
@@ -205,7 +205,7 @@ class Identificator extends Filter {
 			}
 		}
 
-		Logger::collectAlert('success', 'Вы вошли в свой аккаунт!');
+		Logger::collectAlert('success', LOGINSUCCESS);
 
 		return true;
 	}
@@ -249,7 +249,7 @@ class Identificator extends Filter {
 
 		if(!defined('AUTHENTIFCATIONALLOW') || !AUTHENTIFCATIONALLOW) {
 
-			Logger::collectAlert('warnings', 'Авторизация в системе отключена администратором!');
+			Logger::collectAlert('attentions', AUTHDISABLED);
 			return $this->setUserProfile(false);
 		}
 
@@ -298,7 +298,7 @@ class Identificator extends Filter {
 
 		if(!defined('RESTOREALLOW') || !RESTOREALLOW ) {
 
-			Logger::collectAlert('warnings', 'Восстановление профиля отключено администратором!');
+			Logger::collectAlert('attentions', RESTOREDISABLED);
 			return false;
 		}
 
@@ -317,7 +317,7 @@ class Identificator extends Filter {
 
 		if(!$userExist) {
 
-			Logger::collectAlert('warnings', 'Указанный пользователь не найден или удален!');
+			Logger::collectAlert('attentions', USERNOTFOUND);
 			return false; 
 		}
 
@@ -325,7 +325,7 @@ class Identificator extends Filter {
 
 		if (!$userNotBlocked) {
 
-			Logger::collectAlert('warnings', 'Указанный пользователь отправлен в бан!');
+			Logger::collectAlert('attentions', USERBANNED);
 			return false;
 		}
 
@@ -333,7 +333,7 @@ class Identificator extends Filter {
 
 		if(!$genResult) {
 
-			Logger::collectAlert('warnings', 'Ошибка, не смог сгенерировать активационный хещ!');
+			Logger::collectAlert('attentions', ERRGENHASH);
 			return false;
 		}
 
@@ -352,7 +352,7 @@ class Identificator extends Filter {
 
 		if(!defined('RESTOREALLOW') || !RESTOREALLOW ) {
 
-			Logger::collectAlert('warnings', 'Восстановление профиля отключено администратором!');
+			Logger::collectAlert('attentions', RESTOREDISABLED);
 			return null;
 		}
 
@@ -371,7 +371,7 @@ class Identificator extends Filter {
 
 		if(!$this->auth->verifyActivations($restoreParams[$this->authParams['transport']['useridValue']], $restoreParams[$this->authParams['transport']['userTokenHashValue']],$restoreParams[$this->authParams['transport']['userConfirmHashValue']] )) {
 
-			Logger::collectAlert('warnings', 'Ошибка параметров подтверждения пользователя!');
+			Logger::collectAlert('attentions', AUTHPARAMSERR);
 			return null;
 		}
 
@@ -389,7 +389,7 @@ class Identificator extends Filter {
 
 		if(!defined('RESTOREALLOW') || !RESTOREALLOW ) {
 
-			Logger::collectAlert('warnings', 'Восстановление профиля отключено администратором!');
+			Logger::collectAlert('attentions', RESTOREDISABLED);
 			return false;
 		}
 
@@ -398,7 +398,7 @@ class Identificator extends Filter {
 		if ($verifbyid) {
 			$verified = $this->verifyUserActivation();
 			if (!$this->isNotEmpty($verified)) { 
-				Logger::collectAlert('warnings', 'Проверка не пройдена!');
+				Logger::collectAlert('attentions', VERIFYNOTFOUND);
 				return false;
 			}
 		}
@@ -415,14 +415,14 @@ class Identificator extends Filter {
 		}
 
 		if ($updateParams[$this->authParams['transport']['userPassword1Value']] !== $updateParams[$this->authParams['transport']['userPassword2Value']]) {
-			Logger::collectAlert('warnings', 'Ошибка! пароли не совпадают.');
+			Logger::collectAlert('attentions', PWDNOTMATCH);
 			return false;
 		}
 
 		$result = $this->users->updateUserPassword($verified['userid'], $updateParams[$this->authParams['transport']['userPassword2Value']], true);
 
 		if (!$result) {
-			Logger::collectAlert('warnings', 'Ошибка обновления пароля!');
+			Logger::collectAlert('attentions', PWDUPDERR);
 			return false;
 		}
 
@@ -430,10 +430,10 @@ class Identificator extends Filter {
 
 		if (!$r) {
 
-			Logger::collectAlert('attentions', 'Не смог удалить активационные данные!');
+			Logger::collectAlert('attentions', ACTUSERERR);
 		}
 
-		Logger::collectAlert('success', 'Пароль обновлен!');
+		Logger::collectAlert('success', PWDUPDATED);
 		return true;
 	}
 
@@ -442,7 +442,7 @@ class Identificator extends Filter {
 
 		if(!defined('REGISTRATIONALLOW') || !REGISTRATIONALLOW) {
 
-			Logger::collectAlert('warnings', 'Регистрация отключено администратором!');
+			Logger::collectAlert('information', REGDISABLED);
 			return false;
 		}
 
@@ -461,28 +461,28 @@ class Identificator extends Filter {
 
 		if ($registrationParams[$this->authParams['transport']['userPassword1Value']] !== $registrationParams[$this->authParams['transport']['userPassword2Value']]) {
 
-			Logger::collectAlert('warnings', 'Ошибка! пароли не совпадают.');
+			Logger::collectAlert('attentions', PWDNOTMATCH);
 			return false;
 		}
 
 		$userExist = $this->users->userExist($registrationParams[$this->authParams['transport']['userEmailValue']]);
 
 		if($userExist) {
-			Logger::collectAlert('warnings', 'Такой пользователь уже зарегестрирован!');
+			Logger::collectAlert('attentions', USEREXIST);
 			return false; 
 		}
 
 		$insert = $this->users->insertNewUser($registrationParams[$this->authParams['transport']['userEmailValue']], $registrationParams[$this->authParams['transport']['userPassword1Value']], $registrationParams[$this->authParams['transport']['userNameValue']]);
 
 		if (!$insert) {
-			Logger::collectAlert('warnings', 'Ошибка регистрации пользователя! Не могу добавить пользователя.'); 
+			Logger::collectAlert('attentions', ADDUSERERR); 
 			return false;
 		}
 
 		$meta = $this->auth->generateActivations($registrationParams[$this->authParams['transport']['userEmailValue']]);
 
 		if(!$meta) {
-			Logger::collectAlert('warnings', 'Ошибка генерации ccылки для активации! Внимание обратитесь к администратору!!!');
+			Logger::collectAlert('attentions', ERRGENLINK);
 			return false;
 		}
 
@@ -501,14 +501,14 @@ class Identificator extends Filter {
 
 		if(!defined('REGISTRATIONALLOW') || !REGISTRATIONALLOW ) {
 
-			Logger::collectAlert('warnings', 'Регистрация отключено администратором!');
+			Logger::collectAlert('information', REGDISABLED);
 			return false;
 		}
 
 		$registrationConfirm = $this->verifyUserActivation();
 
 		if(!$this->isNotEmpty($registrationConfirm)) {
-			Logger::collectAlert('warnings', 'Параметры регистрационных данных не правильные!');
+			Logger::collectAlert('attentions', REGATRRERR);
 			return false;
 		}
 
@@ -516,13 +516,13 @@ class Identificator extends Filter {
 
 		if (!$status) {
 
-			Logger::collectAlert('warnings', 'Ошибка активации пользователя!');
+			Logger::collectAlert('attentions', USERACTERR);
 			return false;
 		}
 
 		$this->auth->clearActivations($registrationConfirm[$this->authParams['transport']['useridValue']]);
 
-		Logger::collectAlert('success', 'Аккаунт активирован!');
+		Logger::collectAlert('success', USERACTIVED);
 		return true;
 	}
 
@@ -547,7 +547,7 @@ class Identificator extends Filter {
 
 			if (!$this->isNotEmpty($value)) {
 				if(!$silence)
-					Logger::collectAlert('warnings', 'У вас есть пустые поля!');
+					Logger::collectAlert('attentions', EMPTYFIELDSEXIST);
 				return false;
 			}
 			try {
@@ -559,67 +559,53 @@ class Identificator extends Filter {
 				$value = $this->ejectedWords($value);
 			} catch (Exception $e) {
 				if(!$silence)
-					Logger::collectAlert('warnings', $e->getMessage());
+					Logger::collectAlert('attentions', $e->getMessage());
 			}
 
 			switch($key) {
 				case $this->authParams['transport']['userEmailValue']:
-				//case 'loginmail':
-				//case 'emailhash':
-				//case 'restoreemail':
-				//case 'userregemail':
 					$max = $this->authParams['transport']['userEmailMaxSym'];
 					$min = $this->authParams['transport']['userEmailMinSym'];
 				break;
 				case $this->authParams['transport']['userPassword1Value']:
 				case $this->authParams['transport']['userPassword2Value']:
-				//case 'loginpasswd':
-				//case 'newpassword1':
-				//case 'newpassword2':
-				//case 'userregpassword1':
-				//case 'userregpassword2':
 					$max = $this->authParams['transport']['userPasswordMaxSym'];
 					$min = $this->authParams['transport']['userPasswordMinSym'];
 				break;
 				case $this->authParams['transport']['userTokenHashValue']:
 				case $this->authParams['transport']['userConfirmHashValue']:
-				//case 'tokenhash':
-				//case 'confirm':
-				//case 'token':
 					$max = $this->authParams['transport']['userTokenHashMaxSym'];
 					$min = $this->authParams['transport']['userTokenHashMinSym'];
 				break;
 				case $this->authParams['transport']['userNameValue']:
-				//case 'userregname':
 					$max = $this->authParams['transport']['userNameMaxSym'];
 					$min = $this->authParams['transport']['userNameMinSym'];
 				break;
 				case $this->authParams['transport']['useridValue']:
-				//case 'userid':
 					$max = $this->authParams['transport']['useridMaxSym'];
 					$min = $this->authParams['transport']['useridMinSym'];
 				break;
 				default:
-					//$max = 0;
-					//$min = 0;
+					$max = 0;
+					$min = 0;
 				break;
 			}
 
 			if ($this->isMoreThan($value, $max)) {
 				if(!$silence)
-					Logger::collectAlert('warnings', 'Ошибка! В одном из полей превышенно максимальное кол-во символов!');
+					Logger::collectAlert('attentions', sprintf(ERRMAXSYMLIMIT, $max));
 				return false;
 			}
 
 			if($this->isLessThen($value, $min)) {
 				if(!$silence)
-					Logger::collectAlert('warnings', 'Ошибка! В одном из полей количество символов меньше разрешенного!');
+					Logger::collectAlert('attentions', sprintf(ERRMINSYMLIMIT, $min));
 				return false; 
 			}
 
 			if($key == $this->authParams['transport']['userEmailValue'] &&  !$this->mainValidator($value, 'email')) {
 				if(!$silence)
-					Logger::collectAlert('warnings', 'Указан некорректный емайл!');
+					Logger::collectAlert('attentions', ERRMAIL);
 				return false; 
 			}
 

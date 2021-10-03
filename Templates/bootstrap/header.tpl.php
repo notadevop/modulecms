@@ -8,7 +8,14 @@
 $stLinks = array(
 
     '/'         => 'Главная',
-    '/admin'    => 'Админка'
+    '/admin'    => 'Админка',
+    /*'/test' => array(
+        '/submenu' => 'submenu1',
+        '/submenu1' => 'submenu2',
+        '/submenu2' => 'submenu3',
+        '/submenu3' => 'submenu4',
+        '/submenu4' => 'submenu5',
+    ),*/
 );
 
 ?>
@@ -33,17 +40,60 @@ $stLinks = array(
         <div id="logo"><img src="../../Templates/bootstrap/img/logo.png"> %sitetitle% </div>
 
         <p> %site_description% </p>
-        <nav>
-            <ul>
+       
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <div class="container-fluid" style="background-color: #AEC6CF;">
+
+            <!--
+            <a class="navbar-brand" href="#">!</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            -->
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
                 <?php 
+
                 foreach ($stLinks as $key => $value) {
-                    echo '<li><a href="'.$key.'">'.$value.'</a></li>';
+                    if(is_array($value)) {
+                        ?>
+                        <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                           <?=$key;?>
+                          </a>
+                          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <?php 
+                            foreach ($value as $j => $i) {
+                                echo '<li><a class="dropdown-item" href="'.$j.'">'.$i.'</a></li>';
+                            }
+                            ?>
+                          </ul>
+                        </li>
+                        <?php
+                    } else {
+                        ?>
+                        <li class="nav-item">
+                          <a class="nav-link active" aria-current="page" href="<?=$key;?>"><?=$value;?></a>
+                        </li>
+                        <?php 
+                    }
                 }
                 ?>
-            </ul>
+              </ul>
+
+              <form class="d-flex" action="/" method="get">
+                <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Search">
+                <input type="submit" name="search" value="Поиск" class="btn btn-outline-success">
+              </form>
+            </div>
+          </div>
         </nav>
     </header>
 
+
+    <!-- LOGGER -->
     <section>
         <strong>
             <div class="mb-3">

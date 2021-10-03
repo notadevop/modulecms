@@ -71,6 +71,21 @@ class vRender {
 		return $tplarr;
 	}
 
+	// Метод определяет какой тип шаблона нужно вывести 
+	// например админка, окно авторизации или стандартный 
+
+	function initTypeOfRender(): array {
+
+		$defaultRenders = array(
+
+			'admin' => 'admin',
+			'js' => null,
+			'login' => 'auth' 
+
+		);
+
+	}
+
 	function prepareRenderer() {
 
 		$currentRoute 	= $this->currentRoute;
