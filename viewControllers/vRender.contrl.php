@@ -86,7 +86,7 @@ class vRender {
 
 	}
 
-	function prepareRenderer() {
+	function prepareRender() {
 
 		$currentRoute 	= $this->currentRoute;
 		$Allroutes  	= Router::getRoute(true);
@@ -115,11 +115,15 @@ class vRender {
 		// TODO: Определить язык пользователя и загрузить тот языковый пакет
 		// 
 		ob_start();
-		if (isset($r['languagePack']['rus'])) {
-			require_once($this->activeTpl.$r['languagePack']['rus']);
-		} else 
-			Logger::collectAlert('warnings', 'Нет языкового пакета!');
 
+		if(isset($r['languagePack'][LANGUAGE])) {
+			if (!file_exists($this->activeTpl.$r['languagePack'][LANGUAGE])) {
+				Logger::collectAlert('warnings', 'Нет языкового пакета!');
+			} else {
+				require_once($this->activeTpl.$r['languagePack'][LANGUAGE]);
+			}
+		}
+	
 		require_once ($this->activeTpl.$defTpl);
 		$this->htmlRenderRes = ob_get_contents();
 		ob_end_clean();
@@ -200,6 +204,9 @@ class vRender {
 	}
 
 	function viewRender(): void {
+
+		//Set the header to utf-8 for example purposes.
+		header('Content-Type: text/html; charset=utf-8');
 		// Использовать preg_replace то, что нужно заменить 
 		print($this->htmlRenderRes);
 	}

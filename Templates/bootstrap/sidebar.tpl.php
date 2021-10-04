@@ -36,18 +36,19 @@ $tmplinks = array(
         <div>
             <h3>Авторизайия</h3>
             <ul>
-            <?php if(!$this->regOk) { ?>
-                <li><a href="/login">Логин</a></li>
-                <li><a href="/register">Регистрация</a></li>
-                <li><a href="/restore">Восстановление</a></li>
-            <?php } ?>
-                <hr />
-                <li>Пользователь: <?=$name;?></li>
-                <li>Cтатус: <?=$logout;?></li>
-                <li>Пользователей онлайн: <?=$online;?></li>
-                <li>Уведомления: <?=$notifs;?></li>
-   
-            <?php 
+            <?php if($this->regOk) { ?>
+
+                    <hr />
+                    <li>Пользователь: <?=$name;?></li>
+                    <li>Cтатус: <?=$logout;?></li>
+                    <li>Пользователей онлайн: <?=$online;?></li>
+                    <li>Уведомления: <?=$notifs;?></li>
+            <?php } else { ?>
+                    <li><a href="/login">Логин</a></li>
+                    <li><a href="/register">Регистрация</a></li>
+                    <li><a href="/restore">Восстановление</a></li>  
+            <?php }
+
             foreach ($tmplinks as $key => $value) {
                 echo '<hr /><ul>';
                 foreach ($value as $j => $i) {

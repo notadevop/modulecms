@@ -23,7 +23,17 @@ class Database {
 	private $stmt;		// Хронит результат запроса для последущей обр. в виде Object
 
 	private function make_con(): void {
-		$dsn = "mysql:host=". DBHOST .";dbname=". DBNAME .";charset=".DBCHAR;
+
+		/*
+		if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
+    		$stmt = $db->prepare('select * from foo',
+        	array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true));
+		} else {
+		    die("...");
+		}
+		*/
+
+		$dsn = 'mysql:host='.DBHOST.';dbname='.DBNAME.';charset='.DBCHAR;
 		$opt = array(
 			PDO::ATTR_PERSISTENT		 	=> true,
 		    PDO::ATTR_ERRMODE            	=> PDO::ERRMODE_EXCEPTION,

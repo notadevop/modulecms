@@ -40,14 +40,17 @@ $files = array(
 
 foreach ($files as $key => $value) {
 	$r = ROOTPATH . $value;
-
 	!file_exists($r) ? die('Не могу найти системный файл!') : require_once ($r);
 }
+
+$lang = (new Visitor())->get_data()['lang'];
+
+define('LANGUAGE','rus');
 
 Router::initDefaultRoutes();
 
 $v = new vRender();
-$v->prepareRenderer();
+$v->prepareRender();
 
 $timer = function() use ($start){
 	$time 		= microtime();
