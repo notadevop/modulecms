@@ -1,5 +1,7 @@
 
 ![Image](https://img.shields.io/badge/php-7.4.1-green)
+![Image](https://img.shields.io/badge/-html5-yellowgreen)
+
 
 
 # modulecms (Модульная CMS)
