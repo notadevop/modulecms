@@ -1,4 +1,6 @@
-https://img.shields.io/badge/php-7.4.1-green
+
+![Image](https://img.shields.io/badge/php-7.4.1-green)
+
 
 # modulecms (Модульная CMS)
 ###### Домащняя CMS не претендует на какой проект, 
