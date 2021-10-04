@@ -1,6 +1,6 @@
 
 ![Image](https://img.shields.io/badge/php-7.4.1-green)
-![Image](https://img.shields.io/badge/-html5-yellowgreen)
+![Image](https://img.shields.io/badge/version-html5-yellowgreen)
 ![Image](https://img.shields.io/badge/boostrap-5.1.1-orange)
 
 
