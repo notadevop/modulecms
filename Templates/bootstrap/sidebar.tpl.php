@@ -21,7 +21,7 @@ $tmplinks = array(
 
       'Профиль'     => array(
           '/profile/'.PROFILE['userid']         => 'Мой профиль',
-          '/editprofile/'.PROFILE['userid']     => 'Редактировать Профиль',
+          '/profile/edit/'.PROFILE['userid']    => 'Редактировать Профиль',
           '/editpass'                           => 'Изменить пароль',
           '/activesessions'                     => 'Активные сесии',
       ),

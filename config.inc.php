@@ -16,6 +16,9 @@ define('DBNAME', 'ModuleCMS');
 define('DBPREF', '_prefx');
 
 
+define('DBENGINE', 'mysql');
+
+
 
 
 

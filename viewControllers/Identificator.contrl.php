@@ -114,6 +114,8 @@ class Identificator extends Filter {
 
 		$this->saveAuthAction('','',true,true);
 
+		Logger::collectAlert('warnings', LOGGEDOUT);
+
 		if(!$redirect || !defined('LOGOUT')) { return true; }
 
 		if(LOGOUT['redirectuser']) {

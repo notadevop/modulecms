@@ -4,8 +4,22 @@
  * Баннер шаблона
  */
 
-$query = http_build_query($this->result['templateCtrlResult']['result']);
-$action = '/updatePassword/?'.$query;
+if ($this->regOk){
+
+  require_once ($this->activeTpl.$r['pages']['default']);
+  return;
+}
+
+
+
+if (!empty($this->result['templateCtrlResult']['result'])) {
+
+  $query = http_build_query($this->result['templateCtrlResult']['result']);
+}
+
+
+
+$action = '/updatePassword/?'.@$query;
 
 require_once($this->activeTpl.$r['templates']['header']);
 require_once($this->activeTpl.$r['templates']['banner']);

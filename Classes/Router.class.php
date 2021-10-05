@@ -44,26 +44,7 @@
 	*/
 
 
-	/**
-	 * // /search/something/is/here/ -> Возвращает массив всех путей
-	 * // -> ['search', 'something', 'is', 'here']
-	 *
-	 *  Пример использования:
-	 *	$routes = $obj->getRoutes();
-	 *	if($routes[0] == 'search') { if($routes[1] == 'book') { echo 'clicked'; } }
-	 
-	public static function getRoutes(string $extUri = ''): ?array {
-
-		$base_uri = empty($extUri) ? self::getCurrentUri() : $extUri;
-		$routeValues = array();
-		$routes = explode('/', $base_uri);
-
-		foreach ($routes as $route) {
-			if (trim($route) != '') { array_push($routeValues, $route); }
-		}
-		return !empty($routeValues) ? $routeValues : null;
-	}
-	*/
+	
 
 
 final class Router {
@@ -73,7 +54,6 @@ final class Router {
 	private static 	$requestedUrl;
 	public static 	$defaultRoutesDir 	= ROOTPATH.DEFROUTEPATH;
 	public static 	$defaultRoutes 		= array();
-
 
 
 	// Инициализирует все пути по умолчанию
@@ -182,7 +162,7 @@ final class Router {
 
 		// если URL и маршрут полностью совпадают
 		if (isset(self::$defaultRoutes[$requestedUrl])) {
-			self::$params = self::splitUrl(self::$defaultRoutes[$requestedUrl]['action']); // $requestedUrl
+			self::$params = Urlfixer::splitUrl(self::$defaultRoutes[$requestedUrl]['action']); // $requestedUrl
 		} else { 
 			foreach (self::$defaultRoutes as $route => $uri) {
 				// Заменяем wildcards на рег. выражения
@@ -195,7 +175,7 @@ final class Router {
 						$uri['action'] = preg_replace('#^' . $route . '$#', $uri['action'], $requestedUrl);
 					}
 
-					self::$params = self::splitUrl($uri['action']); // разбиваем value роута на параметры и сохраняем
+					self::$params = Urlfixer::splitUrl($uri['action']); // разбиваем value роута на параметры и сохраняем
 					break; // URL обработан!
 				}
 			}

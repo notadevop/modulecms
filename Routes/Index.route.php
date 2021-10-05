@@ -16,7 +16,7 @@ return array(
 
 	'/' => array( 
 			'action' 	=> 'MainController/defaultMethod',
-			'template'	=> 'infopage.tpl.php',
+			'template'	=> 'index.tpl.php',
 			'priority'	=> 4, // Показывать по при оритету
 			'rendertype'=> 'userui'
 	),
@@ -29,4 +29,12 @@ return array(
 			'priority'	=> 2,
 			'rendertype'=> 'userui'
 	),
+
+	'/admin'  => array(
+
+			'action' 	=> 'MainController/defaultMethod',
+			'template'	=> 'index.tpl.php',
+			'priority'	=> 4, // Показывать по при оритету
+			'rendertype'=> 'adminui'
+	)
 );

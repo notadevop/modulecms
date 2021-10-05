@@ -3,7 +3,6 @@
 (defined('ROOTPATH') && defined('DS')) or die('something wrong!');
 
 
-
 define('USERDEFLANG','RUS');
 
 
@@ -43,7 +42,7 @@ define('REDIRECTLOGIN', array(
 define('LOGOUT',array(
 
 		'redirectuser' 	=> true,
-		'timeout' 		=> 0,
+		'timeout' 		=> 3,
 		'redirectpath' 	=> HOST	
 ));
 

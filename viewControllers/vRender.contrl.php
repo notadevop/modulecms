@@ -40,9 +40,9 @@ class vRender {
 		// например чтобы разные страницы имели разные шаблоны
 
 		$this->pages = array(
-			'user',
-			'admin',
-			'auth',
+			'user' 	=> false,
+			'admin' => false,
+			'auth' 	=> false,
 		);
 
 		$this->currentTplDir = TPLDEFAULTFOLDER;
@@ -76,14 +76,6 @@ class vRender {
 
 	function initTypeOfRender(): array {
 
-		$defaultRenders = array(
-
-			'admin' => 'admin',
-			'js' => null,
-			'login' => 'auth' 
-
-		);
-
 	}
 
 	function prepareRender() {
@@ -98,6 +90,7 @@ class vRender {
 		}
 
 		$r = $this->activateTemplate($this->params['website_template']);
+		//$r = $this->activateTemplate('admin');
 
 		if (!$r) {
 			$r = $this->activateTemplate(TPLDEFTEMPLATE);

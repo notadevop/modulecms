@@ -46,15 +46,20 @@ class Database {
 			$link = new PDO($dsn, DBUSER, DBPASS, $opt);
 			if (!$link) {
 				throw new Exception(DBERRCONN, 4);
-			} else {
-				$this->link = $link;
 			}
+
+			if ($link->getAttribute(PDO::ATTR_DRIVER_NAME) != DBENGINE) {
+				throw new Exception(DBENGINEERR, 4);
+			}
+
+			$this->link = $link;
+		
 		} catch (Exception $e) {
 
 			if (DEBUG) {
 				debugger($e->getMessage());
 			}
-			die(DBERRINFO);
+			die(DBERRINFO.' '.$e->getMessage());
 		}
 	}
 
