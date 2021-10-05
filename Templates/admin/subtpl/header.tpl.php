@@ -51,12 +51,9 @@
 		<div id="headerRight">
 			<nav>
 				<ul>
-					<li><a href="/">Home</a>
-					<li><a rel="nofollow" href="https://htmlg.com/html-editor/">HTML Editor</a>
-					<li><a rel="nofollow" href="https://textfancy.com/">Text Fancy</a>
-					<li><a rel="nofollow" href="https://geekprank.com/">Geek Prank</a>
-					<li><a rel="nofollow" href="https://prettycoolsite.com/">Pretty Cool Site</a>
-					<li><a rel="nofollow" href="https://bestsiteever.com/">Best Site Ever</a>
+					<li><a href="/">Главная</a>
+					<li><a rel="nofollow" href="https://htmlg.com/html-editor/">Другое</a>
+					<li><a rel="nofollow" href="/logout">Выйти</a>
 				</ul>
 			</nav>
 		</div>

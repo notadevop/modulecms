@@ -43,10 +43,6 @@
     RewriteRule ^ index.php [QSA,L]
 	*/
 
-
-	
-
-
 final class Router {
 
 	//private static 	$routes 			= array();
@@ -98,10 +94,11 @@ final class Router {
 	 * Разделить переданный URL на компоненты
 	 	https://google.ru/index.php?var=123  array=>( https:, google, index.php?var=123); 
 	 */
+	/*
 	public static function splitUrl(string $url) {
 		return preg_split('/\//', $url, -1, PREG_SPLIT_NO_EMPTY);
 	}
-
+	*/
 	// Очищаем путь роутера
 
 	public static function cleanRoute(string $routeName): bool {
@@ -122,12 +119,12 @@ final class Router {
 
 		foreach(self::$defaultRoutes as $key => $controller) {
 			$regex = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $key));
-			if ( preg_match('#^' .$regex. '$#', self::getCurrentUri()) ) {
+			if ( preg_match('#^' .$regex. '$#', Urlfixer::getCurrentUri()) ) {
 
 				$path = array(
-					'uriarr' 	=> self::splitUrl($key),
+					'uriarr' 	=> Urlfixer::splitUrl($key),
 					'uri' 		=> $key,
-					'action' 	=> self::splitUrl($controller['action']),
+					'action' 	=> Urlfixer::splitUrl($controller['action']),
 					'params'	=> self::$defaultRoutes[$key]
 				);
 				return $path;
@@ -136,7 +133,7 @@ final class Router {
 		return null;
 	}
 
-
+	/*
 	public static function getCurrentUri() {
 		$scriptName = $_SERVER['SCRIPT_NAME'];
 		$basepath 	= implode('/', array_slice(explode('/', $scriptName), 0, -1)) . '/';
@@ -146,7 +143,7 @@ final class Router {
 		}
 		return strtolower('/' . trim($uri, '/'));
 	}
-
+	*/
 	/**
 	 * отправляем url и получаем результат, но до этого разбиваем урл и сравниваем с путями установлеными в системе
 	 */
@@ -154,7 +151,7 @@ final class Router {
 
 		// Если URL не передан, берем его из REQUEST_URI
 		if ($requestedUrl === null) {
-			$cur = self::getCurrentUri();
+			$cur = Urlfixer::getCurrentUri();
 			$requestedUrl = $cur == '/' ? '/' : urldecode(rtrim($cur, '/'));
 		}
 
@@ -201,7 +198,6 @@ final class Router {
 	public static function getResult() {
 		$result = array();
 		foreach (self::$defaultRoutes as $key => $value) {
-			
 			if(substr($key, 0, 1) != '/') {
 				$result[$key] = self::dispatch($key);
 				//self::cleanRoutes($key);
@@ -212,7 +208,7 @@ final class Router {
 			// Отрабатывает по указанному пути
 			//'tplControllerResult' => self::dispatch(),
 			//'perControllerResult' => $result
-
+			
 			'templateCtrlResult' 	=> self::dispatch(), // Результат от пути 
 			'permanetCtrlResult'	=> $result 			 // Результат перманент.
 		);

@@ -185,6 +185,8 @@ class Filter {
 			)
 		);
 
+		/*
+
 		$catWords = $catWords == 'all' ? array_keys($blockedWords) : array_keys($blockedWords, $catWords);
 
 		if(empty($catWords) || !is_array($catWords)) { throw new Exception("Указанн неправильно параметр", 1);
@@ -196,7 +198,7 @@ class Filter {
 			return preg_replace($patterns, '', $input);
 		};
 
-		/*
+		
 		foreach ($catWords as $k => $v) {
 			
 			switch($v) {
@@ -212,16 +214,30 @@ class Filter {
 		return $param;
 	}
 
-	function shieldingData($param): string {
+	function shieldingData($input): string {
 
-		return $param;
+		return $input;
 	}
 
-	function keepParams(string $key, string $category) {
+	function keepParams(string $input, array $type): ?string {
+
+		$elements = '';
+
+		foreach ($type as $key => $value) {
+			
+			if ($value == 'words') {
+				$elements .= 'a-zA-Z';
+			} else if ($value == 'numbers') {
+				$elements .= '0-9\s';
+			} else if ($value == 'specsym') {
+				//$elements .= '/_';
+			}
+		}
+
+		return preg_replace('/[^'.$elements.']/', '', $input);
 
 		// Очистить все кроме букв
 		// $str = preg_replace('/[^a-zA-Z]/', '', $input);
-		// Очистить все кроме букв и цифр
 		// $str = preg_replace('/[^a-zA-Z0-9\s]/', '', $mixed);
 	}
 

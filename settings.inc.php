@@ -25,7 +25,7 @@ define('HOSTENABLED', true);
 
 
 define('DEFROUTEPATH', 'Routes' . DS);
-define('HOST', 'http://'.$_SERVER['HTTP_HOST']);
+define('HOST', 'http://'.$_SERVER['HTTP_HOST']); // <-------  ЭТО НУЖНО ФИЛЬТРОВАТЬ !!!!!
 
 // нужно для того, чтобы отдельно указывать другой путь шаблону
 define('TPLDEFAULTFOLDER', ROOTPATH.'Templates'.DS); 

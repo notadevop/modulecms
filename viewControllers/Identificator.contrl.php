@@ -299,13 +299,11 @@ class Identificator extends Filter {
 	function restoreAction(): ?string {
 
 		if(!defined('RESTOREALLOW') || !RESTOREALLOW ) {
-
 			Logger::collectAlert('attentions', RESTOREDISABLED);
 			return false;
 		}
 
 		$restoreParams = array(
-
 			$this->authParams['transport']['userEmailValue'] => false
 		);
 
@@ -318,7 +316,6 @@ class Identificator extends Filter {
 		$userExist = $this->users->userExist($restoreParams[$this->authParams['transport']['userEmailValue']]);
 
 		if(!$userExist) {
-
 			Logger::collectAlert('attentions', USERNOTFOUND);
 			return false; 
 		}
@@ -326,7 +323,6 @@ class Identificator extends Filter {
 		$userNotBlocked = $this->auth->userActivated($restoreParams[$this->authParams['transport']['userEmailValue']]);
 
 		if (!$userNotBlocked) {
-
 			Logger::collectAlert('attentions', USERBANNED);
 			return false;
 		}
@@ -334,7 +330,6 @@ class Identificator extends Filter {
 		$genResult = $this->auth->generateActivations($restoreParams[$this->authParams['transport']['userEmailValue']]);
 
 		if(!$genResult) {
-
 			Logger::collectAlert('attentions', ERRGENHASH);
 			return false;
 		}
@@ -502,7 +497,6 @@ class Identificator extends Filter {
 	function verifyUserRegistration(): bool {
 
 		if(!defined('REGISTRATIONALLOW') || !REGISTRATIONALLOW ) {
-
 			Logger::collectAlert('information', REGDISABLED);
 			return false;
 		}
@@ -517,7 +511,6 @@ class Identificator extends Filter {
 		$status = $this->auth->activateRegisteredUser($registrationConfirm[$this->authParams['transport']['useridValue']]);
 
 		if (!$status) {
-
 			Logger::collectAlert('attentions', USERACTERR);
 			return false;
 		}

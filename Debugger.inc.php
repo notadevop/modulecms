@@ -33,6 +33,11 @@ function debugger($input='emptyOutput', $category=DEBUG, $params=array()): void 
 	$userfunc = !true;
 
 	if ($category) {
+
+		echo '<span style="color: red;">DEBUG OUTPUT: </span><br/>';
+
+		echo '<p><bold> Тип переменной: '.gettype($input).' </bold></p>';
+
 		$debug = debug_backtrace();
 		//debug_print_backtrace();
 		if (!empty($debug)){

@@ -7,7 +7,25 @@
 
 class Urlfixer {
 
-    public function __construct() { }
+    public function __construct() { 
+
+    }
+
+
+    public static function getCurrentUri() {
+
+        // Тут нужна фильтрация данных !!!!
+
+        $scriptName = $_SERVER['SCRIPT_NAME'];
+        $basepath   = implode('/', array_slice(explode('/', $scriptName), 0, -1)) . '/';
+        $uri        = substr($_SERVER['REQUEST_URI'], strlen($basepath));
+        
+        if (strstr($uri, '?')) { 
+            $uri = substr($uri, 0, strpos($uri, '?')); 
+        }
+        
+        return strtolower('/' . trim($uri, '/'));
+    }
 
     /**
      * // /search/something/is/here/ -> Возвращает массив всех путей
@@ -17,23 +35,22 @@ class Urlfixer {
      *  $routes = $obj->getRoutes();
      *  if($routes[0] == 'search') { if($routes[1] == 'book') { echo 'clicked'; } }
      */
-    public function defragmentUrl(string $url=''): ?array {
+    public function getUriElement(string $url=''): ?array {
 
-        if(!empty($url)) {
-            $base_uri = $url;
-        } else {
-            $base_uri = '';// Получаем из глобальной переменной
-        }
+        $base_uri = !empty($url) ? $uri : parse_url($_SERVER['REQUEST_URI'])['path'];
 
-        $routeValues = array();
+        $values = array();
         $routes = explode('/', $base_uri);
+
+        $filter = new Filter();
 
         foreach ($routes as $route) {
             if (trim($route) != '') { 
-                array_push($routeValues, $route); 
+                $route = $filter->keepParams($route, ['words','numbers','specsym']);
+                array_push($values, $route); 
             }
         }
-        return !empty($routeValues) ? $routeValues : null;
+        return $values;
     }
 
     /**
@@ -46,9 +63,9 @@ class Urlfixer {
         return preg_split('/\//', $url, -1, PREG_SPLIT_NO_EMPTY);
     }
 
-    function generateUrl($genURL=false) {
+    function generateUrl(array $uriParams, bool $genURL=false) {
 
-        $host = HOST;
+        HOST.DS.http_build_query($uriParams); 
     }
 
 }

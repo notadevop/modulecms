@@ -29,12 +29,7 @@ class vRender {
 		$this->result 		= Router::getResult();
 		$this->currentRoute = Router::getRoute();
 
-		$this->regOk = false;
-
-		if(defined('PROFILE') && !empty(PROFILE['useremail'])) {
-
-			$this->regOk = true;
-		}
+		$this->regOk = (defined('PROFILE') && !empty(PROFILE['useremail'])) ? true : false;
 
 		// pages это массив для определения шаблона для определенных страниц 
 		// например чтобы разные страницы имели разные шаблоны
@@ -89,12 +84,18 @@ class vRender {
 			$defTpl = $Allroutes[$this->currentRoute['uri']]['template'];
 		}
 
-		$r = $this->activateTemplate($this->params['website_template']);
-		//$r = $this->activateTemplate('admin');
+		if (isset($currentRoute['uriarr'][0]) && $currentRoute['uriarr'][0] == 'admin') {
 
-		if (!$r) {
-			$r = $this->activateTemplate(TPLDEFTEMPLATE);
+			$r = $this->activateTemplate('admin');
+		} else {
+
+			$r = $this->activateTemplate($this->params['website_template']);
+
+			if (!$r) {
+				$r = $this->activateTemplate(TPLDEFTEMPLATE);
+			}
 		}
+
 
 		if(!$r) {
 			die('No Render! Template Not Found!');

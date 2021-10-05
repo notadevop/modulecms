@@ -72,6 +72,8 @@ $v->replace(
 $v->viewRender();
 
 
+//debugger($_SERVER);
+
 /*
 	Класс разделения контента на страницы Pagination (break to pages)
 	Класс манипуляции с Даты 
