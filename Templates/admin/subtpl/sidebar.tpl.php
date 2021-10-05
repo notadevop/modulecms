@@ -17,27 +17,13 @@ if($this->regOk) {
     $notifs = '0';
 }
 
-$tmplinks = array(
-
-      'Профиль'     => array(
-          '/profile/'.PROFILE['userid']         => 'Мой профиль',
-          '/profile/edit/'.PROFILE['userid']    => 'Редактировать Профиль',
-          '/editpass'                           => 'Изменить пароль',
-          '/activesessions'                     => 'Активные сесии',
-      ),
-
-      'Пользователи'    => array(
-          '/users'      => 'Список пользователей',
-          '/editusers'  => 'Редактировать привелегии',
-      ),
-);
 ?>
     <aside>
+        
         <div>
             <h3>Авторизайия</h3>
             <ul>
             <?php if($this->regOk) { ?>
-
                     <hr />
                     <li>Пользователь: <?=$name;?></li>
                     <li>Cтатус: <?=$logout;?></li>
@@ -47,19 +33,35 @@ $tmplinks = array(
                     <li><a href="/login">Логин</a></li>
                     <li><a href="/register">Регистрация</a></li>
                     <li><a href="/restore">Восстановление</a></li>  
-            <?php }
+            <?php } ?>
 
-            foreach ($tmplinks as $key => $value) {
-                echo '<hr /><ul>';
-                foreach ($value as $j => $i) {
-                    echo '<li><a href="'.$j.'">'.$i.'</a></li>';     
-                }
-                echo '</ul>';
-            }
-            ?>
             </ul>
         </div>
-        <div>Sidebar 2</div>
-        <div>Sidebar 3</div>
+        
+        <div>
+            <ul><label>Профиль</label><hr />
+                <li><a href="/admin/profile/<?=PROFILE['userid'];?>">Профиль пользователь</a></li>
+                <li>Редактировать профиль</li>
+                <li>Активные сессии</li>
+                <li>Добавить привелегии</li>
+                <li>Редактирование привелегий</li>
+                <li><a href="/admin/users">Список пользователей</a></li>
+                <li>Редактировать пользователей</li>
+                <li><a href="/usersonline">Пользователи онлайн</a></li>
+            </ul>
+        </div>
+        <div>  
+            <ul><label></label><hr />
+                <li>Почта пользователя</li>
+                <li>Уведомления</li>
+                <li>Активные сессии</li>
+            </ul></div>
+        <div>
+            <ul><label>Настройки вебсайта</label><hr />
+                <li>Загаловки</li>
+                <li>Авторизация</li>
+                <li></li>
+            </ul>
+        </div>
     </aside>
 </section>

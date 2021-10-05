@@ -18,23 +18,31 @@ return array(
 			'action' 	=> 'MainController/defaultMethod',
 			'template'	=> 'index.tpl.php',
 			'priority'	=> 4, // Показывать по при оритету
-			'rendertype'=> 'userui'
+			'rendertype'=> 'userui',
 	),
 
 	// Не найденная страница
-	
 	'/404page' 	=> array(
 			'action' 	=> 'MainController/defaultMethod',
 			'template'	=> 'errors/404page.tpl.php',
 			'priority'	=> 2,
-			'rendertype'=> 'userui'
+			'rendertype'=> 'userui',
 	),
 
 	'/admin'  => array(
 
 			'action' 	=> 'MainController/defaultMethod',
-			'template'	=> 'index.tpl.php',
+			'template'	=> 'dashboard.tpl.php',
 			'priority'	=> 4, // Показывать по при оритету
-			'rendertype'=> 'adminui'
+			'rendertype'=> 'adminui',
 	)
+	/*
+	'/nopage' => array(
+
+			'action' 	=> 'MainController/defaultMethod',
+			'template'	=> 'dashboard.tpl.php',
+			'priority'	=> 4, // Показывать по при оритету
+			'rendertype'=> 'adminui',
+	),
+	*/
 );

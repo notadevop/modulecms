@@ -16,21 +16,6 @@ if($this->regOk) {
     $online = '('.$this->result['permanetCtrlResult']['online']['result'].')';
     $notifs = '0';
 }
-
-$tmplinks = array(
-
-      'Профиль'     => array(
-          '/profile/'.PROFILE['userid']         => 'Мой профиль',
-          '/profile/edit/'.PROFILE['userid']    => 'Редактировать Профиль',
-          '/editpass'                           => 'Изменить пароль',
-          '/activesessions'                     => 'Активные сесии',
-      ),
-
-      'Пользователи'    => array(
-          '/users'      => 'Список пользователей',
-          '/editusers'  => 'Редактировать привелегии',
-      ),
-);
 ?>
     <aside>
         <div>
@@ -47,16 +32,7 @@ $tmplinks = array(
                     <li><a href="/login">Логин</a></li>
                     <li><a href="/register">Регистрация</a></li>
                     <li><a href="/restore">Восстановление</a></li>  
-            <?php }
-
-            foreach ($tmplinks as $key => $value) {
-                echo '<hr /><ul>';
-                foreach ($value as $j => $i) {
-                    echo '<li><a href="'.$j.'">'.$i.'</a></li>';     
-                }
-                echo '</ul>';
-            }
-            ?>
+            <?php } ?>
             </ul>
         </div>
         <div>Sidebar 2</div>

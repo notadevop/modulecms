@@ -19,7 +19,7 @@ return array(
 
 	// Профиль пользователя который хочет посмотреть свой аккаунт
 
-	'/users' => array(
+	'/admin/users' => array(
 			'action' 	=> 'ProfileController/getAllUsers',
 			'template'	=> 'listUsers.tpl.php',
 			'priority'	=> 3,

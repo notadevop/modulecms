@@ -45,7 +45,6 @@
 
 final class Router {
 
-	//private static 	$routes 			= array();
 	private static 	$params 			= array();
 	private static 	$requestedUrl;
 	public static 	$defaultRoutesDir 	= ROOTPATH.DEFROUTEPATH;
@@ -90,15 +89,6 @@ final class Router {
 		self::$defaultRoutes = array_merge(self::$defaultRoutes, $newArr);
 	}
 
-	/**
-	 * Разделить переданный URL на компоненты
-	 	https://google.ru/index.php?var=123  array=>( https:, google, index.php?var=123); 
-	 */
-	/*
-	public static function splitUrl(string $url) {
-		return preg_split('/\//', $url, -1, PREG_SPLIT_NO_EMPTY);
-	}
-	*/
 	// Очищаем путь роутера
 
 	public static function cleanRoute(string $routeName): bool {
@@ -133,17 +123,6 @@ final class Router {
 		return null;
 	}
 
-	/*
-	public static function getCurrentUri() {
-		$scriptName = $_SERVER['SCRIPT_NAME'];
-		$basepath 	= implode('/', array_slice(explode('/', $scriptName), 0, -1)) . '/';
-		$uri 		= substr($_SERVER['REQUEST_URI'], strlen($basepath));
-		if (strstr($uri, '?')) { 
-			$uri = substr($uri, 0, strpos($uri, '?')); 
-		}
-		return strtolower('/' . trim($uri, '/'));
-	}
-	*/
 	/**
 	 * отправляем url и получаем результат, но до этого разбиваем урл и сравниваем с путями установлеными в системе
 	 */

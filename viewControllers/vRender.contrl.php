@@ -54,6 +54,7 @@ class vRender {
 	}
 
 	function activateTemplate(string $name, string $folder=''): ?array {
+
 		$folder = !empty($folder) ? ROOTPATH.$folder.DS : $this->currentTplDir;
 
 		$fpath = $folder.$name.DS.'schema.tpl.php';
@@ -62,15 +63,15 @@ class vRender {
 		
 		$tplarr = require_once($fpath);
 		if(empty($tplarr)) { return null; }
-		$this->activeTpl = $folder.$name.DS;
-		$this->params['website_template'] = $name;
+		$this->activeTpl 					= $folder.$name.DS;
+		$this->params['website_template'] 	= $name;
 		return $tplarr;
 	}
 
-	// Метод определяет какой тип шаблона нужно вывести 
-	// например админка, окно авторизации или стандартный 
 
-	function initTypeOfRender(): ?array {
+	function prepareRender() {
+
+		$Allroutes  	= Router::getRoute(true); // Все пути 
 
 		$currentRoute = $this->currentRoute;
 
@@ -81,30 +82,30 @@ class vRender {
 			$ui = $currentRoute['uriarr'][0];
 		}
 
-		if($ui == 'admin') {
+		$deniedTpl = false;
+
+		if($ui == 'admin' && $this->regOk) {
 			$r = $this->activateTemplate('admin');
 		} else {
-			$r = $this->activateTemplate($this->params['website_template']);
-			if (!$r) {
-				$r = $this->activateTemplate(TPLDEFTEMPLATE);
+
+			if($ui == 'admin' && !$this->regOk) {
+				$deniedTpl = true;
 			}
+
+			$r = $this->activateTemplate($this->params['website_template']);
 		}
 
-		return $r;
-	}
+		if (!$r) {
+			$r = $this->activateTemplate(TPLDEFTEMPLATE);
+		}
 
-	function prepareRender() {
-
-		$currentRoute 	= $this->currentRoute;
-		$Allroutes  	= Router::getRoute(true);
-
-		if(empty($currentRoute)) {
+		if(empty($this->currentRoute)) {
 			$defTpl = $Allroutes['/404page']['template'];
-		}else{
+		}elseif ($deniedTpl){
+			$defTpl = $Allroutes['/login']['template'];
+		} else { 
 			$defTpl = $Allroutes[$this->currentRoute['uri']]['template'];
 		}
-
-		$r = $this->initTypeOfRender();
 
 		if(!$r) {
 			die('No Render! Template Not Found!');

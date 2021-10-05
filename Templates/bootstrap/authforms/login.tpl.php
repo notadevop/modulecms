@@ -19,7 +19,6 @@ require_once($this->activeTpl.$r['templates']['banner']);
 
 <section id="pageContent">
     <main role="main">
-     
             <form action="/login" method="post">
               <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Email Пользователя</label>
