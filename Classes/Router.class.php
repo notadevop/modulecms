@@ -194,6 +194,22 @@ final class Router {
 	// 2. Отрабатывает один путь который указан в URI 
 	// 3. Возвращает результат постоянных исполнителей в виде массива $result 
 	// 4. И путь по которому зашел пользователь self::dispatch()
+	
+
+
+	public static function getPermanentResult(): ?array {
+
+		$result = array();
+		foreach (self::$defaultRoutes as $key => $value) {
+			if(substr($key, 0, 1) != '/') {
+				$result[$key] = self::dispatch($key);
+				//self::cleanRoutes($key);
+			}
+		}
+
+		return $result;
+	}
+
 
 	public static function getResult() {
 		$result = array();

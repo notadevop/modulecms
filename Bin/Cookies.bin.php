@@ -21,10 +21,9 @@ final class Cookies{
 
 	function cookieKeyExist(string $cookie_name=''): bool {
 
-		if (!isset($cookie_name) || empty($cookie_name)) { 
+		if (empty($cookie_name)) { 
 
 			throw new Exception('В массиве нету такого параметра!', 1);
-			return false; 
 		}
 
 		return array_key_exists($cookie_name, $this->cookies) ? true : false;

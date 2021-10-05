@@ -93,7 +93,7 @@ class Database {
 				throw new RuntimeException(DBEMPTYSQL);
 			$this->stmt = $this->get_con()->prepare($this->sql);
 			if (!$this->stmt) 
-				throw new RuntimeException(DBERRPREPQUERY.' '.$this->stmt->errorCode());
+				throw new RuntimeException(DBERRPREPQUERY.' - '.$this->stmt->errorCode());
 
 			if (!empty($this->prepared)) {
 				foreach ($this->prepared as $key => $value) {
@@ -105,7 +105,7 @@ class Database {
 				throw new RuntimeException(DBERRQUERY.' - '.$this->stmt->errorCode());
 			$r = true;
 		} catch (Exception $e) {
-			debugger($e->getMessage());
+			print_r($e->getMessage().'<br/>');
 		}
 		return $r;
 	}
@@ -128,7 +128,7 @@ class Database {
 		$this->execute()->fetch(); // Получаем ряд
 		$this->execute()->fetchColumn(); // Получаем колонку
 		$this->execute()->fetchAll(PDO::FETCH_COLUMN); // Получаем колонку
-		$this->execute()->fetchAll(); // Получаем все колонки 
+		$this->execute()->fetchAll(); // Получаем все ячейки
 		// получаем ввиде пермен
 		foreach ($result as $row) 
 			echo $row['name'];

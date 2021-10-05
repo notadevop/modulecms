@@ -63,14 +63,34 @@ class vRender {
 		$tplarr = require_once($fpath);
 		if(empty($tplarr)) { return null; }
 		$this->activeTpl = $folder.$name.DS;
+		$this->params['website_template'] = $name;
 		return $tplarr;
 	}
 
 	// Метод определяет какой тип шаблона нужно вывести 
 	// например админка, окно авторизации или стандартный 
 
-	function initTypeOfRender(): array {
+	function initTypeOfRender(): ?array {
 
+		$currentRoute = $this->currentRoute;
+
+		$ui = null;
+
+		if(isset($currentRoute['uriarr'][0]) && !empty($currentRoute['uriarr'][0])){
+
+			$ui = $currentRoute['uriarr'][0];
+		}
+
+		if($ui == 'admin') {
+			$r = $this->activateTemplate('admin');
+		} else {
+			$r = $this->activateTemplate($this->params['website_template']);
+			if (!$r) {
+				$r = $this->activateTemplate(TPLDEFTEMPLATE);
+			}
+		}
+
+		return $r;
 	}
 
 	function prepareRender() {
@@ -84,18 +104,7 @@ class vRender {
 			$defTpl = $Allroutes[$this->currentRoute['uri']]['template'];
 		}
 
-		if (isset($currentRoute['uriarr'][0]) && $currentRoute['uriarr'][0] == 'admin') {
-
-			$r = $this->activateTemplate('admin');
-		} else {
-
-			$r = $this->activateTemplate($this->params['website_template']);
-
-			if (!$r) {
-				$r = $this->activateTemplate(TPLDEFTEMPLATE);
-			}
-		}
-
+		$r = $this->initTypeOfRender();
 
 		if(!$r) {
 			die('No Render! Template Not Found!');
@@ -109,7 +118,6 @@ class vRender {
 		// TODO: Определить язык пользователя и загрузить тот языковый пакет
 		// 
 		ob_start();
-
 		if(isset($r['languagePack'][LANGUAGE])) {
 			if (!file_exists($this->activeTpl.$r['languagePack'][LANGUAGE])) {
 				Logger::collectAlert('warnings', 'Нет языкового пакета!');
