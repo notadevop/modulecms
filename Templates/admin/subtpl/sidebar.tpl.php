@@ -37,7 +37,6 @@ if($this->regOk) {
 
             </ul>
         </div>
-        
         <div>
             <ul><label>Профиль</label><hr />
                 <li><a href="/admin/profile/<?=PROFILE['userid'];?>">Профиль пользователь</a></li>
@@ -47,7 +46,7 @@ if($this->regOk) {
                 <li>Редактирование привелегий</li>
                 <li><a href="/admin/users">Список пользователей</a></li>
                 <li>Редактировать пользователей</li>
-                <li><a href="/usersonline">Пользователи онлайн</a></li>
+                <li><a href="/admin/usersonline">Пользователи онлайн</a></li>
             </ul>
         </div>
         <div>  

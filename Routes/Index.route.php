@@ -35,14 +35,5 @@ return array(
 			'template'	=> 'dashboard.tpl.php',
 			'priority'	=> 4, // Показывать по при оритету
 			'rendertype'=> 'adminui',
-	)
-	/*
-	'/nopage' => array(
-
-			'action' 	=> 'MainController/defaultMethod',
-			'template'	=> 'dashboard.tpl.php',
-			'priority'	=> 4, // Показывать по при оритету
-			'rendertype'=> 'adminui',
 	),
-	*/
 );
