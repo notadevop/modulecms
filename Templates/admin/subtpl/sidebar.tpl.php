@@ -6,10 +6,10 @@
 
 if($this->regOk) {
 
-    $name   = '<a href="/profile/'.PROFILE['userid'].'">'.PROFILE['username'].'</a>';
+    $name   = '<a href="/admin/profile/'.PROFILE['userid'].'">'.PROFILE['username'].'</a>';
     $logout = '<a href="/logout">Выйти?</a>';
-    $online = '<a href="/usersonline">('.$this->result['permanetCtrlResult']['online']['result'].')</a>';
-    $notifs = '<a href="/notifications">(0)</a>';
+    $online = '<a href="/admin/usersonline">('.$this->result['permanetCtrlResult']['online']['result'].')</a>';
+    $notifs = '<a href="/admin/notifications">(0)</a>';
 } else {
     $name = 'Гость';
     $logout = '<a href="/login">Авторизоваться</a>';
@@ -19,7 +19,6 @@ if($this->regOk) {
 
 ?>
     <aside>
-        
         <div>
             <h3>Авторизайия</h3>
             <ul>
@@ -34,7 +33,6 @@ if($this->regOk) {
                     <li><a href="/register">Регистрация</a></li>
                     <li><a href="/restore">Восстановление</a></li>  
             <?php } ?>
-
             </ul>
         </div>
         <div>

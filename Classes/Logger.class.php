@@ -10,21 +10,29 @@
 
 final class Logger {
 
+    const PRIMARY       = 'primary';
+    const SECONDARY     = 'secondary';
+    const SUCCESS       = 'success';
+    const ATTENTIONS    = 'attentions'; 
+    const WARNING       = 'warning';
+    const INFORMATION   = 'information';
+    const LIGHT         = 'light';
+    const DARK          = 'dark';
+
 
     // Статический конструктор
     static protected function __constructorStatic() { 
 
     	self::$alertKeys = array(
 
-            'primary'       => true,
-            'secondary'     => true,
-            'success'       => true,
-            'attentions'    => true,
-            'warnings'      => true,
-    		'information' 	=> true,
-            'light'         => true,
-            'dark'          => true
-    		
+            self::PRIMARY     => false,
+            self::SECONDARY   => false,
+            self::SUCCESS     => false,
+            self::ATTENTIONS  => false,
+            self::WARNING     => false,
+            self::INFORMATION => false,
+            self::LIGHT       => false,
+            self::DARK        => false,
     	);
     }
 

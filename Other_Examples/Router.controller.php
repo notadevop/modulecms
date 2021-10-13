@@ -82,7 +82,7 @@ class Router {
 
 		//$cont = $this->matchRoute();
 
-		if (!$cont) { debugger('Путь не найден!'); }
+		if (!$cont) { die('Путь не найден!'); }
 
 		$myclass 	= $cont['controller'];
 		$myObject 	= new $myclass();

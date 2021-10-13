@@ -56,7 +56,7 @@ class vRender {
 	function activateTemplate(string $name, string $folder=''): ?array {
 
 		$folder = !empty($folder) ? ROOTPATH.$folder.DS : $this->currentTplDir;
-
+		
 		$fpath = $folder.$name.DS.'schema.tpl.php';
 		
 		if (!file_exists($fpath)) { return null; }
@@ -72,10 +72,8 @@ class vRender {
 	function prepareRender() {
 
 		$Allroutes  	= Router::getRoute(true); // Все пути 
-
-		$currentRoute = $this->currentRoute;
-
-		$ui = null;
+		$currentRoute 	= $this->currentRoute;
+		$ui 			= null;
 
 		if(isset($currentRoute['uriarr'][0]) && !empty($currentRoute['uriarr'][0])){
 
@@ -107,9 +105,8 @@ class vRender {
 			$defTpl = $Allroutes[$this->currentRoute['uri']]['template'];
 		}
 
-		if(!$r) {
-			die('No Render! Template Not Found!');
-		} else if (!file_exists($this->activeTpl.$defTpl)) {
+		if(!$r || !file_exists($this->activeTpl.$defTpl)) {
+
 			die('Template Not Found -> '.$this->activeTpl.$defTpl);
 		}
 
@@ -140,67 +137,10 @@ class vRender {
 		$this->replace($replaceParams);
 	}
 
-	/*
-	function prepareRender() {
-
-		$current = $this->currentRoute;
-		$routes  = Router::getRoute(true);
-
-		// Тут определить какой тип страницы открыт. 
-		// Админка, окно входа или пользовательский интерфейс
-
-		$r = $this->activateTemplate($this->params['website_template']);
-
-		if (!$r) {
-			$r = $this->activateTemplate(TPLDEFTEMPLATE);
-		}
-
-		if(!$r) {
-			die('No Render! Template Not Found!');
-		}
-
-		if (empty($current)) {
-			$defTpl 	= $routes['/404page']['template'];
-			$ifRegOk 	= $routes['/404page']['ifRegOk'];
-		} else {
-			$defTpl 	= $routes[$this->currentRoute['uri']]['template'];
-			$ifRegOk 	= $routes[$this->currentRoute['uri']]['ifRegOk'];
-		}
-
-		$renderTpl = ($this->regOk) ? $ifRegOk : $defTpl;
-
-		// TODO: Тут определить тип языка и по нему вывести языковый пакет
-			
-		ob_start();
-		foreach ($r['templates'] as $value) {
-			// Если из схемы выходит content то заменяем его шаблоном из route - url
-			$tmp = $value == 'content' ? $renderTpl : $value; 
-			if (file_exists($this->activeTpl.$tmp))
-				require_once ($this->activeTpl.$tmp);
-			else {
-				echo 'template not found<br />';
-				echo $this->activeTpl.$tmp;
-			} 
-		}
-
-		$this->htmlRenderRes = ob_get_contents();
-		ob_end_clean();
-
-		$replaceParams = array(
-			' %title% ' 			=> 'Модульная CMS',
-			' %sitetitle% ' 			=> $this->params['website_title'],
-			' %site_description% ' 	=> $this->params['website_title_description'],
-		);
-
-		$this->replace($replaceParams);
-	}
-	*/
-
 	function replace(array $params): void {
 		if(empty($params)) return;
 		$html = $this->htmlRenderRes;
 		foreach ($params as $key => $value) {
-			//$html = preg_replace($key, $value, $html);
 			$html = str_replace($key, $value, $html);
 		}
 		$this->htmlRenderRes = $html;
@@ -208,9 +148,7 @@ class vRender {
 
 	function viewRender(): void {
 
-		//Set the header to utf-8 for example purposes.
 		header('Content-Type: text/html; charset=utf-8');
-		// Использовать preg_replace то, что нужно заменить 
 		print($this->htmlRenderRes);
 	}
 

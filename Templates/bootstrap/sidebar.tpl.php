@@ -6,10 +6,10 @@
 
 if($this->regOk) {
 
-    $name   = '<a href="/profile/'.PROFILE['userid'].'">'.PROFILE['username'].'</a>';
+    $name   = PROFILE['username'];
     $logout = '<a href="/logout">Выйти?</a>';
-    $online = '<a href="/usersonline">('.$this->result['permanetCtrlResult']['online']['result'].')</a>';
-    $notifs = '<a href="/notifications">(0)</a>';
+    $online = '('.$this->result['permanetCtrlResult']['online']['result'].')';
+    $notifs = '<a href="/admin/notifications">(0)</a>';
 } else {
     $name = 'Гость';
     $logout = '<a href="/login">Авторизоваться</a>';

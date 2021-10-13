@@ -15,27 +15,8 @@ class ProfileController {
     private $filter;
     private $errors;
 
-    /*
-    private function filtration(string $input, array $options) {
-
-        $this->filter->setVariables(
-            array(
-                'key' => array(
-                    'value'     => $input,
-                    'maximum'   => $options['maxSym'],
-                    'minimum'   => $options['minSym']
-                )
-            )
-        );
-
-        $this->filter->cleanAttack('key', array(''));
-    }
-    */
-
     function getUserProfile(int $uid = 0): ?array {
 
-        // TODO: Проверяем привелегии пользователя который запрашивает профиль указанного юзера
-        // Если привелегии не достаточно, выводим только базовую информацию
         // TODO: Сделать отключение показа социальных данных или профиля пользователям у которых нету привелегий смотреть профиль
 
         // Указываем в массиве кто имеет право смотреть профиль по определенным привелегиям
@@ -48,6 +29,7 @@ class ProfileController {
         $checkPerm = $this->granter->verifyRest($perms);
 
         // Проверяем  есть у даннго пользователя привелегии
+        
         if (!$checkPerm) {
             Logger::collectAlert('attentions', NOPRIVELEGES);
             return null;

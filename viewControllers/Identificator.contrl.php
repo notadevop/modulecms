@@ -3,9 +3,27 @@
 // Класс идентификации пользователя
 
 class Identificator extends Filter {
+
+	// Параметры для правильного пути отслеживания 
+
+	const USERIDVALUE 	= 'userid';
+	const USERNAMEVALUE = 'username';
+	const USERMAILVALUE = 'useremail';
+	const USERPWD1VALUE = 'userpassword1';
+	const USERPWD2VALUE = 'userpassword2';
+	const TOKENHSHVALUE = 'token';
+	const CONFRHSHVALUE = 'confirm';
+
+	// Ссылки на пути 
+
+	const REGLINK = '';
+
+	private $IOAuthStatus;
+
 	
 	function __construct() {
-		
+
+
 		$this->authParams = array(
 
 			// Для куки параметры по умолчанию
@@ -27,25 +45,18 @@ class Identificator extends Filter {
 
 			'transport' => array( 
 
-				'useridValue'  => 'userid',
 				'useridMaxSym' => 255,
 				'useridMinSym' => 1,
 
-				'userNameValue' => 'username',
 				'userNameMaxSym' => 50,
 				'userNameMinSym' => 2,
 
-				'userEmailValue' => 'useremail',
 				'userEmailMaxSym' => 50,
 				'userEmailMinSym' => 7,
 
-				'userPassword1Value' => 'userpassword1',
-				'userPassword2Value' => 'userpassword2',
 				'userPasswordMaxSym' => 20,
 				'userPasswordMinSym' => 8,
 
-				'userTokenHashValue' => 'token',
-				'userConfirmHashValue' => 'confirm',
 				'userTokenHashMaxSym' => 255,
 				'userTokenHashMinSym' => 4,
 			)
@@ -57,6 +68,9 @@ class Identificator extends Filter {
 		$this->glob 	= new GlobalParams();
 		$this->users 	= new Users();
 		$this->granter 	= new PrivelegesController();
+
+
+		$this->initAuthStatus();
 	}
 
 	private $cjob;
@@ -65,6 +79,35 @@ class Identificator extends Filter {
 	private $users;
 	private $granter;
 	private $authParams;
+
+
+	function initAuthStatus() {
+
+		$this->IOAuthStatus = array(
+
+			'login_status'  => LOGINALLOW,
+			'auth_status' 	=> AUTHENTIFCATIONALLOW,
+			'reg_status'  	=> REGISTRATIONALLOW,
+			'restore_status'=> RESTOREALLOW, 
+		);
+
+		$settings = new HostSettings();
+
+		$dbparams = $settings->getSettings($this->IOAuthStatus);
+
+		$dbparams = array_filter($dbparams);
+
+		$check = function($param1, $param2) {
+
+			if (!$param1 || !$param2) { return false; }
+			return true;
+		};
+
+		foreach ($dbparams as $key => $value) {
+			
+			$this->IOAuthStatus[$key] = $check($this->IOAuthStatus[$key], $value);
+		}
+	}
 
 
 	function setUserProfile($profile=''): bool {
@@ -104,6 +147,8 @@ class Identificator extends Filter {
 	}
 
 
+	// TODO: Сделать проверку сам Пользователь вышел или человек случайно по ссылке использовал logout!!!!!
+
 	// переменная это принудительный выход из системы, если даже нету _GET => logout параметра!
 
 	function logout(bool $redirect=false, bool $permQuit=false): bool {
@@ -114,7 +159,7 @@ class Identificator extends Filter {
 
 		$this->saveAuthAction('','',true,true);
 
-		Logger::collectAlert('warnings', LOGGEDOUT);
+		Logger::collectAlert(Logger::SUCCESS, LOGGEDOUT);
 
 		if(!$redirect || !defined('LOGOUT')) { return true; }
 
@@ -134,16 +179,16 @@ class Identificator extends Filter {
 
 	function loginAction(): bool {
 
-		if(!defined('LOGINALLOW') || !LOGINALLOW) {
+		if(!$this->IOAuthStatus['login_status']) {
 
-			Logger::collectAlert('warnings', LOGINDISABLED);
+			Logger::collectAlert(Logger::INFORMATION, LOGINDISABLED);
 			return false;
 		}
 
 		$loginParams = array(
 
-			$this->authParams['transport']['userEmailValue'] 	 => false,
-			$this->authParams['transport']['userPassword1Value'] => false
+			self::USERMAILVALUE => false,
+			self::USERPWD1VALUE => false,
 		);
 
 		$loginParams = $this->getInputParams($loginParams, '_POST');
@@ -152,27 +197,27 @@ class Identificator extends Filter {
 			return false;
 		}
 
-		$userExist = $this->users->userExist($loginParams[$this->authParams['transport']['userEmailValue']]);
+		$userExist = $this->users->userExist($loginParams[self::USERMAILVALUE]);
 
 		if(!$userExist) {
 
-			Logger::collectAlert('attentions', ERREMAILWRONG);
+			Logger::collectAlert(Logger::ATTENTIONS, ERREMAILWRONG);
 			return false; 
 		}
 
-		$userNotBlocked = $this->auth->userActivated($loginParams[$this->authParams['transport']['userEmailValue']]);
+		$userNotBlocked = $this->auth->userActivated($loginParams[self::USERMAILVALUE]);
 
 		if (!$userNotBlocked) {
 
-			Logger::collectAlert('attentions', USERBANNED);
+			Logger::collectAlert(Logger::ATTENTIONS, USERBANNED);
 			return false;
 		}
 
-		$findUser = $this->auth->findUser($loginParams[$this->authParams['transport']['userEmailValue']], $loginParams[$this->authParams['transport']['userPassword1Value']]);
+		$findUser = $this->auth->findUser($loginParams[self::USERMAILVALUE], $loginParams[self::USERPWD1VALUE]);
 
-		if(!$this->isNotEmpty($findUser) || !array_key_exists('userid', $findUser)) {
+		if(!$this->isNotEmpty($findUser) || !array_key_exists(self::USERIDVALUE, $findUser)) {
 
-			Logger::collectAlert('attentions', ERREMAILWRONG);
+			Logger::collectAlert(Logger::ATTENTIONS, ERREMAILWRONG);
 			return false;
 		}
 
@@ -182,7 +227,7 @@ class Identificator extends Filter {
 
 		if(!$this->isNotEmpty($findUser['tokenHash'])) {
 
-			Logger::collectAlert('attentions', ERRGENHASH);
+			Logger::collectAlert(Logger::ATTENTIONS, ERRGENHASH);
 			return false;
 		}
 
@@ -190,7 +235,7 @@ class Identificator extends Filter {
 
 		if(!$isItSaved) {
 
-			Logger::collectAlert('attentions', ERRSAVEMETA);
+			Logger::collectAlert(Logger::ATTENTIONS, ERRSAVEMETA);
 			return false;
 		} 
 
@@ -207,7 +252,7 @@ class Identificator extends Filter {
 			}
 		}
 
-		Logger::collectAlert('success', LOGINSUCCESS);
+		Logger::collectAlert(Logger::SUCCESS, LOGINSUCCESS);
 
 		return true;
 	}
@@ -217,8 +262,8 @@ class Identificator extends Filter {
 
 		$authParams = array(
 
-			$this->authParams['transport']['userEmailValue'] 	 => $email,
-			$this->authParams['transport']['userTokenHashValue'] => $hash 
+			self::USERMAILVALUE => $email,
+			self::TOKENHSHVALUE => $hash,
 		);
 
 		foreach ($authParams as $key => $value) {
@@ -240,7 +285,7 @@ class Identificator extends Filter {
 				$this->cjob->cleanMapArray($key);
 			} catch (Exception $e) {
 				
-				if($showerr) { Logger::collectAlert('warning', $e->getMessage()); }	
+				if($showerr) { Logger::collectAlert(Logger::WARNING, $e->getMessage()); }	
 			}
 		}
 		return true;
@@ -249,15 +294,16 @@ class Identificator extends Filter {
 
 	function AuthAction(): bool {
 
-		if(!defined('AUTHENTIFCATIONALLOW') || !AUTHENTIFCATIONALLOW) {
+		if(!$this->IOAuthStatus['auth_status']) {
 
-			Logger::collectAlert('attentions', AUTHDISABLED);
+			Logger::collectAlert(Logger::ATTENTIONS, AUTHDISABLED);
 			return $this->setUserProfile(false);
 		}
 
 		$authParam = array(
-			$this->authParams['transport']['userEmailValue'] 	 => false,
-			$this->authParams['transport']['userTokenHashValue'] => false
+
+			self::USERMAILVALUE => false,
+			self::TOKENHSHVALUE => false,
 		);
 
 		$authParam = $this->getInputParams($authParam, '_COOKIE');
@@ -266,17 +312,19 @@ class Identificator extends Filter {
 			return $this->setUserProfile(false);
 		}
 
-		$userExist = $this->users->userExist($authParam[$this->authParams['transport']['userEmailValue']]);
+		$userExist = $this->users->userExist($authParam[self::USERMAILVALUE]);
 
 		if(!$userExist) { return $this->setUserProfile(false); }
 
-		$userNotBlocked = $this->auth->userActivated($authParam[$this->authParams['transport']['userEmailValue']]);
+		$userNotBlocked = $this->auth->userActivated($authParam[self::USERMAILVALUE]);
 
 		if (!$userNotBlocked) { return $this->setUserProfile(false); }
 
-		$findUser = $this->auth->authUser($authParam[$this->authParams['transport']['userEmailValue']], $authParam[$this->authParams['transport']['userTokenHashValue']]);
+		$findUser = $this->auth->authUser($authParam[self::USERMAILVALUE], $authParam[self::TOKENHSHVALUE]);
 
-		if(!$this->isNotEmpty($findUser) || !array_key_exists('userid', $findUser)) { return $this->setUserProfile(false); }
+		if(!$this->isNotEmpty($findUser) || !array_key_exists(self::USERIDVALUE, $findUser)) { 
+			return $this->setUserProfile(false); 
+		}
 
 		// Тут обновляем хеш, если закончилось время
 
@@ -298,13 +346,13 @@ class Identificator extends Filter {
 
 	function restoreAction(): ?string {
 
-		if(!defined('RESTOREALLOW') || !RESTOREALLOW ) {
-			Logger::collectAlert('attentions', RESTOREDISABLED);
+		if(!$this->IOAuthStatus['restore_status']) {
+			Logger::collectAlert(Logger::ATTENTIONS, RESTOREDISABLED);
 			return false;
 		}
 
 		$restoreParams = array(
-			$this->authParams['transport']['userEmailValue'] => false
+			self::USERMAILVALUE => false
 		);
 
 		$restoreParams = $this->getInputParams($restoreParams, '_POST');
@@ -313,33 +361,33 @@ class Identificator extends Filter {
 			return false;
 		}
 
-		$userExist = $this->users->userExist($restoreParams[$this->authParams['transport']['userEmailValue']]);
+		$userExist = $this->users->userExist($restoreParams[self::USERMAILVALUE]);
 
 		if(!$userExist) {
-			Logger::collectAlert('attentions', USERNOTFOUND);
+			Logger::collectAlert(Logger::ATTENTIONS, USERNOTFOUND);
 			return false; 
 		}
 
-		$userNotBlocked = $this->auth->userActivated($restoreParams[$this->authParams['transport']['userEmailValue']]);
+		$userNotBlocked = $this->auth->userActivated($restoreParams[self::USERMAILVALUE]);
 
 		if (!$userNotBlocked) {
-			Logger::collectAlert('attentions', USERBANNED);
+			Logger::collectAlert(Logger::ATTENTIONS, USERBANNED);
 			return false;
 		}
 
-		$genResult = $this->auth->generateActivations($restoreParams[$this->authParams['transport']['userEmailValue']]);
+		$genResult = $this->auth->generateActivations($restoreParams[self::USERMAILVALUE]);
 
 		if(!$genResult) {
-			Logger::collectAlert('attentions', ERRGENHASH);
+			Logger::collectAlert(Logger::ATTENTIONS, ERRGENHASH);
 			return false;
 		}
 
 		// TODO: Отправка емайла пользователю для восстановления пароля
 		// TODO: сделать генерацию ссылок
 
-		$link = HOST.'/verifyrestorerequest/?userid=' . $genResult['id'] . '&'.$this->authParams['transport']['userConfirmHashValue'].'=' . $genResult['cofirm'] . '&'.$this->authParams['transport']['userTokenHashValue'].'=' . $genResult['token'];
+		$link = HOST.'/verifyrestorerequest/?'.self::USERIDVALUE.'=' . $genResult['id'] . '&'.self::CONFRHSHVALUE.'=' . $genResult['cofirm'] . '&'.self::TOKENHSHVALUE.'=' . $genResult['token'];
 
-		Logger::collectAlert('information', $link);	
+		Logger::collectAlert(Logger::INFORMATION, $link);	
 
 		return true;
 	}
@@ -347,17 +395,17 @@ class Identificator extends Filter {
 
 	function verifyUserActivation(): ?array {
 
-		if(!defined('RESTOREALLOW') || !RESTOREALLOW ) {
+		if(!$this->IOAuthStatus['restore_status']) {
 
-			Logger::collectAlert('attentions', RESTOREDISABLED);
+			Logger::collectAlert(Logger::ATTENTIONS, RESTOREDISABLED);
 			return null;
 		}
 
 		$restoreParams = array(
 
-			$this->authParams['transport']['useridValue'] 			=> false,
-			$this->authParams['transport']['userConfirmHashValue']  => false,
-			$this->authParams['transport']['userTokenHashValue'] 	=> false,
+			self::USERIDVALUE 	=> false,
+			self::CONFRHSHVALUE => false,
+			self::TOKENHSHVALUE => false,
 		);
 
 		$restoreParams = $this->getInputParams($restoreParams, '_GET');
@@ -366,16 +414,16 @@ class Identificator extends Filter {
 			return null;
 		}
 
-		if(!$this->auth->verifyActivations($restoreParams[$this->authParams['transport']['useridValue']], $restoreParams[$this->authParams['transport']['userTokenHashValue']],$restoreParams[$this->authParams['transport']['userConfirmHashValue']] )) {
+		if(!$this->auth->verifyActivations($restoreParams[self::USERIDVALUE], $restoreParams[self::TOKENHSHVALUE],$restoreParams[self::CONFRHSHVALUE] )) {
 
-			Logger::collectAlert('attentions', AUTHPARAMSERR);
+			Logger::collectAlert(Logger::ATTENTIONS, AUTHPARAMSERR);
 			return null;
 		}
 
 		return array(
-			$this->authParams['transport']['useridValue'] 			=> $restoreParams['userid'],
-			$this->authParams['transport']['userConfirmHashValue'] 	=> $restoreParams['token'],
-			$this->authParams['transport']['userConfirmHashValue'] 	=> $restoreParams['confirm']
+			self::USERIDVALUE 		=> $restoreParams['userid'],
+			self::CONFRHSHVALUE 	=> $restoreParams['token'],
+			self::TOKENHSHVALUE 	=> $restoreParams['confirm']
 		);
 	}
 
@@ -384,25 +432,26 @@ class Identificator extends Filter {
 
 	function updateUserPassword(bool $verifbyid=true, int $userid=0): bool {
 
-		if(!defined('RESTOREALLOW') || !RESTOREALLOW ) {
+		if(!$this->IOAuthStatus['restore_status']) {
 
-			Logger::collectAlert('attentions', RESTOREDISABLED);
+			Logger::collectAlert(Logger::INFORMATION, RESTOREDISABLED);
 			return false;
 		}
 
-		// Это условие удалить???
+		// TODO: ВЫДАСТ ОШИБКУ ЕСЛИ ПОСТАВИТЬ $verifiedbyid = false
 
 		if ($verifbyid) {
 			$verified = $this->verifyUserActivation();
 			if (!$this->isNotEmpty($verified)) { 
-				Logger::collectAlert('attentions', VERIFYNOTFOUND);
+				Logger::collectAlert(Logger::ATTENTIONS, VERIFYNOTFOUND);
 				return false;
 			}
 		}
 
 		$updateParams = array(
-			$this->authParams['transport']['userPassword1Value'] = false,
-			$this->authParams['transport']['userPassword2Value'] = false
+
+			self::USERPWD1VALUE => false,
+			self::USERPWD2VALUE => false,
 		);
 
 		$updateParams = $this->getInputParams($updateParams, '_POST');
@@ -411,15 +460,15 @@ class Identificator extends Filter {
 			return false;
 		}
 
-		if ($updateParams[$this->authParams['transport']['userPassword1Value']] !== $updateParams[$this->authParams['transport']['userPassword2Value']]) {
-			Logger::collectAlert('attentions', PWDNOTMATCH);
+		if ($updateParams[self::USERPWD1VALUE] !== $updateParams[self::USERPWD2VALUE]) {
+			Logger::collectAlert(Logger::ATTENTIONS, PWDNOTMATCH);
 			return false;
 		}
 
-		$result = $this->users->updateUserPassword($verified['userid'], $updateParams[$this->authParams['transport']['userPassword2Value']], true);
+		$result = $this->users->updateUserPassword($verified['userid'], $updateParams[self::USERPWD1VALUE], true);
 
 		if (!$result) {
-			Logger::collectAlert('attentions', PWDUPDERR);
+			Logger::collectAlert(Logger::ATTENTIONS, PWDUPDERR);
 			return false;
 		}
 
@@ -427,27 +476,28 @@ class Identificator extends Filter {
 
 		if (!$r) {
 
-			Logger::collectAlert('attentions', ACTUSERERR);
+			Logger::collectAlert(Logger::ATTENTIONS, ACTUSERERR);
 		}
 
-		Logger::collectAlert('success', PWDUPDATED);
+		Logger::collectAlert(Logger::SUCCESS, PWDUPDATED);
 		return true;
 	}
 
 
 	function registrationAction(): bool {
 
-		if(!defined('REGISTRATIONALLOW') || !REGISTRATIONALLOW) {
+		if(!$this->IOAuthStatus['reg_status']) {
 
-			Logger::collectAlert('information', REGDISABLED);
+			Logger::collectAlert(Logger::INFORMATION, REGDISABLED);
 			return false;
 		}
 
 		$registrationParams = array(
-			$this->authParams['transport']['userNameValue'] => false,
-			$this->authParams['transport']['userEmailValue'] => false,
-			$this->authParams['transport']['userPassword1Value'] => false,
-			$this->authParams['transport']['userPassword2Value'] => false
+
+			self::USERNAMEVALUE => false,
+			self::USERMAILVALUE => false,
+			self::USERPWD1VALUE => false,
+			self::USERPWD2VALUE => false,
 		);
 
 		$registrationParams = $this->getInputParams($registrationParams, '_POST');
@@ -456,39 +506,39 @@ class Identificator extends Filter {
 			return false;
 		}
 
-		if ($registrationParams[$this->authParams['transport']['userPassword1Value']] !== $registrationParams[$this->authParams['transport']['userPassword2Value']]) {
+		if ($registrationParams[self::USERPWD1VALUE] !== $registrationParams[self::USERPWD2VALUE]) {
 
-			Logger::collectAlert('attentions', PWDNOTMATCH);
+			Logger::collectAlert(Logger::ATTENTIONS, PWDNOTMATCH);
 			return false;
 		}
 
-		$userExist = $this->users->userExist($registrationParams[$this->authParams['transport']['userEmailValue']]);
+		$userExist = $this->users->userExist($registrationParams[self::USERMAILVALUE]);
 
 		if($userExist) {
-			Logger::collectAlert('attentions', USEREXIST);
+			Logger::collectAlert(Logger::ATTENTIONS, USEREXIST);
 			return false; 
 		}
 
-		$insert = $this->users->insertNewUser($registrationParams[$this->authParams['transport']['userEmailValue']], $registrationParams[$this->authParams['transport']['userPassword1Value']], $registrationParams[$this->authParams['transport']['userNameValue']]);
+		$insert = $this->users->insertNewUser($registrationParams[self::USERMAILVALUE], $registrationParams[self::USERPWD1VALUE], $registrationParams[self::USERNAMEVALUE]);
 
 		if (!$insert) {
-			Logger::collectAlert('attentions', ADDUSERERR); 
+			Logger::collectAlert(Logger::ATTENTIONS, ADDUSERERR); 
 			return false;
 		}
 
-		$meta = $this->auth->generateActivations($registrationParams[$this->authParams['transport']['userEmailValue']]);
+		$meta = $this->auth->generateActivations($registrationParams[self::USERMAILVALUE]);
 
 		if(!$meta) {
-			Logger::collectAlert('attentions', ERRGENLINK);
+			Logger::collectAlert(Logger::ATTENTIONS, ERRGENLINK);
 			return false;
 		}
 
 		// TODO: Отправка емайла пользователю для восстановления пароля
 		// TODO: сделать генерацию ссылок
 
-		$link = HOST . '/verifreg/?'.$this->authParams['transport']['useridValue'].'=' . $meta['id'] . '&'.$this->authParams['transport']['userConfirmHashValue'].'=' . $meta['cofirm'] . '&'.$this->authParams['transport']['userTokenHashValue'].'=' . $meta['token'];
+		$link = HOST . '/verifreg/?'.self::USERIDVALUE.'=' . $meta['id'] . '&'.self::CONFRHSHVALUE.'=' . $meta['cofirm'] . '&'.self::TOKENHSHVALUE.'=' . $meta['token'];
 
-		Logger::collectAlert('information', $link);
+		Logger::collectAlert(Logger::INFORMATION, $link);
 		return true;
 
 	}
@@ -496,28 +546,28 @@ class Identificator extends Filter {
 
 	function verifyUserRegistration(): bool {
 
-		if(!defined('REGISTRATIONALLOW') || !REGISTRATIONALLOW ) {
-			Logger::collectAlert('information', REGDISABLED);
+		if(!$this->IOAuthStatus['reg_status']) {
+			Logger::collectAlert(Logger::INFORMATION, REGDISABLED);
 			return false;
 		}
 
 		$registrationConfirm = $this->verifyUserActivation();
 
 		if(!$this->isNotEmpty($registrationConfirm)) {
-			Logger::collectAlert('attentions', REGATRRERR);
+			Logger::collectAlert(Logger::ATTENTIONS, REGATRRERR);
 			return false;
 		}
 
-		$status = $this->auth->activateRegisteredUser($registrationConfirm[$this->authParams['transport']['useridValue']]);
+		$status = $this->auth->activateRegisteredUser($registrationConfirm[self::USERIDVALUE]);
 
 		if (!$status) {
-			Logger::collectAlert('attentions', USERACTERR);
+			Logger::collectAlert(Logger::ATTENTIONS, USERACTERR);
 			return false;
 		}
 
-		$this->auth->clearActivations($registrationConfirm[$this->authParams['transport']['useridValue']]);
+		$this->auth->clearActivations($registrationConfirm[self::USERIDVALUE]);
 
-		Logger::collectAlert('success', USERACTIVED);
+		Logger::collectAlert(Logger::SUCCESS, USERACTIVED);
 		return true;
 	}
 
@@ -542,7 +592,7 @@ class Identificator extends Filter {
 
 			if (!$this->isNotEmpty($value)) {
 				if(!$silence)
-					Logger::collectAlert('attentions', EMPTYFIELDSEXIST);
+					Logger::collectAlert(Logger::ATTENTIONS, EMPTYFIELDSEXIST);
 				return false;
 			}
 			try {
@@ -558,25 +608,25 @@ class Identificator extends Filter {
 			}
 
 			switch($key) {
-				case $this->authParams['transport']['userEmailValue']:
+				case self::USERMAILVALUE:
 					$max = $this->authParams['transport']['userEmailMaxSym'];
 					$min = $this->authParams['transport']['userEmailMinSym'];
 				break;
-				case $this->authParams['transport']['userPassword1Value']:
-				case $this->authParams['transport']['userPassword2Value']:
+				case self::USERPWD1VALUE:
+				case self::USERPWD2VALUE:
 					$max = $this->authParams['transport']['userPasswordMaxSym'];
 					$min = $this->authParams['transport']['userPasswordMinSym'];
 				break;
-				case $this->authParams['transport']['userTokenHashValue']:
-				case $this->authParams['transport']['userConfirmHashValue']:
+				case self::TOKENHSHVALUE:
+				case self::CONFRHSHVALUE:
 					$max = $this->authParams['transport']['userTokenHashMaxSym'];
 					$min = $this->authParams['transport']['userTokenHashMinSym'];
 				break;
-				case $this->authParams['transport']['userNameValue']:
+				case self::USERNAMEVALUE:
 					$max = $this->authParams['transport']['userNameMaxSym'];
 					$min = $this->authParams['transport']['userNameMinSym'];
 				break;
-				case $this->authParams['transport']['useridValue']:
+				case self::USERIDVALUE:
 					$max = $this->authParams['transport']['useridMaxSym'];
 					$min = $this->authParams['transport']['useridMinSym'];
 				break;
@@ -588,19 +638,19 @@ class Identificator extends Filter {
 
 			if ($this->isMoreThan($value, $max)) {
 				if(!$silence)
-					Logger::collectAlert('attentions', sprintf(ERRMAXSYMLIMIT, $max));
+					Logger::collectAlert(Logger::ATTENTIONS, sprintf(ERRMAXSYMLIMIT, $max));
 				return false;
 			}
 
 			if($this->isLessThen($value, $min)) {
 				if(!$silence)
-					Logger::collectAlert('attentions', sprintf(ERRMINSYMLIMIT, $min));
+					Logger::collectAlert(Logger::ATTENTIONS, sprintf(ERRMINSYMLIMIT, $min));
 				return false; 
 			}
 
-			if($key == $this->authParams['transport']['userEmailValue'] &&  !$this->mainValidator($value, 'email')) {
+			if($key == self::USERMAILVALUE && !$this->mainValidator($value, 'email')) {
 				if(!$silence)
-					Logger::collectAlert('attentions', ERRMAIL);
+					Logger::collectAlert(Logger::ATTENTIONS, ERRMAIL);
 				return false; 
 			}
 
