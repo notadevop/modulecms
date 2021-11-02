@@ -15,12 +15,16 @@ define('DBHOST', 'localhost');
 define('DBNAME', 'ModuleCMS');
 define('DBPREF', '_prefx');
 
-
 define('DBENGINE', 'mysql');
 
 
 
+// сгенерировать при установке
 
+define('SOLT','abcabcabc'); 
+
+define('PRIVATEKEY', 'mycoolprivatekeytohidesomething');
+define('PUBLICKEY', 'mymorecoolpublickeytohidesomething');
 
 
 

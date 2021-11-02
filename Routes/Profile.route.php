@@ -12,25 +12,25 @@ return array(
 			'action' 	=> 'ProfileController/getUserProfile/$1',
 			'template'	=> 'viewprofile.tpl.php',
 			'priority'	=> 3,
-			'rendertype'=> 'adminui'
+			'rendertype'=> 'adminui',
 	),
 
 	// Редактирование пользователя 
 
 	'/admin/profile/edit/:num' => array(
-			'action' 	=> 'ProfileController/editUserProfile',
+			'action' 	=> 'ProfileController/editUserProfile/$1',
 			'template'	=> 'infopage.tpl.php',
 			'priority'	=> 3,
-			'rendertype'=> 'adminui'
+			'rendertype'=> 'adminui',
 	),
 
 	// Удаление пользователя 
 
-	'/admin/profile/remove/:any' => array(
+	'/admin/profile/remove' => array(
 			'action' 	=> 'ProfileController/getUserProfile',
 			'template'	=> 'infopage.tpl.php',
 			'priority'	=> 3,
-			'rendertype'=> 'adminui'
+			'rendertype'=> 'adminui',
 	),	
 
 	// Заглушка для всех других ссылок
@@ -39,6 +39,6 @@ return array(
 			'action' 	=> 'ProfileController/getUserProfile',
 			'template'	=> 'infopage.tpl.php',
 			'priority'	=> 3,
-			'rendertype'=> 'adminui'
+			'rendertype'=> 'adminui',
 	),
 );

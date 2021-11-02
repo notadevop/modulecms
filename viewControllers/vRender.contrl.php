@@ -107,7 +107,7 @@ class vRender {
 
 		if(!$r || !file_exists($this->activeTpl.$defTpl)) {
 
-			die('Template Not Found -> '.$this->activeTpl.$defTpl);
+			die(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl);
 		}
 
 		// Тут определить какой тип страницы открыт. 

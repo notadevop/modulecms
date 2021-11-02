@@ -93,7 +93,9 @@ class Identificator extends Filter {
 
 		$settings = new HostSettings();
 
-		$dbparams = $settings->getSettings($this->IOAuthStatus);
+		// TODO: Неправильно вводит типы нужно ключи вводить array_keys()
+
+		$dbparams = $settings->getSettings(array_keys($this->IOAuthStatus));
 
 		$dbparams = array_filter($dbparams);
 
@@ -285,7 +287,9 @@ class Identificator extends Filter {
 				$this->cjob->cleanMapArray($key);
 			} catch (Exception $e) {
 				
-				if($showerr) { Logger::collectAlert(Logger::WARNING, $e->getMessage()); }	
+				if($showerr) { 
+					Logger::collectAlert(Logger::WARNING, $e->getMessage()); 
+				}	
 			}
 		}
 		return true;

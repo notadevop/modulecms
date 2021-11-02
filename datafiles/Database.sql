@@ -51,6 +51,16 @@ CREATE TABLE `users_online` (
         `uagent`  varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `user_notifications` ( 
+        `notif_id` int(255) NOT NULL, 
+        `user_id` int(255) NOT NULL, 
+        `notif_title` varchar(1000) NOT NULL, 
+        `notif_meta` varchar(1000) NOT NULL,  
+        `notif_date` int(11) NOT NULL, 
+        `notif_read` int(1) NOT NULL, 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+
 CREATE TABLE `users_activation` (
   `activation_id`     int(255) NOT NULL,
   `activation_user_id`  int(255) NOT NULL,
@@ -90,6 +100,10 @@ ALTER TABLE `roles`
 ALTER TABLE `role_perm`
   ADD KEY `role_id` (`role_id`),
   ADD KEY `perm_id` (`perm_id`);
+
+ALTER TABLE `user_notifications`
+  ADD PRIMARY KEY (`notif_id`),
+  MODIFY `notif_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 ALTER TABLE `user_role`
   ADD KEY `user_id` (`user_id`),

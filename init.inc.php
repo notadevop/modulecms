@@ -18,11 +18,11 @@ spl_autoload_register(function ($class_name) {
 	$found = false;
 
 	$folders = array(
-		'Includes' 	 	=> '.inc.',
-		'Classes' 	 	=> '.class.',
-		'Controller' 	=> '.ctrl.',   // Удалить поже!!!
-		'Bin'			=> '.bin.',
-		'viewControllers'=> '.contrl.'
+		'Includes' 	 		=> '.inc.',
+		'Classes' 	 		=> '.class.',
+		'Controller' 		=> '.ctrl.',   // Удалить поже!!!
+		'Bin'				=> '.bin.',
+		'viewControllers'	=> '.contrl.'
 	);
 
 	try {

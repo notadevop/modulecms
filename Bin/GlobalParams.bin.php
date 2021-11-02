@@ -30,7 +30,7 @@ class GlobalParams {
 
 	function getBulkParams(array $paramKeys=array()): ?array {
 
-		if(!$this->gb || empty($paramKeys)) {return null;}
+		if(empty($paramKeys)) {return null;}
 
 		return array_intersect_assoc($paramKeys, $this->gb);
 	}

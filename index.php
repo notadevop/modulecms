@@ -45,6 +45,34 @@ foreach ($files as $key => $value) {
 
 $lang = (new Visitor())->get_data()['lang'];
 
+
+function languages(): string {
+
+	// проверка не указал ли пользователь свой язык, 
+	// если нет смотрим на браузер и по нему определяем есть ли такой язык
+	// если нет устанавливаем язык который стоит по умолчанию (!)
+
+
+	$known_langs = array('en','fr','de','es');
+	$user_pref_langs = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+
+	//$user_pref_langs = (new Visitor())->get_data()['lang'];
+
+	foreach($user_pref_langs as $idx => $lang) {
+	    $lang = substr($lang, 0, 2);
+	    if (in_array($lang, $known_langs)) {
+	        echo 'Preferred language is '.$lang;
+
+	        //define('LANGUAGE','rus');
+
+	        break;
+	    }
+	}
+}
+
+
+
+
 define('LANGUAGE','rus');
 
 Router::initDefaultRoutes();

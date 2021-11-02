@@ -19,6 +19,21 @@ class Auth extends Database {
 		$this->users = new Users();
 
 		// Временно!!!!! проверяем по времени разницу будет заменен на класс
+		
+		$this->checkExpire = function(int $t1, int $t2, string $format, int $i=0):bool {
+
+			if ($i == 0) {
+				$i = AUTHUPDATE['updatePasswrdInterval'];
+			}
+
+			$time1 = date_create($t1);
+			$time2 = date_create($t2);
+
+			$difference = date_diff($time1, $time2);
+
+			$difference->format('')
+
+		};
 
 		$this->dateClass = function(int $time1,int $time2,string $timetype='%d',int $interval=AUTHUPDATE['updatePasswrdInterval']): bool {
 

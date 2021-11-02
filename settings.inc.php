@@ -2,6 +2,13 @@
 
 (defined('ROOTPATH') && defined('DS')) or die('something wrong!');
 
+// TODO: Настройки
+// СONFIG  это статические настройки 
+// SETTINGS это динамические настройки 
+
+
+
+
 
 define('USERDEFLANG','RUS');
 
@@ -51,30 +58,18 @@ define('LOGOUT',array(
 
 define('AUTHUPDATE', array(
 
-		'updateAuthCookieInterval' 	=> 7, 			// Обновление хеша при аутентификации
+		'updateAuthCookieInterval' 	=> 2, 			// Обновление хеша при аутентификации
 		'updatePasswrdInterval'		=> 70, 			// Запрос на обновления пароля при истичении пароля
 		'waitARegistration'			=> '+24 Hours'	// Время которое дается пользоватею для акт. регистрации
 ));
 
 
-
-
-define('SOLT','abcabcabc'); // сгенерировать при установке
-
-define('PRIVATEKEY', 'mycoolprivatekeytohidesomething');
-define('PUBLICKEY', 'mymorecoolpublickeytohidesomething');
-
 define('UPDATEAUTHINTERVAL', 7); // Интервал обновления хеша аутентификации 
 define('UPDATEPWDINTERVAL', 70); // Интервал обновления пароля пользователя в днях
  
 
-
-
-
 // Время данное для подтверждение регистрации пользователя 
 define('REGWAITER', '+24 Hours');
-
-
 
 // НАСТРОЙКИ: НИЖЕ
 
@@ -83,9 +78,6 @@ define('SQLITEJOB', array(
 	'sqlitefolder' 	=> 'sqlitefolder',
 	'sqlitefile'	=> 'tempdb.sqlite'
 ));
-
-
-
 
 /*
 	LOGIN 		- откуда человек пришел в пределах сайта
@@ -118,10 +110,7 @@ define('VISITOR', 7);
 
 /*
 	Фильтрация данных 
-
 	Легкая - Фильтрация от Mysql Injection, XSS. 
-
 	Средняя - Фильтрация от Mysql Injection, XSS, Теги конвертирует
-
 	Тяжелая - Фильтрация от Mysql Injection, XSS, Теги удаляет, и все доступные фильтры которы могут быть
  */
