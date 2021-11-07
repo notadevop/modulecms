@@ -6,6 +6,8 @@ class Auth extends Database {
 	private $userprofile;
 	private $modifier;
 	private $dateClass;
+	private $checkExpire;
+
 	private $visitor;
 
 	private $users;
@@ -16,40 +18,21 @@ class Auth extends Database {
 
 		$this->modifier = new Modifier();
 		$this->visitor 	= new Visitor();
-		$this->users = new Users();
+		$this->users 	= new Users();
 
 		// Временно!!!!! проверяем по времени разницу будет заменен на класс
 		
-		$this->checkExpire = function(int $t1, int $t2, string $format, int $i=0):bool {
+		$this->checkExpire = function(int $time1, int $time2):bool {
 
-			if ($i == 0) {
-				$i = AUTHUPDATE['updatePasswrdInterval'];
-			}
+			return true;
 
-			$time1 = date_create($t1);
-			$time2 = date_create($t2);
+			$time1 = date_create($time1);
+			$time2 = date_create($time2);
 
 			$difference = date_diff($time1, $time2);
 
-			$difference->format('')
-
+			return ($difference->days > AUTHUPDATE['updatePasswrdInterval']);
 		};
-
-		$this->dateClass = function(int $time1,int $time2,string $timetype='%d',int $interval=AUTHUPDATE['updatePasswrdInterval']): bool {
-
-			return true; // Указывает, что нужно обновить хеш!!!!
-
-			// TODO: Не работает сравнение даты никак вообще 
-
-			$current 	= new DateTime(strtotime($time1));
-			$tomorrow 	= new DateTime(strtotime($time2));
-
-			$interval 	= $current->diff($tomorrow);
-
-			$currInterval = $interval->format($timetype);
-
-			return $currInterval > $interval ? true : false;
-		}; 
 	}
 
 	// Проверяем активирован пользователь или нет
@@ -84,8 +67,8 @@ class Auth extends Database {
 
 	public final function updateUserhash(int $userid, bool $newLogin=false, bool $updateHash=false): ?string{
 
-		$sql = 'SELECT `token_hash` as token, `token_created` as tcreated, 
-				`token_expires` as texpires FROM `user_tokens` 
+		$sql = 'SELECT `token_hash` as token, `token_created` as tcreated, `token_expires` as texpires 
+				FROM `user_tokens` 
 				WHERE `token_user_id` = :uid LIMIT 1';
 
 		$binder = array(':uid' => $userid);
@@ -94,13 +77,7 @@ class Auth extends Database {
 
 		if (!$this->doAction()) {return null;}
 
-		$result = $this
-					->postAction()
-					->fetch();
-
-		$newHash= $this
-					->modifier
-					->randomHash(rand(30, 100), false);
+		$result = $this->postAction()->fetch();
 
 		$setNewHash = false;
 
@@ -117,21 +94,24 @@ class Auth extends Database {
 			SET token_user_agent = :uagent, token_hash = :thash,
 			token_created = :tcreated, token_expires = :texpires WHERE token_user_id = :userid';
 
-			// Тут обновляем хеш когда время истекло
+			// Тут обновляем хеш когда время истекло			
+			$checkExpire = $this->checkExpire;
 
-			$dateClass = $this->dateClass;
-
-			//if ($dateClass($result['tcreated'],$result['texpires'],'%d', UPDATEAUTHINTERVAL)) {
-
-			if ($updateHash) {
+			if ($updateHash || $checkExpire($result['tcreated'], $result['texpires'])) {
 				$setNewHash = true;
 			} 
 		}	
 
+		if($setNewHash) {
+			$newHash = $this->modifier->randomHash(rand(30, 100), false);
+		} else {
+			$newHash = $result['token'];
+		}
+
 		$binder = array(
 					':userid' 			=> $userid,
 					':uagent' 			=> serialize($this->visitor->get_data()),
-					':thash'			=> ($setNewHash ? $newHash : $result['token']),
+					':thash'			=> $newHash,
 					':tcreated'			=> time(),
 					':texpires' 		=> strtotime('+'.UPDATEAUTHINTERVAL.' Days') // time() +3600*24
 		);
@@ -232,7 +212,7 @@ class Auth extends Database {
 		}
 
 		// Обновляем время посещения! =======
-		$time = intval(time());
+		$time = time();
 		$sql = 'UPDATE users SET user_last_visit= :visitime WHERE user_email = :useremail';
 
 		$binder = array(
@@ -241,6 +221,7 @@ class Auth extends Database {
 		);
 
 		$this->preAction($sql, $binder);
+
 		if(!$this->doAction() ) {
 
 			debugger('Не могу обновить время',__METHOD__);
@@ -373,7 +354,7 @@ class Auth extends Database {
 		$binder = array(
 			':act' 	=> 1,
 			':uid'	=>$userid,
-			':lastv'=>time()
+			':lastv'=>time(),
 		);		
 
 		$this->preAction($sql, $binder);
@@ -393,6 +374,15 @@ class Auth extends Database {
 			return false; 
 		} 
 		*/
+	}
+
+
+	public function cleanCronActivations():bool {
+
+		$sql = '';
+
+
+		return true;
 	}
 
 	// устанавливаем активацию для подтверждения 

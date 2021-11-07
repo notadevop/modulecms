@@ -94,14 +94,15 @@ $stLinks = array(
                 <?php 
                     $alerts = array(
 
-                        'primary'       => 'alert alert-primary',
-                        'secondary'     => 'alert alert-secondary',
-                        'success'       => 'alert alert-success',
-                        'attentions'    => 'alert alert-danger',
-                        'warnings'      => 'alert alert-warning',
-                        'information'   => 'alert alert-info',
-                        'light'         => 'alert alert-light',
-                        'dark'          => 'alert alert-dark',
+                        Logger::PRIMARY         => 'alert alert-primary',
+                        Logger::SECONDARY       => 'alert alert-secondary',
+                        Logger::SUCCESS         => 'alert alert-success',
+                        Logger::ATTENTIONS      => 'alert alert-danger',
+                        Logger::WARNING         => 'alert alert-warning',
+                        Logger::INFORMATION     => 'alert alert-info',
+                        Logger::LIGHT           => 'alert alert-light',
+                        Logger::DARK            => 'alert alert-dark',
+
                     );
                     foreach ($alerts as $key => $value) {
                         if (Logger::alertKeyExist($key)) {

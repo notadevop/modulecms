@@ -163,9 +163,13 @@ final class Router {
 		$params 	= array_slice(self::$params, 2);
 		$obj 		= new $controller();
 
+
+		return call_user_func_array(array($obj, $action), $params);
+		/*
 		return array(
 			'result' => call_user_func_array(array($obj, $action), $params),
 		);
+		*/
 	}
 
 	// Метод достает все пути сохраненные в переменной self::defaultRoutes
@@ -204,8 +208,8 @@ final class Router {
 			//'tplControllerResult' => self::dispatch(),
 			//'perControllerResult' => $result
 			
-			'templateCtrlResult' 	=> self::dispatch(), // Результат от пути 
-			'permanetCtrlResult'	=> $result 			 // Результат перманент.
+			'templateRes' 	=> self::dispatch(), // Результат от пути 
+			'permanetRes'	=> $result 			 // Результат перманент.
 		);
 	}
 }

@@ -3,7 +3,7 @@
  * 
  */
 
-if(!$this->regOk || empty($this->result['templateCtrlResult']['result'])) { 
+if(!$this->regOk || empty($this->result['templateRes'])) { 
 
 	require_once($this->activeTpl.$r['templates']['header']);
 	//require_once($this->activeTpl.$r['templates']['banner']);
@@ -24,19 +24,19 @@ require_once($this->activeTpl.$r['templates']['banner']);
 <section id="pageContent">
     <main role="main">
 	    	<h2>Профиль </h2>
-	    	<p><?=@$this->result['templateCtrlResult']['result']['userpicture'];?></p>
+	    	<p><?=@$this->result['templateRes']['userpicture'];?></p>
 	    	<table class="table">
 			  <thead>
 			    <tr>
 			      <th scope="col"></th>
 			      <th scope="col">Имя пользователя</th>
-			      <th scope="col"><?=@$this->result['templateCtrlResult']['result']['name'];?></th>
+			      <th scope="col"><?=@$this->result['templateRes']['name'];?></th>
 			    </tr>
 			  </thead>
 			  <tbody>
 
 			  	<?php 
-			  	if ($this->result['templateCtrlResult']['result']['actstatus'] == 1) {
+			  	if ($this->result['templateRes']['actstatus'] == 1) {
 			  		echo '<tr class="table-success">';
 			  		$stat = 'Активирован!';
 			  	} else {
@@ -52,17 +52,17 @@ require_once($this->activeTpl.$r['templates']['banner']);
 			    <tr>
 			      <th scope="row"></th>
 			      <td>Пользовательский емайл</td>
-			      <td><?=$this->result['templateCtrlResult']['result']['email'];?></td>
+			      <td><?=$this->result['templateRes']['email'];?></td>
 			    </tr>
 			    <tr>
 			      <th scope="row"></th>
 			      <td>Дата регистрации</td>
-			      <td><?=date('F j, D, Y, g:i a' ,$this->result['templateCtrlResult']['result']['regdate']);?></td>
+			      <td><?=date('F j, D, Y, g:i a' ,$this->result['templateRes']['regdate']);?></td>
 			    </tr>
 			    <tr>
 			      <th scope="row"></th>
 			      <td>Последний визит</td>
-			      <td><?=date('F j, D, Y, g:i a' ,$this->result['templateCtrlResult']['result']['lastvisit']);?></td>
+			      <td><?=date('F j, D, Y, g:i a' ,$this->result['templateRes']['lastvisit']);?></td>
 			    </tr>
 			    <tr>
 			      <th scope="row"></th>

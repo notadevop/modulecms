@@ -81,7 +81,7 @@ class Identificator extends Filter {
 	private $authParams;
 
 
-	function initAuthStatus() {
+	private function initAuthStatus() {
 
 		$this->IOAuthStatus = array(
 
@@ -91,23 +91,11 @@ class Identificator extends Filter {
 			'restore_status'=> RESTOREALLOW, 
 		);
 
-		$settings = new HostSettings();
-
-		// TODO: Неправильно вводит типы нужно ключи вводить array_keys()
-
-		$dbparams = $settings->getSettings(array_keys($this->IOAuthStatus));
-
-		$dbparams = array_filter($dbparams);
-
-		$check = function($param1, $param2) {
-
-			if (!$param1 || !$param2) { return false; }
-			return true;
-		};
-
-		foreach ($dbparams as $key => $value) {
+		$stg = new HostSettings();
+	
+		foreach ($stg->getSettings($this->IOAuthStatus) as $key => $value) {
 			
-			$this->IOAuthStatus[$key] = $check($this->IOAuthStatus[$key], $value);
+			$this->IOAuthStatus[$key] = (!$value || !$this->IOAuthStatus[$key]) ? false : true;
 		}
 	}
 
@@ -134,22 +122,19 @@ class Identificator extends Filter {
 			$perms = $this->granter->getPermsOfUser();
 
 			if ($this->isNotEmpty($perms)) {
-
 				$userProfile['priveleges'] = implode(', ', $perms);
 			}
 
 			$profileStatusInit = true;
 		}
 
-		if(!defined('PROFILE')) {
-			define('PROFILE',$userProfile);
-		}
-
+		if(!defined('PROFILE')) define('PROFILE',$userProfile);
+		
 		return $profileStatusInit;
 	}
 
 
-	// TODO: Сделать проверку сам Пользователь вышел или человек случайно по ссылке использовал logout!!!!!
+	
 
 	// переменная это принудительный выход из системы, если даже нету _GET => logout параметра!
 
@@ -300,7 +285,7 @@ class Identificator extends Filter {
 
 		if(!$this->IOAuthStatus['auth_status']) {
 
-			Logger::collectAlert(Logger::ATTENTIONS, AUTHDISABLED);
+			//Logger::collectAlert(Logger::ATTENTIONS, AUTHDISABLED);
 			return $this->setUserProfile(false);
 		}
 

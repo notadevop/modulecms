@@ -71,8 +71,6 @@ function languages(): string {
 }
 
 
-
-
 define('LANGUAGE','rus');
 
 Router::initDefaultRoutes();
@@ -98,6 +96,7 @@ $v->replace(
 );
 
 $v->viewRender();
+
 
 // Указать хост в  базу данных и оттуда доставать параметры чтобы не использовать супер глобальные данные 
 

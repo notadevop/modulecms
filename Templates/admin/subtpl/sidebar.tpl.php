@@ -8,8 +8,8 @@ if($this->regOk) {
 
     $name   = '<a href="/admin/profile/'.PROFILE['userid'].'">'.PROFILE['username'].'</a>';
     $logout = '<a href="/logout">Выйти?</a>';
-    $online = '<a href="/admin/usersonline">('.$this->result['permanetCtrlResult']['online']['result'].')</a>';
-    $notifs = '<a href="/admin/notifications">(0)</a>';
+    $online = '<a href="/admin/usersonline">('.$this->result['permanetRes']['online'].')</a>';
+    $notifs = '(<a href="/admin/notifications">'.$this->result['permanetRes']['notifications'].'</a>)';
 } else {
     $name = 'Гость';
     $logout = '<a href="/login">Авторизоваться</a>';

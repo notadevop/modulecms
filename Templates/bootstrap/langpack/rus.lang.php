@@ -17,7 +17,7 @@ define('FORMLOGINBUTTON',   'Вход');
 
 // Passwords 
 
-define('FORMPWDTITLE',      'Форма восстановления пароля');
+define('FORMAPWDTITLE',      'Форма восстановления пароля');
 define('FORMNEWPWD1',       'Новый пароль пользователя');
 define('FORMNEWPWD2',       'Новый пароль пользователя еще раз');
 define('FORMPWDBUTTON',     'Обновить пароль!');

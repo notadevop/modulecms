@@ -4,7 +4,7 @@
  * 
  */
 
-if(!$this->regOk || empty($this->result['templateCtrlResult']['result'])) { 
+if(!$this->regOk || empty($this->result['templateRes'])) { 
 
 	require_once($this->activeTpl.$r['templates']['header']);
 	//require_once($this->activeTpl.$r['templates']['banner']);
@@ -19,7 +19,7 @@ if(!$this->regOk || empty($this->result['templateCtrlResult']['result'])) {
 }
 
 
-$users = $this->result['templateCtrlResult']['result'];
+$users = $this->result['templateRes'];
 
 require_once($this->activeTpl.$r['templates']['header']);
 require_once($this->activeTpl.$r['templates']['banner']);

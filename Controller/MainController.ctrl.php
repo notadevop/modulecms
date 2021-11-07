@@ -2,24 +2,21 @@
 
 
 /**
- * 
+ *    Класс по умолчанию, пока ничего не делает!! 
  */
+
+
 class MainController {
 	
 	function __construct() { }
 
 	function test($param) {
-
-
-		Logger::collectAlert('primary', 'Пустой метод');
-
-		return 'это параметр который указан в URI =>'.$param;
+		
+		Logger::collectAlert('primary', 'TEST метод');
 	}
 
 	function defaultMethod() {
 
-		Logger::collectAlert('primary', 'Пустой метод');
-
-		return array('Метод по умолчанию', 'Тут никаких действий!');
+		Logger::collectAlert('primary', 'DEFAULT метод');
 	}
 }

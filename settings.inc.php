@@ -22,13 +22,12 @@ define('sqlitefile', 'sqlitedb.sql');
 
 // Разрешаем авторизацию, аутентификацию пользователя
 
-define('AUTHENTIFCATIONALLOW', true);
-define('REGISTRATIONALLOW', true); // <=== 
-define('LOGINALLOW', true);
-define('RESTOREALLOW',true);
+define('AUTHENTIFCATIONALLOW', 	true);
+define('REGISTRATIONALLOW', 	true); // <=== 
+define('LOGINALLOW', 			true);
+define('RESTOREALLOW',			true);
 
-
-define('HOSTENABLED', true);
+define('HOSTENABLED', 			true);
 
 
 define('DEFROUTEPATH', 'Routes' . DS);

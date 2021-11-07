@@ -23,7 +23,8 @@ class HostSettings extends Database {
 	public function getSettings(array $settings_keys): ?array{
 
 		$sql = 'SELECT option_value as value 
-				FROM website_options WHERE option_name LIKE :optname LIMIT 1';
+				FROM website_options 
+				WHERE option_name = :optname LIMIT 1';
 
         $row = array();
 
@@ -31,6 +32,7 @@ class HostSettings extends Database {
         	if (!$this->settingsExist($key)) { continue; }
         	$this->preAction($sql, array(':optname' => $key));
         	if(!$this->doAction()) { continue; }
+
         	$settings_keys[$key] = $this->postAction()->fetch()['value'];
         }
 

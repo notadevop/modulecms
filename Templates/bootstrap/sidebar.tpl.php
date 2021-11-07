@@ -8,21 +8,21 @@ if($this->regOk) {
 
     $name   = PROFILE['username'];
     $logout = '<a href="/logout">Выйти?</a>';
-    $online = '('.$this->result['permanetCtrlResult']['online']['result'].')';
-    $notifs = '<a href="/admin/notifications">(0)</a>';
+    $online = '('.$this->result['permanetRes']['online'].')';
+    $notifs = '(<a href="/admin/notifications">'.$this->result['permanetRes']['notifications'].'</a>)';
 } else {
     $name = 'Гость';
     $logout = '<a href="/login">Авторизоваться</a>';
-    $online = '('.$this->result['permanetCtrlResult']['online']['result'].')';
+    $online = '('.$this->result['permanetRes']['online'].')';
     $notifs = '0';
 }
+
 ?>
     <aside>
         <div>
             <h3>Авторизайия</h3>
             <ul>
             <?php if($this->regOk) { ?>
-
                     <hr />
                     <li>Пользователь: <?=$name;?></li>
                     <li>Cтатус: <?=$logout;?></li>
