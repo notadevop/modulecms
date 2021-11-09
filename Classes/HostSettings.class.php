@@ -20,7 +20,7 @@ class HostSettings extends Database {
 
 	// Получаем все указанные настройки по указанному массиву 
 
-	public function getSettings(array $settings_keys): ?array{
+	public function getSettings(array $stgs_keys): ?array{
 
 		$sql = 'SELECT option_value as value 
 				FROM website_options 
@@ -28,15 +28,15 @@ class HostSettings extends Database {
 
         $row = array();
 
-        foreach ($settings_keys as $key => $value) {
+        foreach ($stgs_keys as $key => $value) {
         	if (!$this->settingsExist($key)) { continue; }
         	$this->preAction($sql, array(':optname' => $key));
         	if(!$this->doAction()) { continue; }
 
-        	$settings_keys[$key] = $this->postAction()->fetch()['value'];
+        	$stgs_keys[$key] = $this->postAction()->fetch()['value'];
         }
 
-        return array_filter($settings_keys);
+        return array_filter($stgs_keys);
 	}
 
 	// Добавляем новые настройки или обновляем при включенном флаге старые
@@ -48,10 +48,12 @@ class HostSettings extends Database {
 		$sql = 'INSERT INTO website_options (option_name, option_value) 
 						VALUES (:optname, optvalue)';
 
-		$this->preAction($sql, array(
-									':optname' 	=>	$key, 
-									':optvalue'	=>	$value
-									));
+		$binder = array(
+					':optname' 	=>	$key, 
+					':optvalue'	=>	$value
+		);
+
+		$this->preAction($sql, $binder);
 		if(!$this->doAction()) { return false; }
 
 		return true;

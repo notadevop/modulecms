@@ -70,7 +70,18 @@ class Identificator extends Filter {
 		$this->granter 	= new PrivelegesController();
 
 
-		$this->initAuthStatus();
+		$this->IOAuthStatus = array(
+
+			'login_status'  => LOGINALLOW,
+			'auth_status' 	=> AUTHENTIFCATIONALLOW,
+			'reg_status'  	=> REGISTRATIONALLOW,
+			'restore_status'=> RESTOREALLOW, 
+		);
+	
+		foreach ((new HostSettings())->getSettings($this->IOAuthStatus) as $key => $value) {
+			
+			$this->IOAuthStatus[$key] = (!$value || !$this->IOAuthStatus[$key]) ? false : true;
+		}
 	}
 
 	private $cjob;
@@ -79,25 +90,6 @@ class Identificator extends Filter {
 	private $users;
 	private $granter;
 	private $authParams;
-
-
-	private function initAuthStatus() {
-
-		$this->IOAuthStatus = array(
-
-			'login_status'  => LOGINALLOW,
-			'auth_status' 	=> AUTHENTIFCATIONALLOW,
-			'reg_status'  	=> REGISTRATIONALLOW,
-			'restore_status'=> RESTOREALLOW, 
-		);
-
-		$stg = new HostSettings();
-	
-		foreach ($stg->getSettings($this->IOAuthStatus) as $key => $value) {
-			
-			$this->IOAuthStatus[$key] = (!$value || !$this->IOAuthStatus[$key]) ? false : true;
-		}
-	}
 
 
 	function setUserProfile($profile=''): bool {

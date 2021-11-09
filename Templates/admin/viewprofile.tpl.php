@@ -29,7 +29,7 @@ require_once($this->activeTpl.$r['templates']['banner']);
 			  <thead>
 			    <tr>
 			      <th scope="col"></th>
-			      <th scope="col">Имя пользователя</th>
+			      <th scope="col">Пользователь</th>
 			      <th scope="col"><?=@$this->result['templateRes']['name'];?></th>
 			    </tr>
 			  </thead>

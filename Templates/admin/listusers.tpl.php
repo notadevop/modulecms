@@ -28,7 +28,7 @@ require_once($this->activeTpl.$r['templates']['banner']);
 
 <section id="pageContent">
     <main role="main">
-	     <table class="table">
+	     <table class="table table-striped">
 		  <thead>
 		    <tr>
 		      <th scope="col">ID</th>
