@@ -30,7 +30,6 @@ return array(
 	),
 
 	'/admin'  => array(
-
 			'action' 	=> 'MainController/defaultMethod',
 			'template'	=> 'dashboard.tpl.php',
 			'priority'	=> 4, // Показывать по при оритету

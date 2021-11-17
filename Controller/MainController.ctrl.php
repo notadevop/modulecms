@@ -8,13 +8,6 @@
 
 class MainController {
 	
-	function __construct() { }
-
-	function test($param) {
-		
-		Logger::collectAlert('primary', 'TEST метод');
-	}
-
 	function defaultMethod() {
 
 		Logger::collectAlert('primary', 'DEFAULT метод');

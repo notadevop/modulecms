@@ -77,8 +77,11 @@ class Identificator extends Filter {
 			'reg_status'  	=> REGISTRATIONALLOW,
 			'restore_status'=> RESTOREALLOW, 
 		);
+
+		$stg 	= new HostSettings();
+		$keys 	= $stg->getSettings($this->IOAuthStatus);
 	
-		foreach ((new HostSettings())->getSettings($this->IOAuthStatus) as $key => $value) {
+		foreach ($keys as $key => $value) {
 			
 			$this->IOAuthStatus[$key] = (!$value || !$this->IOAuthStatus[$key]) ? false : true;
 		}

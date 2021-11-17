@@ -10,7 +10,10 @@ class HostSettings extends Database {
 	}
 
 	public function settingsExist(string $key): bool {
-		$sql = 'SELECT COUNT(*) as count FROM website_options WHERE option_name LIKE :optname LIMIT 1';
+		$sql = 'SELECT COUNT(*) as count 
+				FROM website_options 
+				WHERE option_name LIKE :optname 
+				LIMIT 1';
 		$this->preAction($sql, array(':optname' => $key));
 		if (!$this->doAction()) { return false; }
 		$count = $this->postAction()->fetchColumn();
@@ -29,8 +32,11 @@ class HostSettings extends Database {
         $row = array();
 
         foreach ($stgs_keys as $key => $value) {
+
         	if (!$this->settingsExist($key)) { continue; }
+
         	$this->preAction($sql, array(':optname' => $key));
+        	
         	if(!$this->doAction()) { continue; }
 
         	$stgs_keys[$key] = $this->postAction()->fetch()['value'];
@@ -46,7 +52,7 @@ class HostSettings extends Database {
 		if (empty($key) || $this->settingsExist($key)) { return false; }
 
 		$sql = 'INSERT INTO website_options (option_name, option_value) 
-						VALUES (:optname, optvalue)';
+				VALUES (:optname, optvalue)';
 
 		$binder = array(
 					':optname' 	=>	$key, 
@@ -67,7 +73,9 @@ class HostSettings extends Database {
 
 		// Тут не правильно!!???!? так как ориентировка идет на :optname в коде !!!
 
-		$sql = 'UPDATE website_options SET option_name=:optname, option_value=:optvalue WHERE option_name = :optname';
+		$sql = 'UPDATE website_options 
+				SET option_name=:optname, option_value=:optvalue 
+				WHERE option_name = :optname';
 
 		$this->preAction($sql, array(':optname' => $key, ':optvalue' => $value));
 
@@ -80,7 +88,8 @@ class HostSettings extends Database {
 
 		if(!$this->settingExist($key)) { return false; }
 
-		$sql = 'DELETE FROM website_options WHERE option_name LIKE :optname';
+		$sql = 'DELETE FROM website_options 
+				WHERE option_name LIKE :optname';
 		
 		$this->preAction($sql, array(':optname' => $key));
 

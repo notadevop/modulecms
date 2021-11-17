@@ -7,15 +7,9 @@
 // SETTINGS это динамические настройки 
 
 
-
-
-
 define('USERDEFLANG','RUS');
-
-
 define('sqliteFolder', 'sqlitefolder');
 define('sqlitefile', 'sqlitedb.sql');
-
 
 // Тут хронятся все настройки веб сайта, 
 // отличие от config в том, что это статические настройки веб сайта
@@ -23,19 +17,75 @@ define('sqlitefile', 'sqlitedb.sql');
 // Разрешаем авторизацию, аутентификацию пользователя
 
 define('AUTHENTIFCATIONALLOW', 	true);
-define('REGISTRATIONALLOW', 	true); // <=== 
-define('LOGINALLOW', 			true);
-define('RESTOREALLOW',			true);
+//define('REGISTRATIONALLOW', 	true); // <=== 
+//define('LOGINALLOW', 			true);
+//define('RESTOREALLOW',			true);
 
-define('HOSTENABLED', 			true);
+//define('HOSTENABLED', 			true);
 
 
-define('DEFROUTEPATH', 'Routes' . DS);
-define('HOST', 'http://'.$_SERVER['HTTP_HOST']); // <-------  ЭТО НУЖНО ФИЛЬТРОВАТЬ !!!!!
+//define('DEFROUTEPATH', 'Routes' . DS);
+//define('HOST', 'http://'.$_SERVER['HTTP_HOST']); // <-------  ЭТО НУЖНО ФИЛЬТРОВАТЬ !!!!!
 
 // нужно для того, чтобы отдельно указывать другой путь шаблону
 define('TPLDEFAULTFOLDER', ROOTPATH.'Templates'.DS); 
 define('TPLDEFTEMPLATE', 'bootstrap'.DS);
+
+
+
+
+
+
+// -------------------------------------
+
+define('UILANG', 			'RU');
+
+define('DEFROUTEPATH', 		'Routes'.DS);
+define('HOST', 				'http://'.$_SERVER['HTTP_HOST']);
+define('HOSTENABLED', 		true);
+define('HOSTREDIRECT',		'');
+
+define('TPLFOLDER',			ROOTPATH.'Templates'.DS);
+define('TPLTEMPLATE',		'bootstrap'.DS);
+
+define('REGISTRATIONALLOW',	true);
+define('RESTOREALLOW', 		true);
+
+define('LOGINALLOW',		true);
+define('LOGINREDIRECT',		true);
+define('LOGINREDIRTIMEOUT',	0);
+define('LOGINREDIRPATH',	HOST.'/admin/profile/%userid%');
+define('LOGINREDIRREFFERER',false);
+
+define('LOGOUTALLOW', 		true);
+define('LOGOUTREDIR', 		true);
+define('LOGOUTREDIRTIMEOUT',3);
+define('LOGUNTREDIRPATH', 	HOST);
+
+define('AUTHALLOW', 		true);
+define('AUTHCOOKIEUPDATE', 	2);
+define('AUTHUPDATEPASSINT', 70);
+define('AUTHWAITREGTIME',	'+24 Hours');
+define('AUTHHASHUPDATETIME', 7);
+
+define('SQLITEFOLDER', 		'sqlitefolder');
+define('SQLITEFILE',		'sqlitefile.db');
+
+define('ADMINISTRATOR', 	1);
+define('MODERATOR', 		2);
+define('AUTHOR', 			3);
+define('SUBSCRIBER', 		4);
+define('BLOCKED', 			5);
+define('DELETED', 			6);
+define('VISITOR', 			7);
+
+
+//-------------------------
+
+
+
+
+
 
 define('REDIRECTLOGIN', array(
 			
@@ -97,13 +147,13 @@ define('SQLITEJOB', array(
  7. visitor				Гость, не определенный пользователь
 */
 
-define('ADMINISTRATOR', 1);
-define('MODERATOR', 2);
-define('AUTHOR', 3);
-define('SUBSCRIBER', 4);
-define('BLOCKED', 5);
-define('DELETED', 6);
-define('VISITOR', 7);
+//define('ADMINISTRATOR', 1);
+//define('MODERATOR', 2);
+//define('AUTHOR', 3);//
+//define('SUBSCRIBER', 4);
+//define('BLOCKED', 5);
+//define('DELETED', 6);
+//define('VISITOR', 7);
 
 
 

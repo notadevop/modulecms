@@ -18,12 +18,11 @@ ini_set('error_reporting', 'E_ALL');
 error_reporting(E_ALL);
 
 header('Content-Type: text/html; charset=utf-8');
-header('X-Powered-By: PHP Application');
+header('X-Powered-By: ModuleCMS');
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOTPATH', dirname(__FILE__) . DS);
 
-// Определитель CSRF аттаку, проверяем существует и соответсвтует уникальный ключ
 
 $files = array(
 
@@ -62,9 +61,6 @@ function languages(): string {
 	    $lang = substr($lang, 0, 2);
 	    if (in_array($lang, $known_langs)) {
 	        echo 'Preferred language is '.$lang;
-
-	        //define('LANGUAGE','rus');
-
 	        break;
 	    }
 	}
@@ -74,6 +70,8 @@ function languages(): string {
 define('LANGUAGE','rus');
 
 Router::initDefaultRoutes();
+
+//Router::modifyRoutes('admin');
 
 $v = new vRender();
 $v->prepareRender();

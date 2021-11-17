@@ -59,7 +59,7 @@ class Urlfixer {
      *  index.php?var=123); 
      */
         
-    public static function splitUrl(string $url) {
+    public static function splitUrl(string $url) { // : ?array
         return preg_split('/\//', $url, -1, PREG_SPLIT_NO_EMPTY);
     }
 

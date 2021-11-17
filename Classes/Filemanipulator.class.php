@@ -7,10 +7,18 @@ class Filemanipulator {
 
 	// get from http://php.net
 
-	private $upload_dir = '';
-	private $mimetypes_allowed = array();
-	private $fuploaded = array();
-	private $max_file_size = 10;
+	private $upload_dir;
+	private $mimetypes_allowed;
+	private $fuploaded;
+	private $max_file_size;
+
+	function __construct() {
+
+		$this->upload_dir 			= '';
+		$this->mimetypes_allowed 	= array();
+		$this->fuploaded 			= array();
+		$this->max_file_size 		= 10;
+	}
 
 	public function setUploadFolder(string $filedir): void {
 
@@ -26,12 +34,12 @@ class Filemanipulator {
 
 	// Создает папку с указанным именем
 
-	public function createDir(): void {
+	public function createDir(int $perms = 0755): void {
 
 		if (!is_dir($this->pdir)) {
 
-			mkdir($this->pdir, 0755,true);
-			chmod($this->pdir, 0755);
+			mkdir($this->pdir, $perms,true);
+			chmod($this->pdir, $perms);
 		}
 		unset($this->pdir);
 	}

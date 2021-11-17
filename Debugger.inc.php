@@ -47,6 +47,7 @@ function debugger($input='emptyOutput', $category=DEBUG, $params=array()): void 
 					echo 'File: '.$debug[$i]['file'].'<br/>';
 					echo '<span style="color: red;">Variable OUTPUT: </span><br/>';
 					print_r($debug[$i]['args']);
+					//var_dump($debug[$i]['args']);
 				} 
 			}
 			

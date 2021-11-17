@@ -75,6 +75,51 @@ final class Router {
 		}
 	}
 
+	// Метод который модифицирует пути к спец, страницам 
+	// например к аdmin переименновать в administrator
+	// 
+	// 	  нужно исполнять в константе чтобы можно было использовать 
+	// 	  в где то еще 
+	// 	  
+	// 	  Использовать только для одной константы определения
+	// 
+
+	public static function modifyRoutes(string $page): string {
+
+		if (empty(self::$defaultRoutes)) {
+			die('<h1>'.NOROUTES.'</h1>');
+		}
+
+		if(empty($page)) {
+			die('<h1>fatal! route affected!</h1>');
+		}	
+
+		$stg = new HostSettings();
+
+		$tmp = $stg->getSettings([$page=>$page]);
+
+		if(!$tmp || $tmp[$page] == $page) { return $page; }
+
+		foreach (self::$defaultRoutes as $key => $value) {
+
+			// Тут устанавливаем новый путь
+
+			$newKey = str_ireplace(DS.$page, DS.$tmp[$page], $key);
+
+			self::$defaultRoutes[$newKey] = $value;
+
+			// Тут проверяем и удаляем старый взамен нового
+
+			$first = Urlfixer::splitUrl($key);
+
+			if (!empty($first) && $first[0] == $page) {
+
+				unset(self::$defaultRoutes[$key]);
+			}
+		}
+		return $tmp[$page];
+	}
+
 	// Добавить новый путь
 
 	public static function addRoute(array $route): void {
