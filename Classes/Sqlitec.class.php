@@ -22,7 +22,7 @@ class Sqlitec {
 
 	function __destruct() {
 		
-		@$this->sqlite->close();
+		$this->sqlite->close();
 	}
 
 	function clean(string  $str): string {

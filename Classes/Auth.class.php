@@ -31,7 +31,7 @@ class Auth extends Database {
 
 			$difference = date_diff($time1, $time2);
 
-			return ($difference->days > AUTHUPDATE['updatePasswrdInterval']);
+			return ($difference->days > AUTHUPDATEPASSINT);
 		};
 	}
 
@@ -103,7 +103,9 @@ class Auth extends Database {
 		}	
 
 		if($setNewHash) {
-			$newHash = $this->modifier->randomHash(rand(30, 100), false);
+			$newHash = $this
+						->modifier
+						->randomHash(rand(HASHMINVALUE, HASHMAXVALUE), false);
 		} else {
 			$newHash = $result['token'];
 		}
@@ -113,7 +115,7 @@ class Auth extends Database {
 					':uagent' 			=> serialize($this->visitor->get_data()),
 					':thash'			=> $newHash,
 					':tcreated'			=> time(),
-					':texpires' 		=> strtotime('+'.UPDATEAUTHINTERVAL.' Days') // time() +3600*24
+					':texpires' 		=> strtotime('+'.AUTHHASHUPDATETIME.' Days') // time() +3600*24
 		);
 
 		$this->preAction($sql, $binder);
@@ -184,10 +186,7 @@ class Auth extends Database {
 
 		$this->preAction($sql, $binder);
 
-		if(!$this->doAction()) { 
-
-			return null; 
-		}
+		if(!$this->doAction()) { return null; }
 
 		$profile = $this
 						->postAction()
@@ -312,7 +311,7 @@ class Auth extends Database {
 
 	public function clearUserLogins(int $byspecuser=0): bool{
 
-		// Удаление cесии данного пользователя или всех сессий 
+		// TODO: Удаление cесии данного пользователя или всех сессий 
 		// из базы данных по token_expires и token_created
 
 		return false;
@@ -361,7 +360,7 @@ class Auth extends Database {
 
 		return !$this->doAction() ? false : true;
 
-		// Этот код нужно использовать в крон действии!!! каждые 24-48 часов (указать так, чтобы спамеры не загружали и пользователь мог повторить активацию)
+		// TODO: Этот код нужно использовать в крон действии!!! каждые 24-48 часов (указать так, чтобы спамеры не загружали и пользователь мог повторить активацию)
 
 		//$this->clearActivations($userid, $vertime); 
 
@@ -378,9 +377,6 @@ class Auth extends Database {
 
 
 	public function cleanCronActivations():bool {
-
-		$sql = '';
-
 
 		return true;
 	}
@@ -425,12 +421,12 @@ class Auth extends Database {
 				':actuid'		=> $userid,
 				':actoken'		=> $this
 						->modifier
-						->randomHash(rand(30, 50), false),
+						->randomHash(rand(HASHMINVALUE, HASHMAXVALUE), false),
 				':actconfirm'	=> $this
 						->modifier
-						->randomHash(rand(30, 50), false),
+						->randomHash(rand(HASHMINVALUE, HASHMAXVALUE), false),
 				':actdate'		=> time(),
-				':actexpire'	=> strtotime('+'.UPDATEAUTHINTERVAL.' Days')
+				':actexpire'	=> strtotime('+'.AUTHHASHUPDATETIME.' Days')
 		);
 
 		$this->preAction($sql, $binder);

@@ -1,52 +1,54 @@
 <?php 
 
-(defined('ROOTPATH') && defined('DS')) or die('something wrong!');
-
-// TODO: Настройки
-// СONFIG  это статические настройки 
-// SETTINGS это динамические настройки 
+defined('ROOTPATH') or die('something wrong!');
 
 
-define('USERDEFLANG','RUS');
-define('sqliteFolder', 'sqlitefolder');
-define('sqlitefile', 'sqlitedb.sql');
-
-// Тут хронятся все настройки веб сайта, 
-// отличие от config в том, что это статические настройки веб сайта
-
-// Разрешаем авторизацию, аутентификацию пользователя
-
-define('AUTHENTIFCATIONALLOW', 	true);
-//define('REGISTRATIONALLOW', 	true); // <=== 
-//define('LOGINALLOW', 			true);
-//define('RESTOREALLOW',			true);
-
-//define('HOSTENABLED', 			true);
-
-
-//define('DEFROUTEPATH', 'Routes' . DS);
-//define('HOST', 'http://'.$_SERVER['HTTP_HOST']); // <-------  ЭТО НУЖНО ФИЛЬТРОВАТЬ !!!!!
-
-// нужно для того, чтобы отдельно указывать другой путь шаблону
-define('TPLDEFAULTFOLDER', ROOTPATH.'Templates'.DS); 
-define('TPLDEFTEMPLATE', 'bootstrap'.DS);
-
-
-
-
+/*
+Базовые настройки привелегий 
+------------------
+1. Администратор 
+	Имеет полный доступ ко всем страницам
+	главные настройки вебсайта и управлению
+------------------
+2. Редактор 
+	Имеет доступ редактировать свои или чужие данные 
+	например посты/коментарии/профили пользователей
+------------------
+3. Автор 
+	Имеет право создавать устанавливать темы, создавать 
+	свои посты, коментарии и имеет право редактировать их
+------------------
+4. Подписчик
+	Имеет ограниченные права в определенных подписаных страницах. имеет право оставлять коментарии или редактировать их.
+------------------
+5. Заблокирванный пользователь
+	Имеет право авторизироваться, но все функции отключены.
+	не имеет право ни на какое действие только чтение.
+------------------
+6. Удаленный пользователь
+	Зарегестрированный пользователь, который был удален
+	данные пользователя остаются в системе определенное время, но зайти пользователь уже может
+------------------
+7. Гость или не зарегестрированный пользователь
+	Не имеет прав, так, не определен системой,
+	не идентифицированный пользователь
+------------------
+*/
 
 
 // -------------------------------------
 
-define('UILANG', 			'RU');
+define('DEFLANGUAGE', 		'ru-RU');
 
 define('DEFROUTEPATH', 		'Routes'.DS);
+//TODO: Нужно отфильтровать
 define('HOST', 				'http://'.$_SERVER['HTTP_HOST']);
 define('HOSTENABLED', 		true);
 define('HOSTREDIRECT',		'');
 
 define('TPLFOLDER',			ROOTPATH.'Templates'.DS);
 define('TPLTEMPLATE',		'bootstrap'.DS);
+define('TPLSCHEMEFILE',		'schema.tpl.php');
 
 define('REGISTRATIONALLOW',	true);
 define('RESTOREALLOW', 		true);
@@ -60,7 +62,7 @@ define('LOGINREDIRREFFERER',false);
 define('LOGOUTALLOW', 		true);
 define('LOGOUTREDIR', 		true);
 define('LOGOUTREDIRTIMEOUT',3);
-define('LOGUNTREDIRPATH', 	HOST);
+define('LOGOUTREDIRPATH', 	HOST);
 
 define('AUTHALLOW', 		true);
 define('AUTHCOOKIEUPDATE', 	2);
@@ -79,87 +81,9 @@ define('BLOCKED', 			5);
 define('DELETED', 			6);
 define('VISITOR', 			7);
 
-
-//-------------------------
-
-
-
+// Диапазон размера генерации хеш числа 
+define('HASHMINVALUE',		30);
+define('HASHMAXVALUE',		100);
 
 
 
-define('REDIRECTLOGIN', array(
-			
-			'redirectuser' 	=> true,		// Разрешает перенаправление при авторизации
-			'timeout'		=> 0,			// Через какое время перенаправлять в сек.
-			'redirectpath'	=> HOST.'/admin/profile/%userid%', // Куда перенаправлять, по умолчанию
-			'reffredirect'	=> false 		// перенаправлять, если пришел с какой то страницы
-));
-
-define('LOGOUT',array(
-
-		'redirectuser' 	=> true,
-		'timeout' 		=> 3,
-		'redirectpath' 	=> HOST	
-));
-
-
-// Это отправить в Website settings в базу данных при установке выташить сперва с файла настроек при установке CMS
-
-define('AUTHUPDATE', array(
-
-		'updateAuthCookieInterval' 	=> 2, 			// Обновление хеша при аутентификации
-		'updatePasswrdInterval'		=> 70, 			// Запрос на обновления пароля при истичении пароля
-		'waitARegistration'			=> '+24 Hours'	// Время которое дается пользоватею для акт. регистрации
-));
-
-
-define('UPDATEAUTHINTERVAL', 7); // Интервал обновления хеша аутентификации 
-define('UPDATEPWDINTERVAL', 70); // Интервал обновления пароля пользователя в днях
- 
-
-// Время данное для подтверждение регистрации пользователя 
-define('REGWAITER', '+24 Hours');
-
-// НАСТРОЙКИ: НИЖЕ
-
-// Константа массива для работы с базой данных sqlite 
-define('SQLITEJOB', array(
-	'sqlitefolder' 	=> 'sqlitefolder',
-	'sqlitefile'	=> 'tempdb.sqlite'
-));
-
-/*
-	LOGIN 		- откуда человек пришел в пределах сайта
-	RESTORE 	- после подтверждения, отправить на главную страницу
-	REGISTER 	- после подтверждения регистрации на профиль страницы
-	AUTH 		- проверяет скрытно
-*/
-
-/*
-Привелегии пользователя могут иметь несколько привелегий .... !!!!
-
- 1. administrator, 		Имеет все привелегии
- 2. moderator/editor  	Модератор/Редактор может редактировать, свои/чужие посты, удалять в карзину посты, редактировать всех коментарии
- 3. author,  			Автор, Может добавлять/удалять только свои посты и коментарии.
- 4. subscriber  		Подписчик может добавлять/удалять только свои коментарии
- 5. blockeduser			Заблокированный пользователь, Временно не доступный пользователь, не имеет доступа и авторизации 
- 6. deleteduser 		Удаленный пользователь, вход в систему запрещен пожизнено. 
- 7. visitor				Гость, не определенный пользователь
-*/
-
-//define('ADMINISTRATOR', 1);
-//define('MODERATOR', 2);
-//define('AUTHOR', 3);//
-//define('SUBSCRIBER', 4);
-//define('BLOCKED', 5);
-//define('DELETED', 6);
-//define('VISITOR', 7);
-
-
-
-/*
-	Фильтрация данных 
-	Легкая - Фильтрация от Mysql Injection, XSS. 
-	Средняя - Фильтрация от Mysql Injection, XSS, Теги конвертирует
-	Тяжелая - Фильтрация от Mysql Injection, XSS, Теги удаляет, и все доступные фильтры которы могут быть
- */

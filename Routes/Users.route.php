@@ -20,28 +20,31 @@ return array(
 	// Профиль пользователя который хочет посмотреть свой аккаунт
 
 	'/admin/users' => array(
-			'action' 	=> 'ProfileController/getAllUsers',
-			'template'	=> 'listUsers.tpl.php',
-			'priority'	=> 3,
-			'rendertype'=> 'adminui'
+		'url' 		=> '/admin/users',
+		'action' 	=> 'ProfileController/getAllUsers',
+		'template'	=> 'listUsers.tpl.php',
+		'priority'	=> 3,
+		'rendertype'=> 'adminui'
 	),
 
 	// Страница показывает всех пользователей онлайн
 
 	'/usersonline' 	=> array(
-			'action' 	=> 'Visitor/getOnlineUsers',
-			'template'	=> 'infopage.tpl.php',
-			'priority'	=> 3,
-			'rendertype'=> 'adminui'
+		'url' 		=> '/usersonline',
+		'action' 	=> 'Visitor/getOnlineUsers',
+		'template'	=> 'infopage.tpl.php',
+		'priority'	=> 3,
+		'rendertype'=> 'adminui'
 	),
 
 	// Отрабатывает для показа счетчика пользователей онлайн и регистрирует новых
 
 	'online' => array(
-			'action' 	=> 'Visitor/users_online',
-			'template'	=> 'infopage.tpl.php',
-			'priority'	=> 4,
-			'rendertype'=> null
+		'url' 		=> 'online',
+		'action' 	=> 'Visitor/users_online',
+		'template'	=> 'infopage.tpl.php',
+		'priority'	=> 4,
+		'rendertype'=> null
 	),
 
 );

@@ -9,36 +9,40 @@ return array(
 	// Вывод указанного пользователя
 	
 	'/admin/profile/:num' => array(
-			'action' 	=> 'ProfileController/getUserProfile/$1',
-			'template'	=> 'viewprofile.tpl.php',
-			'priority'	=> 3,
-			'rendertype'=> 'adminui',
+		'url' 		=> '/admin/profile/:num',
+		'action' 	=> 'ProfileController/getUserProfile/$1',
+		'template'	=> 'viewprofile.tpl.php',
+		'priority'	=> 3,
+		'rendertype'=> 'adminui',
 	),
 
 	// Редактирование пользователя 
 
 	'/admin/profile/edit/:num' => array(
-			'action' 	=> 'ProfileController/editUserProfile/$1',
-			'template'	=> 'infopage.tpl.php',
-			'priority'	=> 3,
-			'rendertype'=> 'adminui',
+		'url' 		=> '/admin/profile/edit/:num',
+		'action' 	=> 'ProfileController/editUserProfile/$1',
+		'template'	=> 'infopage.tpl.php',
+		'priority'	=> 3,
+		'rendertype'=> 'adminui',
 	),
 
 	// Удаление пользователя 
 
 	'/admin/profile/remove' => array(
-			'action' 	=> 'ProfileController/getUserProfile',
-			'template'	=> 'infopage.tpl.php',
-			'priority'	=> 3,
-			'rendertype'=> 'adminui',
+		'url' 		=> '/admin/profile/remove',
+		'action' 	=> 'ProfileController/getUserProfile',
+		'template'	=> 'infopage.tpl.php',
+		'priority'	=> 3,
+		'rendertype'=> 'adminui',
 	),	
 
 	// Заглушка для всех других ссылок
 
 	'/admin/profile/:any' => array(
-			'action' 	=> 'ProfileController/getUserProfile',
-			'template'	=> 'infopage.tpl.php',
-			'priority'	=> 3,
-			'rendertype'=> 'adminui',
+		'url' 		=> '/admin/profile/:any',
+		'action' 	=> 'ProfileController/getUserProfile',
+		'template'	=> 'infopage.tpl.php',
+		'priority'	=> 3,
+		'rendertype'=> 'adminui',
 	),
 );

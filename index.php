@@ -66,12 +66,24 @@ function languages(): string {
 	}
 }
 
-
+// ВРЕМЕННО:
+// TODO: Части настроек которые должны быть изменены в течении исполнения 
 define('LANGUAGE','rus');
+
+// Части страниц которые зарезервированны под систему 
+// TODO: Так же могут быть изменены в процессе исполнения
+
+define('ADMINPAGE', 'admin');
+define('LOGINPAGE', 'login');
+define('JSPAGE',	'js');
+//---
+define('USERPAGE',	'');
+define('BLOG',		'blog');
+
 
 Router::initDefaultRoutes();
 
-//Router::modifyRoutes('admin');
+//define('ADMINPAGE', Router::modifyRoutes('admin'));
 
 $v = new vRender();
 $v->prepareRender();
@@ -94,27 +106,5 @@ $v->replace(
 );
 
 $v->viewRender();
-
-
-// Указать хост в  базу данных и оттуда доставать параметры чтобы не использовать супер глобальные данные 
-
-
-
-//debugger($_SERVER);
-
-/*
-	Класс разделения контента на страницы Pagination (break to pages)
-	Класс манипуляции с Даты 
-	Класс Отправки емайлов
-	Метод хуков????
-	url_fixer разрешает конфликты в ссылках
-*/
-
-// Инициализация языка пользователя
-
-
-
-
-
 
 

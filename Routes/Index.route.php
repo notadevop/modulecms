@@ -1,6 +1,6 @@
 <?php
 
-(defined('ROOTPATH') && defined('DS')) || die('something wrong');
+defined('ROOTPATH') || die('something wrong');
 
 return array(
 
@@ -15,24 +15,27 @@ return array(
 	// Главная страница или точка входа по умолчанию
 
 	'/' => array( 
-			'action' 	=> 'MainController/defaultMethod',
-			'template'	=> 'index.tpl.php',
-			'priority'	=> 4, // Показывать по при оритету
-			'rendertype'=> 'userui',
+		'url' 		=> '/', 
+		'action' 	=> 'MainController/defaultMethod',
+		'template'	=> 'index.tpl.php',
+		'priority'	=> 4, // Показывать по при оритету
+		'rendertype'=> 'userui',
 	),
 
 	// Не найденная страница
 	'/404page' 	=> array(
-			'action' 	=> 'MainController/defaultMethod',
-			'template'	=> 'errors/404page.tpl.php',
-			'priority'	=> 2,
-			'rendertype'=> 'userui',
+		'url' 		=> '/404page', 	
+		'action' 	=> 'MainController/defaultMethod',
+		'template'	=> 'errors/404page.tpl.php',
+		'priority'	=> 2,
+		'rendertype'=> 'userui',
 	),
 
 	'/admin'  => array(
-			'action' 	=> 'MainController/defaultMethod',
-			'template'	=> 'dashboard.tpl.php',
-			'priority'	=> 4, // Показывать по при оритету
-			'rendertype'=> 'adminui',
+		'url' 		=> '/admin', 
+		'action' 	=> 'MainController/defaultMethod',
+		'template'	=> 'dashboard.tpl.php',
+		'priority'	=> 4, // Показывать по при оритету
+		'rendertype'=> 'adminui',
 	),
 );

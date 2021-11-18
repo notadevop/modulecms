@@ -34,14 +34,18 @@
 	// непосредственно запуск обработки
 	Routing::dispatch();
 
-	// для нормального использования роутера 
-	// нужно добавить в .htaccess параметры  
+ 
 
-	Options -MultiViews
-    RewriteEngine On
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [QSA,L]
-	*/
+
+// для нормального использования роутера 
+// нужно добавить в .htaccess параметры 
+
+Options -MultiViews
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]
+
+*/
 
 final class Router {
 
@@ -86,6 +90,11 @@ final class Router {
 
 	public static function modifyRoutes(string $page): string {
 
+		// TODO: сделать добавление к URI к некоторым типам UI доп, префикс либо в самом ури URI удалять префикс 
+		// 
+		// как пример /js/post/123  где /js/ указывает на вывод в json
+
+
 		if (empty(self::$defaultRoutes)) {
 			die('<h1>'.NOROUTES.'</h1>');
 		}
@@ -94,17 +103,22 @@ final class Router {
 			die('<h1>fatal! route affected!</h1>');
 		}	
 
+		// Получаем данные из базы данных
+
 		$stg = new HostSettings();
 
 		$tmp = $stg->getSettings([$page=>$page]);
 
 		if(!$tmp || $tmp[$page] == $page) { return $page; }
 
+		// Пытаемся заменить в пути индексы
+
 		foreach (self::$defaultRoutes as $key => $value) {
 
 			// Тут устанавливаем новый путь
 
 			$newKey = str_ireplace(DS.$page, DS.$tmp[$page], $key);
+			//$newKey = str_ireplace(DS.$page, DS.$tmp[$page], $value['url']);
 
 			self::$defaultRoutes[$newKey] = $value;
 
@@ -123,8 +137,10 @@ final class Router {
 	// Добавить новый путь
 
 	public static function addRoute(array $route): void {
+
 		if (empty($route) || !is_array($route)) { return; }
 		$newArr = array();
+		
 		foreach ($route as $key => $value) {
 			if (!array_key_exists($key, self::$defaultRoutes)) {
 				$newArr[$key] = $value;
@@ -145,8 +161,8 @@ final class Router {
 	}
 
 
-	// Метод возвращает массив с параметрами одного пути
-	// Либо все сохраненные пути 
+	// Возвращает действующий путь и его свойства 
+	// (путь где сейчас находиться пользоватль) 
 
 	public static function getRoute(bool $getAllRoutes=false): ?array {
 
@@ -191,9 +207,9 @@ final class Router {
 					$route = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $route));
 				}
 
-				if (preg_match('#^' . $route . '$#', $requestedUrl)) { // $requestedUrl
+				if (preg_match('#^'.$route .'$#', $requestedUrl)) { // $requestedUrl
 					if (strpos($uri['action'], '$') !== false && strpos($route, '(') !== false) {
-						$uri['action'] = preg_replace('#^' . $route . '$#', $uri['action'], $requestedUrl);
+						$uri['action'] = preg_replace('#^'.$route.'$#', $uri['action'], $requestedUrl);
 					}
 
 					self::$params = Urlfixer::splitUrl($uri['action']); // разбиваем value роута на параметры и сохраняем
@@ -210,11 +226,6 @@ final class Router {
 
 
 		return call_user_func_array(array($obj, $action), $params);
-		/*
-		return array(
-			'result' => call_user_func_array(array($obj, $action), $params),
-		);
-		*/
 	}
 
 	// Метод достает все пути сохраненные в переменной self::defaultRoutes
@@ -225,7 +236,7 @@ final class Router {
 	
 
 
-	public static function getPermanentResult(): ?array {
+	public static function getPermanentResult(): array {
 
 		$result = array();
 		foreach (self::$defaultRoutes as $key => $value) {
@@ -240,21 +251,11 @@ final class Router {
 
 
 	public static function getResult() {
-		$result = array();
-		foreach (self::$defaultRoutes as $key => $value) {
-			if(substr($key, 0, 1) != '/') {
-				$result[$key] = self::dispatch($key);
-				//self::cleanRoutes($key);
-			}
-		}
 
 		return array(
+			'permanetRes'	=> self::getPermanentResult(), 	// Результат перманент.
 			// Отрабатывает по указанному пути
-			//'tplControllerResult' => self::dispatch(),
-			//'perControllerResult' => $result
-			
-			'templateRes' 	=> self::dispatch(), // Результат от пути 
-			'permanetRes'	=> $result 			 // Результат перманент.
+			'templateRes' 	=> self::dispatch(), 			// Результат от пути 
 		);
 	}
 }

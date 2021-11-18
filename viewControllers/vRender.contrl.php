@@ -40,7 +40,7 @@ class vRender {
 			'auth' 	=> false,
 		);
 
-		$this->currentTplDir = TPLDEFAULTFOLDER;
+		$this->currentTplDir = TPLFOLDER;
 
 		$settings = new HostSettings();
 
@@ -57,7 +57,7 @@ class vRender {
 
 		$folder = !empty($folder) ? ROOTPATH.$folder.DS : $this->currentTplDir;
 		
-		$fpath = $folder.$name.DS.'schema.tpl.php';
+		$fpath = $folder.$name.DS.TPLSCHEMEFILE;
 		
 		if (!file_exists($fpath)) { return null; }
 		
@@ -94,7 +94,7 @@ class vRender {
 		}
 
 		if (!$r) {
-			$r = $this->activateTemplate(TPLDEFTEMPLATE);
+			$r = $this->activateTemplate(TPLTEMPLATE);
 		}
 
 		if(empty($this->currentRoute)) {

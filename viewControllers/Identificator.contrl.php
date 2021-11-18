@@ -18,7 +18,7 @@ class Identificator extends Filter {
 
 	const REGLINK = '';
 
-	private $IOAuthStatus;
+	private $authSts;
 
 	
 	function __construct() {
@@ -70,20 +70,20 @@ class Identificator extends Filter {
 		$this->granter 	= new PrivelegesController();
 
 
-		$this->IOAuthStatus = array(
+		$this->authSts = array(
 
 			'login_status'  => LOGINALLOW,
-			'auth_status' 	=> AUTHENTIFCATIONALLOW,
+			'auth_status' 	=> AUTHALLOW,
 			'reg_status'  	=> REGISTRATIONALLOW,
 			'restore_status'=> RESTOREALLOW, 
 		);
 
 		$stg 	= new HostSettings();
-		$keys 	= $stg->getSettings($this->IOAuthStatus);
+		$keys 	= $stg->getSettings($this->authSts);
 	
 		foreach ($keys as $key => $value) {
 			
-			$this->IOAuthStatus[$key] = (!$value || !$this->IOAuthStatus[$key]) ? false : true;
+			$this->authSts[$key] = (!$value || !$this->authSts[$key]) ? false : true;
 		}
 	}
 
@@ -145,12 +145,12 @@ class Identificator extends Filter {
 
 		if(!$redirect || !defined('LOGOUT')) { return true; }
 
-		if(LOGOUT['redirectuser']) {
+		if(LOGOUTALLOW) {
 
-			if (LOGOUT['timeout'] > 0) {
-				header('refresh:'.LOGOUT['timeout'].'; url=' . LOGOUT['redirectpath']); 
+			if (LOGOUTREDIRTIMEOUT > 0) {
+				header('refresh:'.LOGOUTREDIRTIMEOUT.'; url='. LOGOUTREDIRPATH); 
 			} else {
-				header('Location: '. LOGOUT['redirectpath']);
+				header('Location: '. LOGOUTREDIRPATH);
 			}
 		}
 		return true;
@@ -161,7 +161,7 @@ class Identificator extends Filter {
 
 	function loginAction(): bool {
 
-		if(!$this->IOAuthStatus['login_status']) {
+		if(!$this->authSts['login_status']) {
 
 			Logger::collectAlert(Logger::INFORMATION, LOGINDISABLED);
 			return false;
@@ -221,16 +221,14 @@ class Identificator extends Filter {
 			return false;
 		} 
 
-		if(defined('REDIRECTLOGIN') && REDIRECTLOGIN['redirectuser']) {
+		if(LOGINREDIRECT) {
 
-			$redirect = REDIRECTLOGIN;
+			$path = str_replace('%userid%', $findUser['userid'], LOGINREDIRPATH);
 
-			$redirect['redirectpath'] = str_replace('%userid%', $findUser['userid'], $redirect['redirectpath']);
-
-			if($redirect['timeout'] > 0) {
-				header('refresh: '.$redirect['timeout'].'; url='.$redirect['redirectpath']);
+			if(LOGINREDIRTIMEOUT > 0) {
+				header('refresh: '.LOGINREDIRTIMEOUT.'; url='.$path);
 			} else {
-				header('Location: '.$redirect['redirectpath']);
+				header('Location: '.$path);
 			}
 		}
 
@@ -278,9 +276,7 @@ class Identificator extends Filter {
 
 	function AuthAction(): bool {
 
-		if(!$this->IOAuthStatus['auth_status']) {
-
-			//Logger::collectAlert(Logger::ATTENTIONS, AUTHDISABLED);
+		if(!$this->authSts['auth_status']) {
 			return $this->setUserProfile(false);
 		}
 
@@ -330,7 +326,7 @@ class Identificator extends Filter {
 
 	function restoreAction(): ?string {
 
-		if(!$this->IOAuthStatus['restore_status']) {
+		if(!$this->authSts['restore_status']) {
 			Logger::collectAlert(Logger::ATTENTIONS, RESTOREDISABLED);
 			return false;
 		}
@@ -379,7 +375,7 @@ class Identificator extends Filter {
 
 	function verifyUserActivation(): ?array {
 
-		if(!$this->IOAuthStatus['restore_status']) {
+		if(!$this->authSts['restore_status']) {
 
 			Logger::collectAlert(Logger::ATTENTIONS, RESTOREDISABLED);
 			return null;
@@ -416,7 +412,7 @@ class Identificator extends Filter {
 
 	function updateUserPassword(bool $verifbyid=true, int $userid=0): bool {
 
-		if(!$this->IOAuthStatus['restore_status']) {
+		if(!$this->authSts['restore_status']) {
 
 			Logger::collectAlert(Logger::INFORMATION, RESTOREDISABLED);
 			return false;
@@ -470,7 +466,7 @@ class Identificator extends Filter {
 
 	function registrationAction(): bool {
 
-		if(!$this->IOAuthStatus['reg_status']) {
+		if(!$this->authSts['reg_status']) {
 
 			Logger::collectAlert(Logger::INFORMATION, REGDISABLED);
 			return false;
@@ -530,7 +526,7 @@ class Identificator extends Filter {
 
 	function verifyUserRegistration(): bool {
 
-		if(!$this->IOAuthStatus['reg_status']) {
+		if(!$this->authSts['reg_status']) {
 			Logger::collectAlert(Logger::INFORMATION, REGDISABLED);
 			return false;
 		}

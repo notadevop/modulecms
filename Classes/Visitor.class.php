@@ -320,7 +320,7 @@ final class Visitor extends Database {
 		// Cпециально для SQLite базы создаем папку и в ней базу
 		$files = new Filemanipulator();
 
-		$workinDir = ROOTPATH.SQLITEJOB['sqlitefolder'];
+		$workinDir = ROOTPATH.SQLITEFOLDER;
 
 		$files->setDirName($workinDir);
 		$files->createDir();
@@ -334,7 +334,7 @@ final class Visitor extends Database {
 			'outtime' => (time() - 60),
 			'userip'  => $this->get_ip(),
 			'uagent'  => serialize($this->get_userspecs()),
-			'sqlfile' => ($workinDir.DIRECTORY_SEPARATOR.SQLITEJOB['sqlitefile'])
+			'sqlfile' => ($workinDir.DS.SQLITEFILE)
 		);
 
 		$sqlite = new Sqlitec($p['sqlfile']);
@@ -367,17 +367,17 @@ final class Visitor extends Database {
 
 	    $objusers = $sqlite->prepare($sql);
 
-	    $objusers->bindValue(':curtime', $p['vistime'], SQLITE3_TEXT);
-	    $objusers->bindValue(':addr', $p['userip'], SQLITE3_TEXT);
-	    $objusers->bindValue(':uagent', $p['uagent'], SQLITE3_TEXT);
-	    $objusers->bindValue(':sess', $p['session'], SQLITE3_TEXT);
+	    $objusers->bindValue(':curtime',$p['vistime'], 	SQLITE3_TEXT);
+	    $objusers->bindValue(':addr', 	$p['userip'], 	SQLITE3_TEXT);
+	    $objusers->bindValue(':uagent', $p['uagent'], 	SQLITE3_TEXT);
+	    $objusers->bindValue(':sess', 	$p['session'], 	SQLITE3_TEXT);
 
 	    $objusers->execute();
 
 	    $sql = 'DELETE FROM tmp_users_online WHERE usertime < :tmout';
 
 	    $deluser = $sqlite->prepare($sql);
-	    $deluser->bindValue(':tmout', $p['outtime'], SQLITE3_TEXT);
+	    $deluser->bindValue(':tmout', 	$p['outtime'], 	SQLITE3_TEXT);
 	    $deluser->execute();
 
 	    $sql 	= 'SELECT COUNT(*) as count FROM tmp_users_online';
