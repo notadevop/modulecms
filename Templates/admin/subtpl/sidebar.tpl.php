@@ -4,57 +4,84 @@
  *  Сайдбар для шаблона!
  */
 
+
+
 if($this->regOk) {
 
-    $name   = '<a href="/admin/profile/'.PROFILE['userid'].'">'.PROFILE['username'].'</a>';
-    $logout = '<a href="/logout">Выйти?</a>';
-    $online = '<a href="/admin/usersonline">('.$this->result['permanetRes']['online'].')</a>';
-    $notifs = '(<a href="/admin/notifications">'.$this->result['permanetRes']['notifications'].'</a>)';
-} else {
-    $name = 'Гость';
-    $logout = '<a href="/login">Авторизоваться</a>';
-    $online = '('.$this->result['permanetCtrlResult']['online']['result'].')';
-    $notifs = '0';
+    $authorize = array(
+
+        str_replace(':num', PROFILE['userid'] ,$this->allRoutes['/admin/profile/:num']['url']) 
+                            => $this->allRoutes['/admin/profile/:num']['urltitle'].': '.PROFILE['username'],
+        $this->allRoutes['/logout']['url'] 
+                            => 'Cтатус: '.$this->allRoutes['/logout']['urltitle'],
+        $this->allRoutes['/usersonline']['url'] 
+                            => $this->allRoutes['/usersonline']['urltitle'].': '.$this->result['permanetRes']['online'],
+        $this->allRoutes['/admin/notifications']['url'] 
+                            => $this->allRoutes['/admin/notifications']['urltitle'].' '.$this->result['permanetRes']['notifications'],
+    );
+
+    $profile = array(
+        str_replace(':num', PROFILE['userid'] ,$this->allRoutes['/admin/profile/:num']['url']) 
+                            => 'Показать '.$this->allRoutes['/admin/profile/:num']['urltitle'],
+        '' => 'Редактировать профиль',
+        '' => 'Активные сессии',
+        '' => 'Почта пользователя',
+        '' => 'Добавить привелегии',
+        '' => 'Редактирование привелегий',
+        $this->allRoutes['/admin/users']['url'] => $this->allRoutes['/admin/users']['urltitle'],
+        '' => 'Редактировать пользователей',
+        $this->allRoutes['/usersonline']['url'] => $this->allRoutes['/usersonline']['urltitle'],
+    );
+
+
+    $settings = array(
+        $this->allRoutes['/admin/settings/website']['url'] 
+                    => $this->allRoutes['/admin/settings/website']['urltitle'],
+    );
 }
+
+
 
 ?>
     <aside>
         <div>
-            <h3>Авторизайия</h3>
+            <h3>Авторизация</h3>
             <ul>
-            <?php if($this->regOk) { ?>
-                    <hr />
-                    <li>Пользователь: <?=$name;?></li>
-                    <li>Cтатус: <?=$logout;?></li>
-                    <li>Пользователей онлайн: <?=$online;?></li>
-                    <li>Уведомления: <?=$notifs;?></li>
-            <?php } else { ?>
-                    <li><a href="/login">Логин</a></li>
-                    <li><a href="/register">Регистрация</a></li>
-                    <li><a href="/restore">Восстановление</a></li>  
-            <?php } ?>
-            </ul>
-        </div>
-        <div>
-            <ul><label>Профиль</label><hr />
-                <li><a href="/admin/profile/<?=PROFILE['userid'];?>">Профиль пользователь</a></li>
-                <li>Редактировать профиль</li>
-                <li>Активные сессии</li>
-                <li>Почта пользователя</li>
-                <li>Добавить привелегии</li>
-                <li>Редактирование привелегий</li>
-                <li><a href="/admin/users">Список пользователей</a></li>
-                <li>Редактировать пользователей</li>
-                <li><a href="/admin/usersonline">Пользователи онлайн</a></li>
+                <?php 
+
+                foreach ($authorize as $key => $value) {
+                    
+                    echo '<li><a href="'.$key.'" style="color: inherit; text-decoration: none;">'.$value.'</a></li>';
+                }
+                ?>
             </ul>
         </div>
 
         <div>
-            <ul><label>Настройки вебсайта</label><hr />
-                <li><a href="/admin/settings/website">Базовые настройки</a></li>
-                <li>Авторизация</li>
-                <li></li>
+            <h3>Профиль и Пользователи</h3>
+            <ul>
+                <?php 
+
+                foreach ($profile as $key => $value) {
+                    
+                    echo '<li><a href="'.$key.'" style="color: inherit; text-decoration: none;">'.$value.'</a></li>';
+                }
+                ?>
             </ul>
         </div>
+
+        <div>
+            <h3>Настройки</h3>
+            <ul>
+                <?php 
+
+                foreach ($settings as $key => $value) {
+                    
+                    echo '<li><a href="'.$key.'" style="color: inherit; text-decoration: none;">'.$value.'</a></li>';
+                }
+                ?>
+            </ul>
+        </div>
+
     </aside>
 </section>

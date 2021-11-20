@@ -1,14 +1,15 @@
 <?php 
 /**
  *
- *	Это заголовок шаблона!
+ *  Это заголовок шаблона!
  * 
  */
 
-$stLinks = array(
+// Индексы для ссылок
 
-    '/'         => 'Главная',
-    '/admin'    => 'Админка',
+$indexes = array(
+    '/',
+    '/admin',
     /*'/test' => array(
         '/submenu' => 'submenu1',
         '/submenu1' => 'submenu2',
@@ -17,7 +18,6 @@ $stLinks = array(
         '/submenu4' => 'submenu5',
     ),*/
 );
-
 ?>
 
 <!doctype html>
@@ -36,6 +36,13 @@ $stLinks = array(
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
 
+    <style type="text/css">
+        
+    a:hover{
+        color: yellow;
+    }
+
+    </style>
 
     <script type="text/javascript">
         
@@ -75,16 +82,15 @@ $stLinks = array(
           <div class="container-fluid" style="background-color: #DCDCDC;">
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                 <?php 
-
-                foreach ($stLinks as $key => $value) {
+                foreach ($indexes as $key => $value) {
                     if(is_array($value)) {
                         ?>
                         <li class="nav-item dropdown">
                           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                           <?=$key;?>
+                            <?=$key;?>
                           </a>
                           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <?php 
@@ -98,14 +104,15 @@ $stLinks = array(
                     } else {
                         ?>
                         <li class="nav-item">
-                          <a class="nav-link active" aria-current="page" href="<?=$key;?>"><?=$value;?></a>
+                          
+                          <a class="nav-link active" aria-current="page" href="<?=$this->allRoutes[$value]['url'];?>"><?=$this->allRoutes[$value]['urltitle'];?></a>
+
                         </li>
                         <?php 
                     }
                 }
                 ?>
-                
-                </ul>
+              </ul>
 
               <form class="d-flex" action="/admin/" method="get">
                 <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Search">
