@@ -11,8 +11,9 @@ require_once($this->activeTpl.$r['templates']['banner']);
 
   <section id="pageContent">
 		<main role="main">
-				<h2>Это заглушка! Ооо, привет!</h2>
-				<p></p>
+				<h2>Информационная страница или заглушка сайта</h2>
+				<hr />
+				<p>Данная страница несет только информационный характер!</p>
 		</main>
 
 <?php 

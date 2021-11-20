@@ -10,7 +10,8 @@ define('DBERRPREPQUERY',	'Ошибка подготовки SQL запроса!'
 define('DBERRQUERY', 		'Ошибка исполнения SQL запроса!');
 
 define('ERRCLASSNOTFOUND',	'Класс %s не найден!');
-define('NOROUTES',			'Фатальная ошибка пути не найдены!');
+define('NOROUTES',			'<h1>Фатальная ошибка пути не найдены!</h1>');
+define('ROUTEAFFECTED',		'<h1>Индексы путей поврежденны!</h1>');
 
 // Ошибки связанные с авторизацией
 

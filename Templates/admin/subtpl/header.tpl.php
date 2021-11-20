@@ -35,18 +35,47 @@ $stLinks = array(
     <script src="script.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+
+
+    <script type="text/javascript">
+        
+        function myFunction() {
+            alert('Вы вышли из системы!');
+
+            //if(confirm("Перенаправить на главную?")) {
+            //    window.location.href = "<?=HOST;?>"
+            //}
+
+            window.location.href = "<?=HOST;?>"
+        }
+
+        function checkCookies() {
+              var text = "";
+
+              if (navigator.cookieEnabled == true) {
+                text = "Cookies are enabled.";
+              } else {
+                 text = "Cookies are not enabled.";
+              }
+              document.getElementById("demo").innerHTML = text;
+        }
+
+        // <body onload="checkCookies()">
+    </script>
 </head>
-<body>
+
+
+
+
+<body onload="setTimeout(myFunction, 7200000)">
     <header>
         <div id="logo"> Администратор </div>
-
         <p> Административная зона </p>
-       
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
           <div class="container-fluid" style="background-color: #DCDCDC;">
-
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                 <?php 
 
@@ -75,7 +104,8 @@ $stLinks = array(
                     }
                 }
                 ?>
-              </ul>
+                
+                </ul>
 
               <form class="d-flex" action="/admin/" method="get">
                 <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Search">

@@ -56,7 +56,6 @@ define('RESTOREALLOW', 		true);
 define('LOGINALLOW',		true);
 define('LOGINREDIRECT',		true);
 define('LOGINREDIRTIMEOUT',	0);
-define('LOGINREDIRPATH',	HOST.'/admin/profile/%userid%');
 define('LOGINREDIRREFFERER',false);
 
 define('LOGOUTALLOW', 		true);
@@ -65,7 +64,10 @@ define('LOGOUTREDIRTIMEOUT',3);
 define('LOGOUTREDIRPATH', 	HOST);
 
 define('AUTHALLOW', 		true);
+// Установка куки на короткий период в часах
 define('AUTHCOOKIEUPDATE', 	2);
+// Установка куки на долгий период в часах
+define('AUTHCOOKIEUPDLONG', 24 * 7);
 define('AUTHUPDATEPASSINT', 70);
 define('AUTHWAITREGTIME',	'+24 Hours');
 define('AUTHHASHUPDATETIME', 7);

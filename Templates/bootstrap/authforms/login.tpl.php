@@ -19,7 +19,7 @@ require_once($this->activeTpl.$r['templates']['banner']);
 <section id="pageContent">
     <main role="main">
         <h1><?=FORMLOGINTITLE;?></h1>
-            <form action="/login" method="post">
+            <form action="<?=$this->allRoutes['/login']['url'];?>" method="post">
               <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label"><?=FORMEMAILTITLE;?></label>
                 <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="<?=Identificator::USERMAILVALUE;?>" value="jcmaxuser@gmail.com">
@@ -36,7 +36,12 @@ require_once($this->activeTpl.$r['templates']['banner']);
               <input type="submit" class="btn btn-primary" name="loginaction" value="Войти" />
             </form>
             <p class="lead">
-                <a href="/restore">Забыл пароль</a> | <a href="/register">Регистрация</a>
+                <a href="<?=$this->allRoutes['/restore']['url'];?>">
+                  <?=$this->allRoutes['/restore']['urltitle'];?>
+                </a> | 
+                <a href="<?=$this->allRoutes['/register']['url'];?>">
+                  <?=$this->allRoutes['/register']['urltitle'];?>
+                </a>
             </p>
     </main>
 

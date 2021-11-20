@@ -40,6 +40,7 @@ if($this->regOk) {
                 <li><a href="/admin/profile/<?=PROFILE['userid'];?>">Профиль пользователь</a></li>
                 <li>Редактировать профиль</li>
                 <li>Активные сессии</li>
+                <li>Почта пользователя</li>
                 <li>Добавить привелегии</li>
                 <li>Редактирование привелегий</li>
                 <li><a href="/admin/users">Список пользователей</a></li>
@@ -47,15 +48,10 @@ if($this->regOk) {
                 <li><a href="/admin/usersonline">Пользователи онлайн</a></li>
             </ul>
         </div>
-        <div>  
-            <ul><label></label><hr />
-                <li>Почта пользователя</li>
-                <li>Уведомления</li>
-                <li>Активные сессии</li>
-            </ul></div>
+
         <div>
             <ul><label>Настройки вебсайта</label><hr />
-                <li>Загаловки</li>
+                <li><a href="/admin/settings/website">Базовые настройки</a></li>
                 <li>Авторизация</li>
                 <li></li>
             </ul>

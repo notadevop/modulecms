@@ -34,7 +34,8 @@ $files = array(
 
 	'meta/Attentions.meta.php',
 	'meta/Info.meta.php',
-	'meta/Errors.meta.php'
+	'meta/Errors.meta.php',
+	'meta/Staticlinks.meta.php',
 );
 
 foreach ($files as $key => $value) {
@@ -55,8 +56,6 @@ function languages(): string {
 	$known_langs = array('en','fr','de','es');
 	$user_pref_langs = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 
-	//$user_pref_langs = (new Visitor())->get_data()['lang'];
-
 	foreach($user_pref_langs as $idx => $lang) {
 	    $lang = substr($lang, 0, 2);
 	    if (in_array($lang, $known_langs)) {
@@ -66,6 +65,7 @@ function languages(): string {
 	}
 }
 
+
 // ВРЕМЕННО:
 // TODO: Части настроек которые должны быть изменены в течении исполнения 
 define('LANGUAGE','rus');
@@ -73,17 +73,15 @@ define('LANGUAGE','rus');
 // Части страниц которые зарезервированны под систему 
 // TODO: Так же могут быть изменены в процессе исполнения
 
-define('ADMINPAGE', 'admin');
+//define('ADMINPAGE', 'admin');
 define('LOGINPAGE', 'login');
 define('JSPAGE',	'js');
-//---
+//---//
 define('USERPAGE',	'');
 define('BLOG',		'blog');
 
 
-Router::initDefaultRoutes();
 
-//define('ADMINPAGE', Router::modifyRoutes('admin'));
 
 $v = new vRender();
 $v->prepareRender();

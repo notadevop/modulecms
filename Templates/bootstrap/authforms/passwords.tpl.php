@@ -15,7 +15,7 @@ if (!empty($this->result['templateCtrlResult']['result'])) {
   $query = http_build_query($this->result['templateCtrlResult']['result']);
 }
 
-$action = '/updatePassword/?'.@$query;
+//$action = '/updatePassword/?'.@$query;
 
 require_once($this->activeTpl.$r['templates']['header']);
 require_once($this->activeTpl.$r['templates']['banner']);
@@ -26,7 +26,7 @@ require_once($this->activeTpl.$r['templates']['banner']);
 <section id="pageContent">
     <main role="main">
       <h1><?=FORMPWDTITLE;?></h1>
-      <form action="<?=$action;?>" method="post">
+      <form action="<?=$this->allRoutes['/updatePassword']['url'].'/?'.$query;?>" method="post">
         <div class="mb-3">
           <label for="exampleInputPassword1" class="form-label"><?=FORMNEWPWD1;?></label>
           <input type="password" class="form-control" id="exampleInputPassword1" name="userpassword1">

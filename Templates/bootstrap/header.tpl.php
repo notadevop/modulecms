@@ -5,10 +5,11 @@
  * 
  */
 
-$stLinks = array(
+// Индексы для ссылок
 
-    '/'         => 'Главная',
-    '/admin'    => 'Админка',
+$indexes = array(
+    '/',
+    '/admin',
     /*'/test' => array(
         '/submenu' => 'submenu1',
         '/submenu1' => 'submenu2',
@@ -17,7 +18,6 @@ $stLinks = array(
         '/submenu4' => 'submenu5',
     ),*/
 );
-
 ?>
 
 <!doctype html>
@@ -56,12 +56,14 @@ $stLinks = array(
 
                 <?php 
 
-                foreach ($stLinks as $key => $value) {
+                foreach ($indexes as $key => $value) {
+
                     if(is_array($value)) {
+                        
                         ?>
                         <li class="nav-item dropdown">
                           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                           <?=$key;?>
+                            <?=$key;?>
                           </a>
                           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <?php 
@@ -75,7 +77,9 @@ $stLinks = array(
                     } else {
                         ?>
                         <li class="nav-item">
-                          <a class="nav-link active" aria-current="page" href="<?=$key;?>"><?=$value;?></a>
+                          
+                          <a class="nav-link active" aria-current="page" href="<?=$this->allRoutes[$value]['url'];?>"><?=$this->allRoutes[$value]['urltitle'];?></a>
+
                         </li>
                         <?php 
                     }
@@ -84,9 +88,10 @@ $stLinks = array(
               </ul>
 
               <form class="d-flex" action="/" method="get">
-                <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Search">
+                <input class="form-control me-2" type="search" name="find" placeholder="Поиск" aria-label="Search">
                 <input type="submit" name="search" value="Поиск" class="btn btn-outline-success">
               </form>
+
             </div>
           </div>
         </nav>

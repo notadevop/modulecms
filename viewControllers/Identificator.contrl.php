@@ -143,7 +143,7 @@ class Identificator extends Filter {
 
 		Logger::collectAlert(Logger::SUCCESS, LOGGEDOUT);
 
-		if(!$redirect || !defined('LOGOUT')) { return true; }
+		if(!$redirect || !defined('LOGOUTALLOW')) { return true; }
 
 		if(LOGOUTALLOW) {
 
@@ -222,8 +222,8 @@ class Identificator extends Filter {
 		} 
 
 		if(LOGINREDIRECT) {
-
-			$path = str_replace('%userid%', $findUser['userid'], LOGINREDIRPATH);
+			$source = Router::getRoute('/admin/profile/:num');
+			$path = str_replace(':num', $findUser['userid'] ,$source['url']);
 
 			if(LOGINREDIRTIMEOUT > 0) {
 				header('refresh: '.LOGINREDIRTIMEOUT.'; url='.$path);
@@ -364,8 +364,10 @@ class Identificator extends Filter {
 
 		// TODO: Отправка емайла пользователю для восстановления пароля
 		// TODO: сделать генерацию ссылок
+		
+		$source = Router::getRoute('/verifyrestorerequest');
 
-		$link = HOST.'/verifyrestorerequest/?'.self::USERIDVALUE.'=' . $genResult['id'] . '&'.self::CONFRHSHVALUE.'=' . $genResult['cofirm'] . '&'.self::TOKENHSHVALUE.'=' . $genResult['token'];
+		$link = HOST.$source['url'].'/?'.self::USERIDVALUE.'=' . $genResult['id'] . '&'.self::CONFRHSHVALUE.'=' . $genResult['cofirm'] . '&'.self::TOKENHSHVALUE.'=' . $genResult['token'];
 
 		Logger::collectAlert(Logger::INFORMATION, $link);	
 
@@ -515,8 +517,10 @@ class Identificator extends Filter {
 
 		// TODO: Отправка емайла пользователю для восстановления пароля
 		// TODO: сделать генерацию ссылок
+		
+		$source = Router::getRoute('/verifreg');
 
-		$link = HOST . '/verifreg/?'.self::USERIDVALUE.'=' . $meta['id'] . '&'.self::CONFRHSHVALUE.'=' . $meta['cofirm'] . '&'.self::TOKENHSHVALUE.'=' . $meta['token'];
+		$link = HOST .$source['url'].'/?'.self::USERIDVALUE.'=' . $meta['id'] . '&'.self::CONFRHSHVALUE.'=' . $meta['cofirm'] . '&'.self::TOKENHSHVALUE.'=' . $meta['token'];
 
 		Logger::collectAlert(Logger::INFORMATION, $link);
 		return true;

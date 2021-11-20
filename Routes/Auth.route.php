@@ -1,13 +1,14 @@
 <?php 
 
-(defined('ROOTPATH') && defined('DS')) || die('something wrong');
+defined('ROOTPATH') || die('something wrong');
 
 return array(
 
 	// Вход в систему
 
 	'/login' => array( 
-		'url' 		=> '/login', 
+		'url' 		=> '/login',
+		'urltitle'  => LOGINPG,
 		'action' 	=> 'Identificator/loginAction',
 		'template'	=> 'authforms/login.tpl.php',
 		'priority'	=> 4,
@@ -18,6 +19,7 @@ return array(
 
 	'auth' 			=> array(
 		'url' 		=> 'auth', 	
+		'urltitle'  => '',
 		'action' 	=> 'Identificator/authAction',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 1,
@@ -28,6 +30,7 @@ return array(
 
 	'/register' 	=> array(
 		'url' 		=> '/register', 
+		'urltitle'  => REGISTERPAGE,
 		'action' 	=> 'Identificator/registrationAction',
 		'template'	=> 'authforms/registration.tpl.php',
 		'priority'	=> 4,
@@ -38,6 +41,7 @@ return array(
 
 	'/restore' 		=> array(
 		'url' 		=> '/restore', 
+		'urltitle'  => RESTOREPAGE,
 		'action' 	=> 'Identificator/restoreAction',
 		'template'	=> 'authforms/restore.tpl.php',
 		'priority'	=> 4,
@@ -47,7 +51,8 @@ return array(
 	// Форма для введения нового пароля для пользователя
 
 	'/verifyrestorerequest' => array(
-		'url' 		=> '/verifyrestorerequest', 
+		'url' 		=> '/verifyrestorerequest',
+		'urltitle'  => VERIFYRESTORE,
 		'action' 	=> 'Identificator/verifyUserActivation',
 		'template'	=> 'authforms/passwords.tpl.php',
 		'priority'	=> 2,
@@ -58,6 +63,7 @@ return array(
 
 	'/updatepassword' 	=> array(
 		'url' 		=> '/updatepassword', 
+		'urltitle'  => PWDUPDATE,
 		'action' 	=> 'Identificator/updateUserPassword',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 2,
@@ -68,6 +74,7 @@ return array(
 
 	'/verifreg' 	=> array(
 		'url' 		=> '/verifreg',
+		'urltitle'  => VERIFYREGIST,
 		'action' 	=> 'Identificator/verifyUserRegistration',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 2,
@@ -81,6 +88,7 @@ return array(
 
 	'/logout' 		=> array(
 		'url' 		=> '/logout',
+		'urltitle'  => LOGOUTPAGE,
 		'action' 	=> 'Identificator/logout/true/false',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 3,

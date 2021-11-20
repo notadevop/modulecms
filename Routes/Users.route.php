@@ -21,6 +21,7 @@ return array(
 
 	'/admin/users' => array(
 		'url' 		=> '/admin/users',
+		'urltitle'  => USERSLISTPAGE,
 		'action' 	=> 'ProfileController/getAllUsers',
 		'template'	=> 'listUsers.tpl.php',
 		'priority'	=> 3,
@@ -31,6 +32,7 @@ return array(
 
 	'/usersonline' 	=> array(
 		'url' 		=> '/usersonline',
+		'urltitle'  => USERSONLINEPG,
 		'action' 	=> 'Visitor/getOnlineUsers',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 3,
@@ -41,10 +43,10 @@ return array(
 
 	'online' => array(
 		'url' 		=> 'online',
+		'urltitle'  => '',
 		'action' 	=> 'Visitor/users_online',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 4,
 		'rendertype'=> null
 	),
-
 );

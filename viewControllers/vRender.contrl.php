@@ -5,29 +5,29 @@
 
 class vRender {
 
-	
 	private $result;
-
 	private $currentTplDir;
 	private $activeTpl;
-
 	private $currentRoute;
 	private $replaceParams;
-
 	private $regOk;
 	private $params;
-
 	private $htmlRenderRes;
-
 	private $pages;
+	private $allRoutes;
+
 
 	function __construct() {
 
 		// Как то определить к какому пути относится какой шаблон
 
 		Router::initDefaultRoutes();
+		define('ADMINPAGE', Router::modifyRoutes('admin'));
+
+
 		$this->result 		= Router::getResult();
 		$this->currentRoute = Router::getRoute();
+		$this->allRoutes 	= Router::getAllRoutes(); // Все пути 
 
 		$this->regOk = (defined('PROFILE') && !empty(PROFILE['useremail'])) ? true : false;
 
@@ -43,6 +43,8 @@ class vRender {
 		$this->currentTplDir = TPLFOLDER;
 
 		$settings = new HostSettings();
+
+		// TODO: Сперва определить куда попал ?????
 
 		$prm = array(
 			'website_template' 			=> '', // Пользовательский шаблон
@@ -68,54 +70,62 @@ class vRender {
 		return $tplarr;
 	}
 
+	// Тут определить какая страница сейчас загруженна
+
+	function identifyPage() {
+
+	}
+
 
 	function prepareRender() {
 
-		$Allroutes  	= Router::getRoute(true); // Все пути 
-		$currentRoute 	= $this->currentRoute;
-		$ui 			= null;
+		$ui = null;
 
-		if(isset($currentRoute['uriarr'][0]) && !empty($currentRoute['uriarr'][0])){
+		if(!empty(isset($this->currentRoute['uriarr'][0]))){
 
-			$ui = $currentRoute['uriarr'][0];
+			$ui = $this->currentRoute['uriarr'][0];
 		}
+
+
+		// Определяет нужно заблокировать вывод или на оборот
+		// нужно например для административной части вывода вместо html json 
 
 		$deniedTpl = false;
 
-		if($ui == 'admin' && $this->regOk) {
+		if($ui == ADMINPAGE && $this->regOk) {
 			$r = $this->activateTemplate('admin');
 		} else {
 
-			if($ui == 'admin' && !$this->regOk) {
+			if($ui == ADMINPAGE && !$this->regOk) {
 				$deniedTpl = true;
 			}
 
 			$r = $this->activateTemplate($this->params['website_template']);
 		}
 
+		// Тут устанавливается шаблон по умолчанию, 
+		// если не найден другой!
 		if (!$r) {
 			$r = $this->activateTemplate(TPLTEMPLATE);
 		}
 
 		if(empty($this->currentRoute)) {
-			$defTpl = $Allroutes['/404page']['template'];
+			$defTpl = $this->allRoutes['/404page']['template'];
 		}elseif ($deniedTpl){
-			$defTpl = $Allroutes['/login']['template'];
+			$defTpl = $this->allRoutes['/login']['template'];
 		} else { 
-			$defTpl = $Allroutes[$this->currentRoute['uri']]['template'];
+			$defTpl = $this->allRoutes[$this->currentRoute['url']]['template'];
 		}
+
+
+		ob_start();
 
 		if(!$r || !file_exists($this->activeTpl.$defTpl)) {
 
 			die(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl);
 		}
 
-		// Тут определить какой тип страницы открыт. 
-		// Админка, окно входа или пользовательский интерфейс
 
-		// TODO: Определить язык пользователя и загрузить тот языковый пакет
-		// 
-		ob_start();
 		if(isset($r['languagePack'][LANGUAGE])) {
 			if (!file_exists($this->activeTpl.$r['languagePack'][LANGUAGE])) {
 				Logger::collectAlert('warnings', 'Нет языкового пакета!');
@@ -123,8 +133,15 @@ class vRender {
 				require_once($this->activeTpl.$r['languagePack'][LANGUAGE]);
 			}
 		}
-	
-		require_once ($this->activeTpl.$defTpl);
+
+		try {
+			if (!require_once ($this->activeTpl.$defTpl)) {
+				throw new Exception(NOTEMPLETEFOUND);
+			}
+		} catch (Exception $e) {
+			echo $e->getMessage();
+		}
+
 		$this->htmlRenderRes = ob_get_contents();
 		ob_end_clean();
 

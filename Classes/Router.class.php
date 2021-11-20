@@ -51,8 +51,8 @@ final class Router {
 
 	private static 	$params 			= array();
 	private static 	$requestedUrl;
-	public static 	$defaultRoutesDir 	= ROOTPATH.DEFROUTEPATH;
-	public static 	$defaultRoutes 		= array();
+	private static 	$defaultRoutesDir 	= ROOTPATH.DEFROUTEPATH;
+	private static 	$defaultRoutes 		= array();
 
 
 	// Инициализирует все пути по умолчанию
@@ -96,11 +96,9 @@ final class Router {
 
 
 		if (empty(self::$defaultRoutes)) {
-			die('<h1>'.NOROUTES.'</h1>');
-		}
-
-		if(empty($page)) {
-			die('<h1>fatal! route affected!</h1>');
+			die(NOROUTES);
+		} else if(empty($page)) {
+			die(ROUTEAFFECTED);
 		}	
 
 		// Получаем данные из базы данных
@@ -108,29 +106,16 @@ final class Router {
 		$stg = new HostSettings();
 
 		$tmp = $stg->getSettings([$page=>$page]);
-
+		
 		if(!$tmp || $tmp[$page] == $page) { return $page; }
 
-		// Пытаемся заменить в пути индексы
-
 		foreach (self::$defaultRoutes as $key => $value) {
+			
+			$newValue = str_ireplace(DS.$page, DS.$tmp[$page], $value['url']);
 
-			// Тут устанавливаем новый путь
-
-			$newKey = str_ireplace(DS.$page, DS.$tmp[$page], $key);
-			//$newKey = str_ireplace(DS.$page, DS.$tmp[$page], $value['url']);
-
-			self::$defaultRoutes[$newKey] = $value;
-
-			// Тут проверяем и удаляем старый взамен нового
-
-			$first = Urlfixer::splitUrl($key);
-
-			if (!empty($first) && $first[0] == $page) {
-
-				unset(self::$defaultRoutes[$key]);
-			}
+			self::$defaultRoutes[$key]['url'] = $newValue;
 		}
+
 		return $tmp[$page];
 	}
 
@@ -160,25 +145,42 @@ final class Router {
 		return false;
 	}
 
+	public static function getAllRoutes(): ?array {
+
+		if(!empty(self::$defaultRoutes)) {
+
+			return self::$defaultRoutes;
+		}		
+
+		return null;
+	}
+
 
 	// Возвращает действующий путь и его свойства 
 	// (путь где сейчас находиться пользоватль) 
 
-	public static function getRoute(bool $getAllRoutes=false): ?array {
+	public static function getRoute(string $getSelectedRoute=''): ?array {
 
-		if ($getAllRoutes) {return self::$defaultRoutes;}
+		if (!empty($getSelectedRoute)) {
+			if (isset(self::$defaultRoutes[$getSelectedRoute])) {
+				return self::$defaultRoutes[$getSelectedRoute];
+			}
+			return null;
+		}
 
-		foreach(self::$defaultRoutes as $key => $controller) {
-			$regex = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $key));
-			if ( preg_match('#^' .$regex. '$#', Urlfixer::getCurrentUri()) ) {
+		$current = Urlfixer::getCurrentUri();
 
-				$path = array(
-					'uriarr' 	=> Urlfixer::splitUrl($key),
-					'uri' 		=> $key,
-					'action' 	=> Urlfixer::splitUrl($controller['action']),
-					'params'	=> self::$defaultRoutes[$key]
+		foreach(self::$defaultRoutes as $key => $ctrl) {
+			$regex = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $ctrl['url']));
+			if ( preg_match('#^' .$regex. '$#', $current) ) {
+
+				return array(
+					'uriarr' 	=> Urlfixer::splitUrl($ctrl['url']),
+					'uri' 		=> $ctrl['url'], //$key
+					'url' 		=> $key,
+					'action' 	=> Urlfixer::splitUrl($ctrl['action']),
+					'params'	=> self::$defaultRoutes[$key],
 				);
-				return $path;
 		  	}
 		}
 		return null;
@@ -203,13 +205,18 @@ final class Router {
 		} else { 
 			foreach (self::$defaultRoutes as $route => $uri) {
 				// Заменяем wildcards на рег. выражения
-				if (strpos($route, ':') !== false) {
-					$route = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $route));
+				//if (strpos($route, ':') !== false) {
+				if (strpos($uri['url'], ':') !== false) {
+					//$route = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $route));
+					$uri['url'] = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $uri['url']));
 				}
 
-				if (preg_match('#^'.$route .'$#', $requestedUrl)) { // $requestedUrl
-					if (strpos($uri['action'], '$') !== false && strpos($route, '(') !== false) {
-						$uri['action'] = preg_replace('#^'.$route.'$#', $uri['action'], $requestedUrl);
+				//if (preg_match('#^'.$route .'$#', $requestedUrl)) { // $requestedUrl
+				if (preg_match('#^'.$uri['url'] .'$#', $requestedUrl)) { // $requestedUrl
+					//if (strpos($uri['action'], '$') !== false && strpos($route, '(') !== false) {
+					if (strpos($uri['action'], '$') !== false && strpos($uri['url'], '(') !== false) {
+						//$uri['action'] = preg_replace('#^'.$route.'$#', $uri['action'], $requestedUrl);
+						$uri['action'] = preg_replace('#^'.$uri['url'].'$#', $uri['action'], $requestedUrl);
 					}
 
 					self::$params = Urlfixer::splitUrl($uri['action']); // разбиваем value роута на параметры и сохраняем
@@ -221,6 +228,9 @@ final class Router {
 
 		$controller = isset(self::$params[0]) ? self::$params[0] : 'MainController';
 		$action 	= isset(self::$params[1]) ? self::$params[1] : 'defaultMethod';
+
+		// TODO: Тут отфильтровать данные которые поступают в систему!
+
 		$params 	= array_slice(self::$params, 2);
 		$obj 		= new $controller();
 

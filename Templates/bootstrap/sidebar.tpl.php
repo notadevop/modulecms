@@ -4,34 +4,35 @@
  *  Сайдбар для шаблона!
  */
 
-if($this->regOk) {
 
-    $name   = PROFILE['username'];
-    $logout = '<a href="/logout">Выйти?</a>';
-    $online = '('.$this->result['permanetRes']['online'].')';
-    $notifs = '(<a href="/admin/notifications">'.$this->result['permanetRes']['notifications'].'</a>)';
-} else {
-    $name = 'Гость';
-    $logout = '<a href="/login">Авторизоваться</a>';
-    $online = '('.$this->result['permanetRes']['online'].')';
-    $notifs = '0';
-}
 
-?>
+
+//<?=$Allroutes[$value]['url'];?>
+
     <aside>
         <div>
             <h3>Авторизайия</h3>
             <ul>
             <?php if($this->regOk) { ?>
                     <hr />
-                    <li>Пользователь: <?=$name;?></li>
-                    <li>Cтатус: <?=$logout;?></li>
-                    <li>Пользователей онлайн: <?=$online;?></li>
-                    <li>Уведомления: <?=$notifs;?></li>
+                    
+                    <li>Пользователь: 
+                        <a href="<?=str_replace(':num', PROFILE['userid'] ,$this->allRoutes['/admin/profile/:num']['url']);?>">
+                            <?=PROFILE['username'];?></a></li>
+
+                    <li>Cтатус: <a href="<?=$this->allRoutes['/logout']['url'];?>"><?=$this->allRoutes['/logout']['urltitle'];?></a></li>
+                    
+                    <li><?=$this->allRoutes['/usersonline']['urltitle'];?>: 
+                        <a href="<?=$this->allRoutes['/usersonline']['url'];?>">
+                        (<?=$this->result['permanetRes']['online'];?>)
+                        </a>
+                    </li>
+
+                    <li><?=$this->allRoutes['/admin/notifications']['urltitle'];?>: <a href="<?=$this->allRoutes['/admin/notifications']['url'];?>">(<?=$this->result['permanetRes']['notifications'];?>)</a></li>
             <?php } else { ?>
-                    <li><a href="/login">Логин</a></li>
-                    <li><a href="/register">Регистрация</a></li>
-                    <li><a href="/restore">Восстановление</a></li>  
+                    <li><a href="<?=$this->allRoutes['/login']['url'];?>"><?=$this->allRoutes['/login']['urltitle'];?></a></li>
+                    <li><a href="<?=$this->allRoutes['/register']['url'];?>"><?=$this->allRoutes['/register']['urltitle'];?></a></li>
+                    <li><a href="<?=$this->allRoutes['/restore']['url'];?>"><?=$this->allRoutes['/restore']['urltitle'];?></a></li>
             <?php } ?>
             </ul>
         </div>

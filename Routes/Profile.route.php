@@ -10,6 +10,7 @@ return array(
 	
 	'/admin/profile/:num' => array(
 		'url' 		=> '/admin/profile/:num',
+		'urltitle'  => PROFILEVIEW, 
 		'action' 	=> 'ProfileController/getUserProfile/$1',
 		'template'	=> 'viewprofile.tpl.php',
 		'priority'	=> 3,
@@ -20,6 +21,7 @@ return array(
 
 	'/admin/profile/edit/:num' => array(
 		'url' 		=> '/admin/profile/edit/:num',
+		'urltitle' 	=> PROFILEEDIT,
 		'action' 	=> 'ProfileController/editUserProfile/$1',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 3,
@@ -30,6 +32,7 @@ return array(
 
 	'/admin/profile/remove' => array(
 		'url' 		=> '/admin/profile/remove',
+		'urltitle'  => PROFILEREMOVE,
 		'action' 	=> 'ProfileController/getUserProfile',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 3,
@@ -40,6 +43,7 @@ return array(
 
 	'/admin/profile/:any' => array(
 		'url' 		=> '/admin/profile/:any',
+		'urltitle'  => NOPAGE404,
 		'action' 	=> 'ProfileController/getUserProfile',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 3,
