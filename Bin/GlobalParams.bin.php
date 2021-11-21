@@ -40,22 +40,14 @@ class GlobalParams {
 
 	public function isExist(string $key): bool {
 
-		if(empty($this->gp)) { 
-
-			//throw new Exception('Такого глобального параметра не существует!', 1);
-			return false; 
-		} 
-
-		return array_key_exists($key, $this->gp);
+		return (!isset($this->gp) || !array_key_exists($key, $this->gp)) ? false : true;
 	}
 
 	// получаем 
 
 	public function getGlobParam(string $key): ?string {
 
-		if($this->isExist($key)) { return $this->gp[$key]; }
-
-		throw new Exception('Такого глобального параметра не существует!', 1);
+		return $this->isExist($key) ? $this->gp[$key] : null;
 	}
 }
 

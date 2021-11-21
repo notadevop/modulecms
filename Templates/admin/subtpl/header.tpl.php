@@ -62,7 +62,7 @@ $indexes = array(
               if (navigator.cookieEnabled == true) {
                 text = "Cookies are enabled.";
               } else {
-                 text = "Cookies are not enabled.";
+                text = "Cookies are not enabled.";
               }
               document.getElementById("demo").innerHTML = text;
         }
@@ -104,9 +104,7 @@ $indexes = array(
                     } else {
                         ?>
                         <li class="nav-item">
-                          
                           <a class="nav-link active" aria-current="page" href="<?=$this->allRoutes[$value]['url'];?>"><?=$this->allRoutes[$value]['urltitle'];?></a>
-
                         </li>
                         <?php 
                     }
@@ -114,7 +112,7 @@ $indexes = array(
                 ?>
               </ul>
 
-              <form class="d-flex" action="/admin/" method="get">
+              <form class="d-flex" action="" method="get">
                 <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Search">
                 <input type="submit" name="search" value="Поиск" class="btn btn-outline-success">
               </form>

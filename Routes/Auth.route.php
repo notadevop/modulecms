@@ -7,12 +7,11 @@ return array(
 	// Вход в систему
 
 	'/login' => array( 
-		'url' 		=> '/login',
+		'url' 		=> '/login/login',
 		'urltitle'  => LOGINPG,
 		'action' 	=> 'Identificator/loginAction',
 		'template'	=> 'authforms/login.tpl.php',
 		'priority'	=> 4,
-		'rendertype'=> 'authui',
 	),
 
 	// Авторизация через куки
@@ -23,62 +22,56 @@ return array(
 		'action' 	=> 'Identificator/authAction',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 1,
-		'rendertype'=> null,
 	),
 
 	// Регистрация пользователя
 
 	'/register' 	=> array(
-		'url' 		=> '/register', 
+		'url' 		=> '/login/register', 
 		'urltitle'  => REGISTERPAGE,
 		'action' 	=> 'Identificator/registrationAction',
 		'template'	=> 'authforms/registration.tpl.php',
 		'priority'	=> 4,
-		'rendertype'=> 'authui',
 	),
 
 	// Восстановление пароля
 
 	'/restore' 		=> array(
-		'url' 		=> '/restore', 
+		'url' 		=> '/login/restore', 
 		'urltitle'  => RESTOREPAGE,
 		'action' 	=> 'Identificator/restoreAction',
 		'template'	=> 'authforms/restore.tpl.php',
 		'priority'	=> 4,
-		'rendertype'=> 'authui',
 	),
 
 	// Форма для введения нового пароля для пользователя
 
 	'/verifyrestorerequest' => array(
-		'url' 		=> '/verifyrestorerequest',
+		'url' 		=> '/login/verifyrestorerequest',
 		'urltitle'  => VERIFYRESTORE,
 		'action' 	=> 'Identificator/verifyUserActivation',
 		'template'	=> 'authforms/passwords.tpl.php',
 		'priority'	=> 2,
-		'rendertype'=> 'authui',
 	),
 
 	// Обработчик данных (новых паролей) для пользователя
 
 	'/updatepassword' 	=> array(
-		'url' 		=> '/updatepassword', 
+		'url' 		=> '/login/updatepassword', 
 		'urltitle'  => PWDUPDATE,
 		'action' 	=> 'Identificator/updateUserPassword',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 2,
-		'rendertype'=> 'authui',
 	),
 
 	// Страница активации зарегестрированного пользователя
 
 	'/verifreg' 	=> array(
-		'url' 		=> '/verifreg',
+		'url' 		=> '/login/verifreg',
 		'urltitle'  => VERIFYREGIST,
 		'action' 	=> 'Identificator/verifyUserRegistration',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 2,
-		'rendertype'=> 'authui',
 	),
 
 	// Выход из системы
@@ -87,11 +80,10 @@ return array(
 	// /logout/user_token_as_:any attack protection 
 
 	'/logout' 		=> array(
-		'url' 		=> '/logout',
+		'url' 		=> '/login/logout',
 		'urltitle'  => LOGOUTPAGE,
 		'action' 	=> 'Identificator/logout/true/false',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 3,
-		'rendertype'=> 'authui',
 	),
 );

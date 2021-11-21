@@ -19,9 +19,4 @@ class Settings {
 
     }
 
-
-
-
-    
-
 }

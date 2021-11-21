@@ -13,6 +13,7 @@ class Identificator extends Filter {
 	const USERPWD2VALUE = 'userpassword2';
 	const TOKENHSHVALUE = 'token';
 	const CONFRHSHVALUE = 'confirm';
+	const USERALIEN		= 'alienuser';
 
 	// Ссылки на пути 
 
@@ -37,6 +38,7 @@ class Identificator extends Filter {
 
 			'userid'	=> 0,
 			'username'	=> 'Анонимный пользователь',
+			'useremail' => false,
 			'priveleges'=> false,
 
 			// Использовать из базы сохраненные параметры !!! 
@@ -103,7 +105,8 @@ class Identificator extends Filter {
 		$userProfile = array(
 			'userid' 	=> $this->authParams['userid'],
 			'username' 	=> $this->authParams['username'],
-			'priveleges'=> $this->authParams['priveleges']
+			'priveleges'=> $this->authParams['priveleges'],
+			'useremail' => $this->authParams['useremail'],
 		);
 
 		if($this->isNotEmpty($profile) && array_key_exists('userid', $profile)) { 
@@ -171,6 +174,7 @@ class Identificator extends Filter {
 
 			self::USERMAILVALUE => false,
 			self::USERPWD1VALUE => false,
+			//self::USERALIEN 	=> false,
 		);
 
 		$loginParams = $this->getInputParams($loginParams, '_POST');
@@ -213,6 +217,14 @@ class Identificator extends Filter {
 			return false;
 		}
 
+		// Тут нужно установить долгое время или нет 
+		// $this->authParams['future'] = '+48 Hours',
+
+		//if($loginParams[self::USERALIEN]) {
+		//	 $this->authParams['future'] = '+48 Hours';
+		//}
+
+
 		$isItSaved = $this->saveAuthAction($findUser['useremail'], $findUser['tokenHash'], false, true);
 
 		if(!$isItSaved) {
@@ -221,6 +233,7 @@ class Identificator extends Filter {
 			return false;
 		} 
 
+		
 		if(LOGINREDIRECT) {
 			$source = Router::getRoute('/admin/profile/:num');
 			$path = str_replace(':num', $findUser['userid'] ,$source['url']);
@@ -231,7 +244,7 @@ class Identificator extends Filter {
 				header('Location: '.$path);
 			}
 		}
-
+		
 		Logger::collectAlert(Logger::SUCCESS, LOGINSUCCESS);
 
 		return true;
@@ -265,7 +278,7 @@ class Identificator extends Filter {
 				$this->cjob->cleanMapArray($key);
 			} catch (Exception $e) {
 				
-				if($showerr) { 
+				if(DEBUG) { 
 					Logger::collectAlert(Logger::WARNING, $e->getMessage()); 
 				}	
 			}

@@ -30,7 +30,8 @@ require_once($this->activeTpl.$r['templates']['banner']);
                 <input type="password" class="form-control" id="exampleInputPassword1" name="<?=Identificator::USERPWD1VALUE;?>" value="Hesoyam12">
               </div>
               <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <input type="checkbox" class="form-check-input" name="<?=Identificator::USERALIEN;?>" id="exampleCheck1" 
+                value="" />
                 <label class="form-check-label" for="exampleCheck1"><?=FORMALIENPCTITLE;?></label>
               </div>
               <input type="submit" class="btn btn-primary" name="loginaction" value="Войти" />

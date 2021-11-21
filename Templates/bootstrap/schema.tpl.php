@@ -3,11 +3,10 @@
 return array(
 
 	'templates' => array(
-
-		'header' 	=> 'header.tpl.php',
-		'banner' 	=> 'banner.tpl.php',
-		'sidebar' 	=> 'sidebar.tpl.php',
-		'footer' 	=> 'footer.tpl.php'
+		'header' 	=> 'subtpl/header.tpl.php',
+		'banner' 	=> 'subtpl/banner.tpl.php',
+		'sidebar' 	=> 'subtpl/sidebar.tpl.php',
+		'footer' 	=> 'subtpl/footer.tpl.php',
 	),
 
 	'pages' => array(

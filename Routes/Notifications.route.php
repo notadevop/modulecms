@@ -14,7 +14,6 @@ return array(
 		'action' 	=> 'NotificationController/countNotifications',
 		'template'	=> '',
 		'priority'	=> 3,
-		'rendertype'=> 'userui',
 	),
 
 	'/admin/notifications' => array(
@@ -24,6 +23,5 @@ return array(
 		'action' 	=> 'NotificationController/getAllNotifications',
 		'template'	=> 'NotificationsList.tpl.php',
 		'priority'	=> 4,
-		'rendertype'=> 'adminui',
 	),
 );

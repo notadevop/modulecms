@@ -81,6 +81,9 @@ require_once($this->activeTpl.$r['templates']['banner']);
 			    </tr>
 			  </tbody>
 			</table>
+		<br />
+		<hr />
+		<p>Удалить профиль нажать <a href="<?=$this->allRoutes['/admin/profile/remove']['url'];?>">сюда!</a></p>
 	</main>
 
 <?php 

@@ -43,44 +43,6 @@ foreach ($files as $key => $value) {
 	!file_exists($r) ? die('Не могу найти системный файл!') : require_once ($r);
 }
 
-$lang = (new Visitor())->get_data()['lang'];
-
-
-function languages(): string {
-
-	// проверка не указал ли пользователь свой язык, 
-	// если нет смотрим на браузер и по нему определяем есть ли такой язык
-	// если нет устанавливаем язык который стоит по умолчанию (!)
-
-
-	$known_langs = array('en','fr','de','es');
-	$user_pref_langs = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-
-	foreach($user_pref_langs as $idx => $lang) {
-	    $lang = substr($lang, 0, 2);
-	    if (in_array($lang, $known_langs)) {
-	        echo 'Preferred language is '.$lang;
-	        break;
-	    }
-	}
-}
-
-
-// ВРЕМЕННО:
-// TODO: Части настроек которые должны быть изменены в течении исполнения 
-define('LANGUAGE','rus');
-
-// Части страниц которые зарезервированны под систему 
-// TODO: Так же могут быть изменены в процессе исполнения
-
-//define('ADMINPAGE', 'admin');
-define('LOGINPAGE', 'login');
-define('JSPAGE',	'js');
-//---//
-define('USERPAGE',	'');
-define('BLOG',		'blog');
-
-
 
 
 $v = new vRender();
@@ -95,10 +57,11 @@ $timer = function() use ($start){
 	return 'Загрузка: ' . $total_time . ' cекунд.';
 };
 
+$mem = convert(memory_get_usage(true));
+
 $v->replace(
 	array(
-		'%memused%'		=> 'Использованная память: '. convert(memory_get_usage(true)),
-		'%username%' 	=> PROFILE['username'],
+		'%memused%'		=> 'Использованная память: '.$mem,
 		'%loadtime%' 	=> $timer(), 
 	)
 );

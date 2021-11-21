@@ -7,7 +7,7 @@ return array(
 		'header' 	=> 'subtpl/header.tpl.php',
 		'banner' 	=> 'subtpl/banner.tpl.php',
 		'sidebar' 	=> 'subtpl/sidebar.tpl.php',
-		'footer' 	=> 'subtpl/footer.tpl.php'
+		'footer' 	=> 'subtpl/footer.tpl.php',
 	),
 
 	'pages' => array(

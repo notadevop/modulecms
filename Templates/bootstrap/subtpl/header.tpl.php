@@ -53,33 +53,30 @@ $indexes = array(
                         ?>
                         <li class="nav-item dropdown">
                           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <?=$key;?>
+                            <?=$this->allRoutes[$key]['urltitle'];?>
                           </a>
                           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <?php 
                             foreach ($value as $j => $i) {
-                                echo '<li><a class="dropdown-item" href="'.$j.'">'.$i.'</a></li>';
+                                echo '<li><a class="dropdown-item" href="'.$this->allRoutes[$i]['url'].'">
+                                        '.$this->allRoutes[$i]['urltitle'].'</a></li>';
                             }
                             ?>
                           </ul>
-                        </li>
-                        <?php
+                        </li> <?php
                     } else {
-                        ?>
-                        <li class="nav-item">
-                          
-                          <a class="nav-link active" aria-current="page" href="<?=$this->allRoutes[$value]['url'];?>"><?=$this->allRoutes[$value]['urltitle'];?></a>
-
-                        </li>
-                        <?php 
+                        ?> <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="<?=$this->allRoutes[$value]['url'];?>">
+                                <?=$this->allRoutes[$value]['urltitle'];?></a>
+                        </li><?php 
                     }
                 }
                 ?>
               </ul>
 
-              <form class="d-flex" action="/" method="get">
-                <input class="form-control me-2" type="search" name="find" placeholder="Поиск" aria-label="Search">
-                <input type="submit" name="search" value="Поиск" class="btn btn-outline-success">
+              <form class="d-flex" action="" method="get">
+                <input class="form-control me-2" type="search" name="search" placeholder="Поиск" aria-label="Search">
+                <input type="submit" value="Поиск" class="btn btn-outline-success">
               </form>
 
             </div>

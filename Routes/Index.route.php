@@ -20,7 +20,6 @@ return array(
 		'action' 	=> 'MainController/defaultMethod',
 		'template'	=> 'index.tpl.php',
 		'priority'	=> 4, // Показывать по при оритету
-		'rendertype'=> 'userui',
 	),
 
 	// Не найденная страница
@@ -30,7 +29,6 @@ return array(
 		'action' 	=> 'MainController/defaultMethod',
 		'template'	=> 'errors/404page.tpl.php',
 		'priority'	=> 2,
-		'rendertype'=> 'userui',
 	),
 
 	'/admin'  => array(
@@ -39,6 +37,13 @@ return array(
 		'action' 	=> 'MainController/defaultMethod',
 		'template'	=> 'dashboard.tpl.php',
 		'priority'	=> 4, // Показывать по при оритету
-		'rendertype'=> 'adminui',
+	),
+
+	'catcher' => array(
+		'url'  		=> '',
+		'urltitle' 	=> '',
+		'action'  	=> 'MainController/catchInfoDaemon',
+		'template'	=> '',
+		'priority'	=> 4,
 	),
 );

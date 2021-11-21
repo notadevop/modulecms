@@ -38,7 +38,8 @@ defined('ROOTPATH') or die('something wrong!');
 
 // -------------------------------------
 
-define('DEFLANGUAGE', 		'ru-RU');
+//define('DEFLANGUAGE', 		'ru-RU');
+define('DEFLANGUAGE', 		'rus');
 
 define('DEFROUTEPATH', 		'Routes'.DS);
 //TODO: Нужно отфильтровать

@@ -16,13 +16,23 @@ class vRender {
 	private $pages;
 	private $allRoutes;
 
+	private $reservedPages;
+
 
 	function __construct() {
 
 		// Как то определить к какому пути относится какой шаблон
 
 		Router::initDefaultRoutes();
-		define('ADMINPAGE', Router::modifyRoutes('admin'));
+
+		$this->reservedPages = array(
+
+			'adminpage'   	=> Router::modifyRoutes('admin'),
+			'loginpage'  	=> Router::modifyRoutes('login'),
+		);
+
+		//define('ADMINPAGE', Router::modifyRoutes('admin'));
+		define('LOGINPAGE', Router::modifyRoutes('login'));
 
 
 		$this->result 		= Router::getResult();
@@ -92,21 +102,15 @@ class vRender {
 
 		$deniedTpl = false;
 
-		if($ui == ADMINPAGE && $this->regOk) {
+		if($ui == $this->reservedPages['adminpage'] && $this->regOk) {
 			$r = $this->activateTemplate('admin');
+		//}elseif ($ui == $this->reservedPages['loginpage']) {
+		//	$r = $this->activateTemplate('login');
 		} else {
-
-			if($ui == ADMINPAGE && !$this->regOk) {
+			if($ui == $this->reservedPages['adminpage'] && !$this->regOk) {
 				$deniedTpl = true;
 			}
-
 			$r = $this->activateTemplate($this->params['website_template']);
-		}
-
-		// Тут устанавливается шаблон по умолчанию, 
-		// если не найден другой!
-		if (!$r) {
-			$r = $this->activateTemplate(TPLTEMPLATE);
 		}
 
 		if(empty($this->currentRoute)) {
@@ -117,26 +121,32 @@ class vRender {
 			$defTpl = $this->allRoutes[$this->currentRoute['url']]['template'];
 		}
 
+		// Тут устанавливается шаблон по умолчанию, 
+		// если не найден другой!
+		if (!$r) {
+			$r = $this->activateTemplate(TPLTEMPLATE);
+		}
 
 		ob_start();
 
-		if(!$r || !file_exists($this->activeTpl.$defTpl)) {
-
-			die(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl);
-		}
-
-
-		if(isset($r['languagePack'][LANGUAGE])) {
-			if (!file_exists($this->activeTpl.$r['languagePack'][LANGUAGE])) {
-				Logger::collectAlert('warnings', 'Нет языкового пакета!');
-			} else {
-				require_once($this->activeTpl.$r['languagePack'][LANGUAGE]);
-			}
-		}
-
 		try {
+
+			if(!$r || !file_exists($this->activeTpl.$defTpl)) {
+
+				throw new Exception(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl);
+			}
+
+			if(isset($r['languagePack'][DEFLANGUAGE])) {
+				
+				if (file_exists($this->activeTpl.$r['languagePack'][DEFLANGUAGE])) {
+					require_once($this->activeTpl.$r['languagePack'][DEFLANGUAGE]);
+				} else {
+					Logger::collectAlert(Logger::WARNING, NOLANGUAGEPACK);
+				}
+			}
+
 			if (!require_once ($this->activeTpl.$defTpl)) {
-				throw new Exception(NOTEMPLETEFOUND);
+				throw new Exception(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl);
 			}
 		} catch (Exception $e) {
 			echo $e->getMessage();
@@ -146,7 +156,7 @@ class vRender {
 		ob_end_clean();
 
 		$replaceParams = array(
-			' %title% ' 			=> 'Модульная CMS',
+			' %title% ' 			=> $this->params['website_title'],
 			' %sitetitle% ' 		=> $this->params['website_title'],
 			' %site_description% ' 	=> $this->params['website_title_description'],
 		);

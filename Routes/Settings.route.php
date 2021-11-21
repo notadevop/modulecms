@@ -16,6 +16,5 @@ return array(
 		'action' 	=> '',
 		'template'	=> 'websiteSettings.tpl.php',
 		'priority'	=> 3,
-		'rendertype'=> 'adminui'
 	),
 );
