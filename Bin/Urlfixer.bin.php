@@ -14,8 +14,10 @@ class Urlfixer {
         // Тут нужна фильтрация данных !!!!
 
         $scriptName = $_SERVER['SCRIPT_NAME'];
+        $requestUri = $_SERVER['REQUEST_URI'];
+
         $basepath   = implode('/', array_slice(explode('/', $scriptName), 0, -1)) . '/';
-        $uri        = substr($_SERVER['REQUEST_URI'], strlen($basepath));
+        $uri        = substr($requestUri, strlen($basepath));
         
         if (strstr($uri, '?')) { 
             $uri = substr($uri, 0, strpos($uri, '?')); 
@@ -34,7 +36,9 @@ class Urlfixer {
      */
     public function getUriElement(string $url=''): ?array {
 
-        $base_uri = !empty($url) ? $uri : parse_url($_SERVER['REQUEST_URI'])['path'];
+        $requestUri = $_SERVER['REQUEST_URI'];
+
+        $base_uri = !empty($url) ? $uri : parse_url($requestUri)['path'];
 
         $values = array();
         $routes = explode('/', $base_uri);
@@ -60,9 +64,9 @@ class Urlfixer {
         return preg_split('/\//', $url, -1, PREG_SPLIT_NO_EMPTY);
     }
 
-    function generateUrl(array $uriParams, bool $genURL=false) {
+    function generateUrl(array $uriParams, bool $genURL=false): string {
 
-        HOST.DS.http_build_query($uriParams); 
+        http_build_query($uriParams); 
     }
 
 }

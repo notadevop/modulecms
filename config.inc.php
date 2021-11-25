@@ -23,9 +23,12 @@ define('DBENGINE', 'mysql');
 
 define('SOLT','abcabcabc'); 
 
-define('PRIVATEKEY', 'mycoolprivatekeytohidesomething');
-define('PUBLICKEY', 'mymorecoolpublickeytohidesomething');
+define('PRIVATEKEY', 	'mycoolprivatekeytohidesomething');
+define('PUBLICKEY', 	'mymorecoolpublickeytohidesomething');
 
+
+define('WEBTITLE',		'ModuleCMS');
+define('WEBTITLEDESC',	'Module description!');
 
 
 

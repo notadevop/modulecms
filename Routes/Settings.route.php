@@ -13,7 +13,7 @@ return array(
 	'/admin/settings/website' => array(
 		'url' 		=> '/admin/settings/website',
 		'urltitle' 	=> SETTINGSHOST,
-		'action' 	=> '',
+		'action' 	=> 'SettingsController/updateSettings',
 		'template'	=> 'websiteSettings.tpl.php',
 		'priority'	=> 3,
 	),

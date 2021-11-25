@@ -21,16 +21,18 @@ if($this->regOk) {
     );
 
     $profile = array(
-        str_replace(':num', PROFILE['userid'] ,$this->allRoutes['/admin/profile/:num']['url']) 
+        str_replace(':num', PROFILE['userid'] ,
+        $this->allRoutes['/admin/profile/:num']['url']) 
                             => 'Показать '.$this->allRoutes['/admin/profile/:num']['urltitle'],
         '' => 'Редактировать профиль',
         '' => 'Активные сессии',
         '' => 'Почта пользователя',
         '' => 'Добавить привелегии',
         '' => 'Редактирование привелегий',
-        '' => 'Редактировать пользователей',
-        $this->allRoutes['/admin/users']['url'] => $this->allRoutes['/admin/users']['urltitle'],
-        $this->allRoutes['/usersonline']['url'] => $this->allRoutes['/usersonline']['urltitle'],
+        $this->allRoutes['/admin/users']['url'] 
+                            => $this->allRoutes['/admin/users']['urltitle'],
+        $this->allRoutes['/usersonline']['url'] 
+                            => $this->allRoutes['/usersonline']['urltitle'],
     );
 
 
@@ -45,7 +47,7 @@ if($this->regOk) {
             <h3>Авторизация</h3>
             <ul><?php 
                 foreach ($authorize as $key => $value) {
-                    echo '<li><a href="'.$key.'" style="color: inherit; text-decoration: none;">'.$value.'</a></li>';
+                    echo '<li><a href="'.$key.'" style=" text-decoration: none;">'.$value.'</a></li>';
                 } ?>
             </ul>
         </div>

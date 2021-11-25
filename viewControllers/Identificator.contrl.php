@@ -47,20 +47,20 @@ class Identificator extends Filter {
 
 			'transport' => array( 
 
-				'useridMaxSym' => 255,
-				'useridMinSym' => 1,
+				'useridMaxSym' 			=> 255,
+				'useridMinSym' 			=> 1,
 
-				'userNameMaxSym' => 50,
-				'userNameMinSym' => 2,
+				'userNameMaxSym' 		=> 50,
+				'userNameMinSym' 		=> 2,
 
-				'userEmailMaxSym' => 50,
-				'userEmailMinSym' => 7,
+				'userEmailMaxSym' 		=> 50,
+				'userEmailMinSym' 		=> 7,
 
-				'userPasswordMaxSym' => 20,
-				'userPasswordMinSym' => 8,
+				'userPasswordMaxSym' 	=> 20,
+				'userPasswordMinSym' 	=> 8,
 
-				'userTokenHashMaxSym' => 255,
-				'userTokenHashMinSym' => 4,
+				'userTokenHashMaxSym' 	=> 255,
+				'userTokenHashMinSym' 	=> 4,
 			)
 			// Данные с проверки подтверждения авторизации
 		);

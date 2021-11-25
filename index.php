@@ -43,8 +43,6 @@ foreach ($files as $key => $value) {
 	!file_exists($r) ? die('Не могу найти системный файл!') : require_once ($r);
 }
 
-
-
 $v = new vRender();
 $v->prepareRender();
 

@@ -31,9 +31,12 @@ class vRender {
 			'loginpage'  	=> Router::modifyRoutes('login'),
 		);
 
-		//define('ADMINPAGE', Router::modifyRoutes('admin'));
-		define('LOGINPAGE', Router::modifyRoutes('login'));
+		// Результат от постоянных исполнителей 
+		// и от того, что идет по определенному пути  
+		//$this->permanRes 		= Router::getPermanentResult();
+		//$this->currenRes 		= Router::getResult();
 
+		// Тут нужно разделить исполнение постоянное и то, что запускается по пути шаблона
 
 		$this->result 		= Router::getResult();
 		$this->currentRoute = Router::getRoute();
@@ -80,16 +83,11 @@ class vRender {
 		return $tplarr;
 	}
 
-	// Тут определить какая страница сейчас загруженна
-
-	function identifyPage() {
-
-	}
-
-
 	function prepareRender() {
 
 		$ui = null;
+
+		// Разделяем URI для определения какая страница перед нами
 
 		if(!empty(isset($this->currentRoute['uriarr'][0]))){
 
@@ -113,16 +111,20 @@ class vRender {
 			$r = $this->activateTemplate($this->params['website_template']);
 		}
 
+		// Определяет какую страницу нужно вывести 
+
 		if(empty($this->currentRoute)) {
 			$defTpl = $this->allRoutes['/404page']['template'];
 		}elseif ($deniedTpl){
 			$defTpl = $this->allRoutes['/login']['template'];
+		//}elseif ($hostDisabled && !LOGIN && !ADMIN) {
+		//	$defTpl = $this->allRoutes['/disabled']['template'];
 		} else { 
 			$defTpl = $this->allRoutes[$this->currentRoute['url']]['template'];
 		}
 
-		// Тут устанавливается шаблон по умолчанию, 
-		// если не найден другой!
+		// Тут устанавливается cистемный или резервный шаблон  
+		// если в системе не оказалось шаблона
 		if (!$r) {
 			$r = $this->activateTemplate(TPLTEMPLATE);
 		}
@@ -156,7 +158,7 @@ class vRender {
 		ob_end_clean();
 
 		$replaceParams = array(
-			' %title% ' 			=> $this->params['website_title'],
+			' %title% ' 			=> $this->params['website_title_description'],
 			' %sitetitle% ' 		=> $this->params['website_title'],
 			' %site_description% ' 	=> $this->params['website_title_description'],
 		);

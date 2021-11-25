@@ -66,7 +66,7 @@ final class Router {
 		$files 		= $fileObj->listFolder();
 
 		if(count($files) < 1 || !($files = preg_grep('/.route.php/i', $files))) {
-			die('<h1>'.NOROUTES.'</h1>');
+			die(NOROUTES);
 		}
 
 		foreach ($files as $key => $value) {
@@ -93,7 +93,7 @@ final class Router {
 		// TODO: сделать добавление к URI к некоторым типам UI доп, префикс либо в самом ури URI удалять префикс 
 		// 
 		// как пример /js/post/123  где /js/ указывает на вывод в json
-
+		// fatal!
 
 		if (empty(self::$defaultRoutes)) {
 			die(NOROUTES);
@@ -102,17 +102,11 @@ final class Router {
 		}	
 
 		// Получаем данные из базы данных
-
 		$stg = new HostSettings();
-
 		$tmp = $stg->getSettings([$page=>$page]);
-		
 		if(!$tmp || $tmp[$page] == $page) { return $page; }
-
 		foreach (self::$defaultRoutes as $key => $value) {
-			
 			$newValue = str_ireplace(DS.$page, DS.$tmp[$page], $value['url']);
-
 			self::$defaultRoutes[$key]['url'] = $newValue;
 		}
 
@@ -125,7 +119,6 @@ final class Router {
 
 		if (empty($route) || !is_array($route)) { return; }
 		$newArr = array();
-		
 		foreach ($route as $key => $value) {
 			if (!array_key_exists($key, self::$defaultRoutes)) {
 				$newArr[$key] = $value;
@@ -147,12 +140,7 @@ final class Router {
 
 	public static function getAllRoutes(): ?array {
 
-		if(!empty(self::$defaultRoutes)) {
-
-			return self::$defaultRoutes;
-		}		
-
-		return null;
+		return (!empty(self::$defaultRoutes)) ? self::$defaultRoutes : null;
 	}
 
 
@@ -205,21 +193,16 @@ final class Router {
 		} else { 
 			foreach (self::$defaultRoutes as $route => $uri) {
 				// Заменяем wildcards на рег. выражения
-				//if (strpos($route, ':') !== false) {
 				if (strpos($uri['url'], ':') !== false) {
-					//$route = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $route));
 					$uri['url'] = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $uri['url']));
 				}
 
-				//if (preg_match('#^'.$route .'$#', $requestedUrl)) { // $requestedUrl
-				if (preg_match('#^'.$uri['url'] .'$#', $requestedUrl)) { // $requestedUrl
-					//if (strpos($uri['action'], '$') !== false && strpos($route, '(') !== false) {
+				if (preg_match('#^'.$uri['url'] .'$#', $requestedUrl)) { 
 					if (strpos($uri['action'], '$') !== false && strpos($uri['url'], '(') !== false) {
-						//$uri['action'] = preg_replace('#^'.$route.'$#', $uri['action'], $requestedUrl);
 						$uri['action'] = preg_replace('#^'.$uri['url'].'$#', $uri['action'], $requestedUrl);
 					}
-
-					self::$params = Urlfixer::splitUrl($uri['action']); // разбиваем value роута на параметры и сохраняем
+					// разбиваем value роута на параметры и сохраняем
+					self::$params = Urlfixer::splitUrl($uri['action']); 
 					break; // URL обработан!
 				}
 			}
