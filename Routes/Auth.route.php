@@ -60,7 +60,7 @@ return array(
 		'url' 		=> '/login/updatepassword', 
 		'urltitle'  => PWDUPDATE,
 		'action' 	=> 'Identificator/updateUserPassword',
-		'template'	=> 'infopage.tpl.php',
+		'template'	=> 'authforms/passwords.tpl.php',
 		'priority'	=> 2,
 	),
 

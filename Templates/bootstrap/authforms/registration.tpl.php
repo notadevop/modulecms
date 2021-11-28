@@ -6,8 +6,7 @@
 
 if ($this->regOk){
 
-  require_once ($this->activeTpl.$r['pages']['default']);
-  return;
+  return require_once ($this->activeTpl.$r['pages']['default']);
 }
 
 
@@ -18,7 +17,7 @@ require_once($this->activeTpl.$r['templates']['banner']);
 
 <section id="pageContent">
     <main role="main">
-            <form action="/register" method="post">
+            <form action="<?=$this->allRoutes['/register']['url'];?>" method="post">
               <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label"><?=FORMNAMETITLE;?></label>
                 <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="username" value="maks_<?=rand(1,10000); ?>">

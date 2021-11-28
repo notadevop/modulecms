@@ -135,7 +135,7 @@ class vRender {
 
 			if(!$r || !file_exists($this->activeTpl.$defTpl)) {
 
-				throw new Exception(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl);
+				throw new Exception(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl. ' code 1000');
 			}
 
 			if(isset($r['languagePack'][DEFLANGUAGE])) {
@@ -148,7 +148,7 @@ class vRender {
 			}
 
 			if (!require_once ($this->activeTpl.$defTpl)) {
-				throw new Exception(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl);
+				throw new Exception('tpl require error x.x');
 			}
 		} catch (Exception $e) {
 			echo $e->getMessage();

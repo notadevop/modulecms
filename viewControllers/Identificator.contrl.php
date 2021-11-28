@@ -193,6 +193,12 @@ class Identificator extends Filter {
 
 		$userNotBlocked = $this->auth->userActivated($loginParams[self::USERMAILVALUE]);
 
+		if($this->auth->didYouActivated()) {
+
+			Logger::collectAlert(Logger::ATTENTIONS, USERNOTCONFREG);
+			return false;
+		}
+
 		if (!$userNotBlocked) {
 
 			Logger::collectAlert(Logger::ATTENTIONS, USERBANNED);
@@ -363,6 +369,12 @@ class Identificator extends Filter {
 
 		$userNotBlocked = $this->auth->userActivated($restoreParams[self::USERMAILVALUE]);
 
+		if($this->auth->didYouActivated()) {
+
+			Logger::collectAlert(Logger::ATTENTIONS, USERNOTCONFREG);
+			return false;
+		}
+
 		if (!$userNotBlocked) {
 			Logger::collectAlert(Logger::ATTENTIONS, USERBANNED);
 			return false;
@@ -388,7 +400,7 @@ class Identificator extends Filter {
 	}
 
 
-	function verifyUserActivation(): ?array {
+	function verifyUserActivation($silence=false): ?array {
 
 		if(!$this->authSts['restore_status']) {
 
@@ -411,14 +423,18 @@ class Identificator extends Filter {
 
 		if(!$this->auth->verifyActivations($restoreParams[self::USERIDVALUE], $restoreParams[self::TOKENHSHVALUE],$restoreParams[self::CONFRHSHVALUE] )) {
 
-			Logger::collectAlert(Logger::ATTENTIONS, AUTHPARAMSERR);
+			if(!$silence) {
+				Logger::collectAlert(Logger::ATTENTIONS, AUTHPARAMSERR);
+			}
+
+			
 			return null;
 		}
 
 		return array(
-			self::USERIDVALUE 		=> $restoreParams['userid'],
-			self::CONFRHSHVALUE 	=> $restoreParams['token'],
-			self::TOKENHSHVALUE 	=> $restoreParams['confirm']
+			self::USERIDVALUE 		=> $restoreParams[self::USERIDVALUE],
+			self::CONFRHSHVALUE 	=> $restoreParams[self::CONFRHSHVALUE],
+			self::TOKENHSHVALUE 	=> $restoreParams[self::TOKENHSHVALUE],
 		);
 	}
 
@@ -436,7 +452,8 @@ class Identificator extends Filter {
 		// TODO: ВЫДАСТ ОШИБКУ ЕСЛИ ПОСТАВИТЬ $verifiedbyid = false
 
 		if ($verifbyid) {
-			$verified = $this->verifyUserActivation();
+			$verified = $this->verifyUserActivation(true);
+
 			if (!$this->isNotEmpty($verified)) { 
 				Logger::collectAlert(Logger::ATTENTIONS, VERIFYNOTFOUND);
 				return false;
@@ -470,7 +487,6 @@ class Identificator extends Filter {
 		$r = $this->auth->clearActivations($verified['userid']);
 
 		if (!$r) {
-
 			Logger::collectAlert(Logger::ATTENTIONS, ACTUSERERR);
 		}
 
@@ -551,7 +567,7 @@ class Identificator extends Filter {
 		$registrationConfirm = $this->verifyUserActivation();
 
 		if(!$this->isNotEmpty($registrationConfirm)) {
-			Logger::collectAlert(Logger::ATTENTIONS, REGATRRERR);
+			//Logger::collectAlert(Logger::ATTENTIONS, REGATRRERR);
 			return false;
 		}
 

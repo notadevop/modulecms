@@ -35,20 +35,38 @@ class Auth extends Database {
 		};
 	}
 
+
+
+	private $notActivated;
+
+	function didYouActivated(): bool {
+
+		return $this->notActivated;
+	}
+
+
 	// Проверяем активирован пользователь или нет
+
+	//public function accessAllowed(string $useremail): bool{
 
 	public function userActivated(string $useremail): bool{
 
-		$profile = $this
-					->users
-					->getUserProfile($useremail);
+		$profile = $this->users->getUserProfile($useremail);
 
-		if (empty($profile['lastvisit']) || $profile['lastvisit'] == 0 || $profile['actstatus'] == 0) 
-			{return false;}
+		if($profile['actstatus'] == 0) {
+			$this->notActivated = true;
+			return false;
+		}else if (empty($profile['lastvisit']) || $profile['lastvisit'] == 0 || $profile['actstatus'] != 1) {
+
+			return false;
+		}
+
 
 		// Проверка привелегий пользователя, если их нет то пользователь не активирован
 
-		$sql = 'SELECT DISTINCT COUNT(*) as counter FROM user_role WHERE user_id IN (SELECT user_id FROM users WHERE user_email = :useremail)';
+		$sql = 'SELECT DISTINCT COUNT(*) as counter 
+				FROM user_role 
+				WHERE user_id IN (SELECT user_id FROM users WHERE user_email = :useremail)';
 
 		$binder = array(':useremail' => $useremail);
 
@@ -134,10 +152,6 @@ class Auth extends Database {
 
 		return $setNewHash ? $newHash : $result['token'];
 	}
-
-
-
-
 
 	// Проверяем авторизация по паролю и емайлу, возвращаем массив с данными
 
@@ -265,8 +279,6 @@ class Auth extends Database {
 		return !$this->doAction() ? false : true;
 	}
 
-
-
 	// Активирует или деактивирует указанного пользователя
 
 	public function activateOrBlockUser(int $userid, bool $block=false): bool{
@@ -309,7 +321,7 @@ class Auth extends Database {
 
 	// Удаляем указанные сесси пользователя или все сессии НЕЯСНО.
 
-	public function clearUserLogins(int $byspecuser=0): bool{
+	public function clearSessionTokens(int $byspecuser=0): bool{
 
 		// TODO: Удаление cесии данного пользователя или всех сессий 
 		// из базы данных по token_expires и token_created
@@ -418,23 +430,23 @@ class Auth extends Database {
 		}
 
 		$binder = array(
-				':actuid'		=> $userid,
-				':actoken'		=> $this
-						->modifier
-						->randomHash(rand(HASHMINVALUE, HASHMAXVALUE), false),
-				':actconfirm'	=> $this
-						->modifier
-						->randomHash(rand(HASHMINVALUE, HASHMAXVALUE), false),
-				':actdate'		=> time(),
-				':actexpire'	=> strtotime('+'.AUTHHASHUPDATETIME.' Days')
+			':actuid'		=> $userid,
+			':actoken'		=> $this
+					->modifier
+					->randomHash(rand(HASHMINVALUE, HASHMAXVALUE), false),
+			':actconfirm'	=> $this
+					->modifier
+					->randomHash(rand(HASHMINVALUE, HASHMAXVALUE), false),
+			':actdate'		=> time(),
+			':actexpire'	=> strtotime('+'.AUTHHASHUPDATETIME.' Days')
 		);
 
 		$this->preAction($sql, $binder);
 		if(!$this->doAction()) { return null; }
 
 		return array(
-				'cofirm' 	=> $binder[':actconfirm'], 
-				'token' 	=> $binder[':actoken']
+			'cofirm' 	=> $binder[':actconfirm'], 
+			'token' 	=> $binder[':actoken'],
 		);
 	}
 
@@ -452,7 +464,6 @@ class Auth extends Database {
 
 			$sql = 'DELETE FROM users_activation 
 					WHERE activation_user_id = :uid AND activation_expired < :curtime';
-
 			$binder = array(':uid' => $userid, ':curtime' => time());
 		} else {
 
@@ -465,13 +476,22 @@ class Auth extends Database {
 		return !$this->doAction() ? false : true;
 	}
 
+	// Функция для получения активационных данных для повторной отправки
+	// useremail, token и confirm
+
+	function getActivationParams(int $userid): ?array {
+
+
+		// [];
+
+		return null;
+	}
+
 	// Генерируем активацию 
 
 	public function generateActivations(string $useremail): ?array{
 
-		$profile = $this
-						->users
-						->getUserProfile($useremail);
+		$profile = $this->users->getUserProfile($useremail);
 
 		if (empty($profile['id'])) { return null; }
 

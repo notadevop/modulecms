@@ -6,8 +6,7 @@
 
 if ($this->regOk){
 
-  require_once ($this->activeTpl.$r['pages']['default']);
-  return;
+  return require_once ($this->activeTpl.$r['pages']['default']);
 }
 
 require_once($this->activeTpl.$r['templates']['header']);

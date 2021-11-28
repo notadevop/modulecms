@@ -120,4 +120,35 @@ class Users extends Database {
 
          return false;
       }
+
+      function permanentlyDeleteUser(int $userid) {
+
+         $sql = 'DELETE users, user_role FROM users INNER JOIN user_role ON
+               users.user_id = user_role.user_id WHERE users.user_id = :userid';
+
+         $binder = array(
+            ':userid'    => $userid,
+         );
+
+         $this->preAction($sql, $binder);
+
+         $this->preAction($sql, $binder);
+
+         return !$this->doAction() ? false : true;
+      }
+
+      function diactivateUser(int $userid): bool {
+
+         $sql = 'UPDATE users SET user_activated= :activation WHERE user_id = :userid';
+
+         $binder = array(
+            ':userid'    => $userid,
+         );
+
+         $this->preAction($sql, $binder);
+
+         $this->preAction($sql, $binder);
+
+         return !$this->doAction() ? false : true;
+      }
 }

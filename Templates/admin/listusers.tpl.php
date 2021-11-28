@@ -4,20 +4,21 @@
  * 
  */
 
+/*
 if(!$this->regOk || empty($this->result['templateRes'])) { 
 
 	require_once($this->activeTpl.$r['templates']['header']);
-	//require_once($this->activeTpl.$r['templates']['banner']);
+	require_once($this->activeTpl.$r['templates']['banner']);
 	?>
 	<section id="pageContent">
-	    <main role="main"></main>
+	    <main role="main">Страница пустая</main>
 
 	<?php 
-	//require_once($this->activeTpl.$r['templates']['sidebar']);
+	require_once($this->activeTpl.$r['templates']['sidebar']);
 	require_once($this->activeTpl.$r['templates']['footer']);
-	return; 
+	return 1; 
 }
-
+*/
 
 $users = $this->result['templateRes'];
 
