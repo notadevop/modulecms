@@ -6,7 +6,7 @@ body,html {
 header {
     background: #AEC6CF;
     padding: 10px 15px;
-    max-width: 1000px;
+    max-width: 1200px;
     margin: auto;
     border-radius: 0px 0px 5px 5px
 }
@@ -33,7 +33,7 @@ nav ul {
     list-style: none;
 }
 #pageContent {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: auto;
     border: none;
 }
@@ -62,7 +62,7 @@ main section {
 }
 footer {
 	background: #AEC6CF;
-	max-width: 1000px;
+	max-width: 1200px;
 	margin: auto;
 	clear: both;
 	text-align: right;
@@ -95,14 +95,14 @@ aside > div {
     border-radius: 10px;
 }
 body > section {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: auto;
     padding: 10px 0px;
     border-bottom: 0px solid #999;
     color: #333;
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1200px) {
 	body > section {
 		padding: 10px 10px;
 	}

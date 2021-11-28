@@ -6,31 +6,32 @@
 if(!$this->regOk || empty($this->result['templateRes'])) { 
 
 	require_once($this->activeTpl.$r['templates']['header']);
-	//require_once($this->activeTpl.$r['templates']['banner']);
+	require_once($this->activeTpl.$r['templates']['banner']);
 	?>
 	<section id="pageContent">
 	    <main role="main"></main>
 
 	<?php 
-	//require_once($this->activeTpl.$r['templates']['sidebar']);
+	require_once($this->activeTpl.$r['templates']['sidebar']);
 	require_once($this->activeTpl.$r['templates']['footer']);
 	return; 
 }
 
 require_once($this->activeTpl.$r['templates']['header']);
 require_once($this->activeTpl.$r['templates']['banner']);
+
 ?>
 
 <section id="pageContent">
     <main role="main">
-	    	<h2>Профиль </h2>
-	    	<p><?=@$this->result['templateRes']['userpicture'];?></p>
+	    	<h2>Пользователь - <?=$this->result['templateRes']['name'];?></h2>
+	    	<p><?=$this->result['templateRes']['userpicture'];?></p>
 	    	<table class="table">
 			  <thead>
 			    <tr>
 			      <th scope="col"></th>
-			      <th scope="col">Пользователь</th>
-			      <th scope="col"><?=@$this->result['templateRes']['name'];?></th>
+			      <th scope="col">Профиль</th>
+			      <th scope="col"><?=$this->result['templateRes']['id'];?></th>
 			    </tr>
 			  </thead>
 			  <tbody>
