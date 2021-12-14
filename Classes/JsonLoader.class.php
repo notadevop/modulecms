@@ -6,16 +6,6 @@
 
 class JsonLoader {
 	
-	function getAJson(string $path, string $file):array {
 
-		return array();
-	}
-
-	function insertInToJson(array $input): bool{
-
-
-
-		return false;
-	}
 
 }

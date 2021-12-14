@@ -1,4 +1,7 @@
 <?php 
+
+defined('ROOTPATH') or die();
+
 /**
  *
  * 
@@ -49,8 +52,11 @@ require_once($this->activeTpl.$r['templates']['banner']);
 			<br /><hr />
 
 			<label for="validationDefault04" class="form-label">Чтобы отключить хостинг для посещения установите значение тут</label>
+			<br />
+			<label class="form-label">Хост (<b>Включен</b>)</label>
 			<form class="row g-3" action="" method="POST">
 			  <div class="col-auto">
+
 			    <select name='hostEnabled' class="form-select" id="validationDefault04" required>
 
 			    	<?php 
@@ -98,18 +104,24 @@ require_once($this->activeTpl.$r['templates']['banner']);
 
 			<br /><hr />
 
-			<label for="validationDefault04" class="form-label">Включение/Отключение страниц авторизации!</label>
+			<label class="form-label">Включение/Отключение страниц авторизации!</label>
+
 				<form class="row g-3" action="" method="POST">
+					<label class="form-label">Авторизация (<b>Включена</b>)</label>
 
 					<select class="form-select form-select-sm" aria-label=".form-select-sm example">
 					  <option selected>Включить авторизацию</option>
 					  <option value="1">Отключить авторизацию</option>
 					</select>
+
+					<label class="form-label">Регистрация (<b>Включена</b>)</label>
 						
 					<select class="form-select form-select-sm" aria-label=".form-select-sm example">
 					  <option selected value="">Включить регистрацию</option>
 					  <option value="1">Отключить регистрацию</option>
 					</select>
+
+					<label class="form-label">Аутентификация (<b>Включена</b>)</label>
 
 					<select class="form-select form-select-sm" aria-label=".form-select-sm example">
 					  <option selected value="">Включить аутентификацию</option>

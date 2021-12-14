@@ -30,7 +30,7 @@ return array(
 	// Страница показывает всех пользователей онлайн
 
 	'/usersonline' 	=> array(
-		'url' 		=> '/usersonline',
+		'url' 		=> '/admin/online',
 		'urltitle'  => USERSONLINEPG,
 		'action' 	=> 'Visitor/getOnlineUsers',
 		'template'	=> 'infopage.tpl.php',

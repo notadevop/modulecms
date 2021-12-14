@@ -1,10 +1,12 @@
 <?php 
+
+defined('ROOTPATH') or die();
+
 /**
  *
  *  Сайдбар для шаблона!
  */
 
-defined('ROOTPATH') or die();
 
 $authorize = array(
 

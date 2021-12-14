@@ -1,5 +1,7 @@
 <?php 
 
+defined('ROOTPATH') or die();
+
 return array(
 
 	'templates' => array(

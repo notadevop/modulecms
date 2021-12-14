@@ -33,9 +33,9 @@ class Auth extends Database {
 
 			return ($difference->days > AUTHUPDATEPASSINT);
 		};
+
+		$this->notActivated = false;
 	}
-
-
 
 	private $notActivated;
 
@@ -60,7 +60,6 @@ class Auth extends Database {
 
 			return false;
 		}
-
 
 		// Проверка привелегий пользователя, если их нет то пользователь не активирован
 

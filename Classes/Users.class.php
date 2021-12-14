@@ -121,6 +121,9 @@ class Users extends Database {
          return false;
       }
 
+
+      // Полностью удаляет пользователя из системы
+
       function permanentlyDeleteUser(int $userid) {
 
          $sql = 'DELETE users, user_role FROM users INNER JOIN user_role ON
@@ -129,8 +132,6 @@ class Users extends Database {
          $binder = array(
             ':userid'    => $userid,
          );
-
-         $this->preAction($sql, $binder);
 
          $this->preAction($sql, $binder);
 

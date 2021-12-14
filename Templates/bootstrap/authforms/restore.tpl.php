@@ -1,4 +1,7 @@
 <?php
+
+defined('ROOTPATH') or die();
+
 /**
  *
  * Баннер шаблона
