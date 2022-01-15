@@ -52,12 +52,12 @@ CREATE TABLE `users_online` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user_notifications` ( 
-        `notif_id` int(255) NOT NULL, 
-        `user_id` int(255) NOT NULL, 
+        `notif_id`    int(255)      NOT NULL, 
+        `user_id`     int(255)      NOT NULL, 
         `notif_title` varchar(1000) NOT NULL, 
-        `notif_meta` varchar(1000) NOT NULL,  
-        `notif_date` int(11) NOT NULL, 
-        `notif_read` int(1) NOT NULL, 
+        `notif_meta`  varchar(1000) NOT NULL,  
+        `notif_date`  int(11)       NOT NULL, 
+        `notif_read`  int(1)        NOT NULL 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 
 
