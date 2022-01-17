@@ -8,7 +8,9 @@
 
 class Mailer {
 
-    public function __construct() { }
+    public function __construct() { 
+
+    }
 
 
     private $to; 	// кому
@@ -49,7 +51,6 @@ class Mailer {
         $from   = $this->from;
         $subject= $this->subject;
         $body   = $this->body;
-
 
         try {
             if (empty($to) || empty($from) || empty($subject) || empty($body)) {

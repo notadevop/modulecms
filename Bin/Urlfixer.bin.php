@@ -34,6 +34,7 @@ class Urlfixer {
      *  $routes = $obj->getRoutes();
      *  if($routes[0] == 'search') { if($routes[1] == 'book') { echo 'clicked'; } }
      */
+    
     public function getUriElement(string $url=''): ?array {
 
         $requestUri = $_SERVER['REQUEST_URI'];
