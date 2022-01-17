@@ -64,6 +64,7 @@ final class Router {
 		$fileObj 	= new Filemanipulator();
 		$fileObj->setDirName(self::$defaultRoutesDir);
 		$files 		= $fileObj->listFolder();
+		//$files = preg_grep('/.route.php/i', $files);
 
 		if(count($files) < 1 || !($files = preg_grep('/.route.php/i', $files))) {
 			die(NOROUTES);

@@ -57,9 +57,10 @@ class Database {
 		} catch (Exception $e) {
 
 			if (DEBUG) {
-				debugger($e->getMessage());
+				//debugger($e->getMessage());
 			}
-			die(DBERRINFO.' '.$e->getMessage());
+			//die(DBERRINFO.' '.$e->getMessage());
+			die($e->getMessage());
 		}
 	}
 
@@ -78,10 +79,11 @@ class Database {
 			$this->prepared = $prepared;
 	}
 
+	// Онулируем все переменнные, при запуске данного метода!
+
 	public function resetAction(): void {
-		$this->sql 		= null;
-		$this->prepared = null;
-		$this->stmt 	= null;
+
+		$this->sql = $this->prepared = $this->stmt = null;
 	}
 
 	public function doAction(): bool{
