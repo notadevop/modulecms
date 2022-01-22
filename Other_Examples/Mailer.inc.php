@@ -462,9 +462,6 @@ function _build_attachement()
 
                /* echo 'filename--'.$filename;
                   echo '<br>';
-               */
-
-                /*
 
                    the semicolon after the Content-type : $basename is important
                    since it was not there.This mail program

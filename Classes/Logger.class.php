@@ -81,6 +81,6 @@ final class Logger {
 
     public static function getAlerts(string $type):?array {
 
-    	return !self::alertKeyExist($type) ? NULL : self::$alerts[$type];
+    	return !self::alertKeyExist($type) ? null : self::$alerts[$type];
     }
 }
