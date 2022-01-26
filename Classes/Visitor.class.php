@@ -3,7 +3,7 @@
 /**
  * 
  */
-final class Visitor extends Database {
+class Visitor extends Database {
 	
 	function __construct() { 
 		parent::__construct(true);
@@ -15,6 +15,7 @@ final class Visitor extends Database {
 	// TODO: Для нормальной работы статического метода использовать для 
 	// переменнных self::
 
+	/*
 	public function get_data(): array {
 
 		return array(
@@ -32,13 +33,19 @@ final class Visitor extends Database {
 			'userremoteip' 	=> $this->get_ip()
 		);
 	}
+	*/
 
-	public function get_lang(): string {
+	public function getUA(): string {
 
-		return substr($this->get_data()['lang'], 0, 2);
+		return $_SERVER['HTTP_USER_AGENT'];
 	}
 
-	public function get_os(): string {
+	public function getLang(): string {
+
+		return substr( $_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+	}
+
+	public function getOS(): string {
 
 		$os_platform = "Unknown OS"; 
 	    $os_array = array(
@@ -81,7 +88,7 @@ final class Visitor extends Database {
             // TODO: Добавить новые операционные системы
 	    );
 
-	    $ua = $this->get_data()['ua'];
+	    $ua = $this->getUA();
 
 	    foreach ($os_array as $regex => $value) { 
 
@@ -90,7 +97,7 @@ final class Visitor extends Database {
 	    return $os_platform;
 	}
 
-	public function get_ip() {
+	public function getIP() {
 
 		// Check for shared Internet/ISP IP
 	    if (!empty($_SERVER['HTTP_CLIENT_IP']) && $this->validate_ip($_SERVER['HTTP_CLIENT_IP'])) {
@@ -134,10 +141,6 @@ final class Visitor extends Database {
 	    return $_SERVER['REMOTE_ADDR'];
 	}
 
-	/**
-	 * Ensures an IP address is both a valid IP address and does not fall within
-	 * a private network range.
-	 */
 	function validate_ip(string $ip): bool {
 
 	    if (strtolower($ip) === 'unknown')
@@ -174,7 +177,7 @@ final class Visitor extends Database {
 	    return true;
 	}
 
-	public function get_browser(): string {
+	public function getBrowser(): string {
 
 		$browser        = "Unknown Browser";  
 	    $browser_array  = array(
@@ -227,39 +230,45 @@ final class Visitor extends Database {
 
 	    foreach ($browser_array as $regex => $value) { 
 
-	        if (preg_match($regex, $this->get_data()['ua'])) {
+	        if (preg_match($regex, $this->getUA())) {
 	            $browser = $value;
 	        }
 	    }
 	    return $browser;
 	}
 
-	public function getOnlineUsers() {
 
-		// установить привелегии и по ним выдавать список посетителей
+	public function getOnlineUsers() {
 
 		$sql = 'SELECT `session`, `visitime`, `uagent` FROM `users_online`';
 
 		$this->preAction($sql);
+
 		if(!$this->doAction()) return -1;
 
-		return $this
-				->postAction()
-				->fetchAll();
+		return $this->postAction()->fetchAll();
 	}
+	
 
-	private function usersOnlineStorageMysql(): int { 
+	protected function updateUsersOnline(): bool { 
 
 		// MySQL database -----------------------------
 
-		if (session_id() == '') session_start();
+		if (session_id() == '') 
+			session_start();
+
+		$userspecs['userbrowser'] 	= $this->getBrowser();
+		$userspecs['useros'] 		= $this->getOS();
+		$userspecs['userbrlang'] 	= $this->getLang();
+		$userspecs['userremoteip'] 	= $this->getIP();
+
 
 		$p = array(
-			'session' 	=> session_id(),
-			'vistime' 	=> time(),
-			'outtime' 	=> (time() - 60), //
-			'userip'  	=> $this->get_ip(),
-			'uagent' 	=> serialize($this->get_userspecs())
+			'session' 	=> (string)	session_id(),
+			'vistime' 	=> (string)	time(),
+			'outtime' 	=> (string)	(time() - 60), //
+			'userip'  	=> (string)	$this->getIP(),
+			'uagent' 	=> (string)	serialize($userspecs),
 		);
 
 		// Проверяем существует ли пользователь указанный в session_id
@@ -270,9 +279,8 @@ final class Visitor extends Database {
 		$this->preAction($sql, $binder);
 		$this->doAction();
 
-		$r = $this
-				->postAction()
-				->fetchColumn(); // кажеться возвращает интигер без имени массива !
+		// кажеться возвращает интигер без имени массива !
+		$r = $this->postAction()->fetchColumn(); 
 
 		// Обновляем или добавляем id пользователя
 
@@ -299,22 +307,17 @@ final class Visitor extends Database {
 		$binder = array(':vistime' => $p['outtime']);
 
 		$this->preAction($sql, $binder);
-		$this->doAction();
 
-		$sql = 'SELECT COUNT(*) as count FROM users_online';
-
-		$this->preAction($sql);
-
-		if(!$this->doAction()) return -1;
-
-		$people = $this
-					->postAction()
-					->fetch(); // fetchColumn();
-
-		return $people['count'];
+		return !$this->doAction() ? false : true;
 	} 
 
-	private function usersOnlineStorageSqlite(bool $stats=false): int { 
+
+
+	// SQLite stats хранилище для отслеживания пользователей
+	// если не работает MySQL база данных
+
+	/*
+	protected function usersOnlineStorageSqlite(bool $stats=false): int { 
 
 		//SQLite 
 		// Cпециально для SQLite базы создаем папку и в ней базу
@@ -385,12 +388,5 @@ final class Visitor extends Database {
 
 	    return $result['count'];
 	}
-
-	// storage: mysql, sqlite <= для получения статистики даже когда сайт упал
-	public function users_online(string $storage='mysql'): int {
-
-		//$storage = 'mysql';
-
-		return $storage == 'mysql' ? $this->usersOnlineStorageMysql() : $this->usersOnlineStorageSqlite();
-	}
+	*/
 }

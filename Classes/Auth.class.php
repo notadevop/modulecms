@@ -127,9 +127,13 @@ class Auth extends Database {
 			$newHash = $result['token'];
 		}
 
+		$userspecs['ua'] 	= $this->visitor->getUA();
+		$userspecs['lang'] 	= $this->visitor->getLANG();
+
+
 		$binder = array(
 					':userid' 			=> $userid,
-					':uagent' 			=> serialize($this->visitor->get_data()),
+					':uagent' 			=> serialize($userspecs),
 					':thash'			=> $newHash,
 					':tcreated'			=> time(),
 					':texpires' 		=> strtotime('+'.AUTHHASHUPDATETIME.' Days') // time() +3600*24
@@ -212,8 +216,12 @@ class Auth extends Database {
 		$dbfinger 	= $this
 						->modifier
 						->createFingerprint($profile['thash'], $profile['uagent']);
+
+
+		$userspecs['ua'] 	= $this->visitor->getUA();
+		$userspecs['lang'] 	= $this->visitor->getLANG();				
 	
-		$uagent 	= serialize($this->visitor->get_data());
+		$uagent 	= serialize($userspecs);
 
 		$userfinger = $this
 						->modifier

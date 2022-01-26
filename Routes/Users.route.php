@@ -32,18 +32,21 @@ return array(
 	'/usersonline' 	=> array(
 		'url' 		=> '/admin/online',
 		'urltitle'  => USERSONLINEPG,
-		'action' 	=> 'Visitor/getOnlineUsers',
+		'action' 	=> 'UsersOnline/viewOnlineUsers',
+		'action' 	=> '',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 3,
 	),
 
 	// Отрабатывает для показа счетчика пользователей онлайн и регистрирует новых
 
+	
 	'online' => array(
 		'url' 		=> 'online',
 		'urltitle'  => '',
-		'action' 	=> 'Visitor/users_online',
+		'action' 	=> 'UsersOnline/countOnlineUsers',
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 4,
 	),
+	
 );

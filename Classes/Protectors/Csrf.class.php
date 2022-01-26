@@ -2,7 +2,7 @@
 
 
 
-```php
+/*
 <?php
 
 require_once __DIR__path_to_file;
@@ -10,12 +10,10 @@ require_once __DIR__path_to_file;
 use steveclifton\phpcsrftokens\Csrf;
 
 session_start();
-
 if (!empty($_GET['a'])) {
 	echo '<pre>' . print_r($_POST, true) . '</pre>';
 	echo 'Verification has been : ' . (Csrf::verifyToken('home') ? 'successful' : 'unsuccessful');
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +28,7 @@ if (!empty($_GET['a'])) {
 </body>
 </html>
 
-```
+*/
 
 
 // This code taken from: https://github.com/steveclifton/phpcsrftokens/
@@ -66,10 +64,8 @@ class Csrf {
 
 		/*  
 
-		// issue fix from issues
-
+		// issue: not cleaning old token, fix from issues???
 		$token = $_SESSION['csrftokens'][$page];
-
 	    if (empty($token) || time() > (int) $token->expiry) {
 
 	        self::removeToken($page);

@@ -12,6 +12,7 @@ return array(
 		'url' 		=> '',
 		'urltitle'  => '', 
 		'action' 	=> 'NotificationController/countNotifications',
+		//'action' 	=> '',
 		'template'	=> '',
 		'priority'	=> 3,
 	),

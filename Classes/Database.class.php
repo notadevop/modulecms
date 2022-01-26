@@ -93,7 +93,9 @@ class Database {
 		try {
 			if (empty($this->sql)) 
 				throw new RuntimeException(DBEMPTYSQL);
+
 			$this->stmt = $this->get_con()->prepare($this->sql);
+			
 			if (!$this->stmt) 
 				throw new RuntimeException(DBERRPREPQUERY.' - '.$this->stmt->errorCode());
 

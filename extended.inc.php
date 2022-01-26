@@ -14,7 +14,7 @@ function getLanguage(array $langsSupported=[]): string {
 }
 
 
-$lang = (new Visitor())->get_data()['lang'];
+$lang = (new Visitor())->getLang();
 
 
 function languages(): string {
