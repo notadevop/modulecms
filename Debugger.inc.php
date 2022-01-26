@@ -5,6 +5,14 @@
 *
 */
 
+function vardump($input) {
+
+	echo '<pre>';
+	var_dump($input);
+	echo '</pre>';
+}
+
+
 
 function debugger($input='emptyOutput', $category=DEBUG, $params=array()): void {
 

@@ -221,11 +221,9 @@ class Auth extends Database {
 		$userspecs['ua'] 	= $this->visitor->getUA();
 		$userspecs['lang'] 	= $this->visitor->getLANG();				
 	
-		$uagent 	= serialize($userspecs);
+		$uagent = serialize($userspecs);
 
-		$userfinger = $this
-						->modifier
-						->createFingerprint($userhash, $uagent);
+		$userfinger = $this->modifier->createFingerprint($userhash, $uagent);
 
 		if ($dbfinger !== $userfinger) { 
 			return null; 

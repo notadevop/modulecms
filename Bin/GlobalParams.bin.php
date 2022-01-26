@@ -15,7 +15,11 @@ class GlobalParams {
 
 	private $gp = null; 
 
-	public function setGlobParam(string $param='na'): void {
+	public function setGlobParam(string $param=''): void {
+
+		if(empty($param)) {
+			$param = $_SERVER['REQUEST_METHOD'];
+		}
 
 		switch ($param) {
 			case '_POST': 		$this->gp = $_POST;		break;  

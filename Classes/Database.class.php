@@ -38,7 +38,8 @@ class Database {
 			PDO::ATTR_PERSISTENT		 	=> true,
 		    PDO::ATTR_ERRMODE            	=> PDO::ERRMODE_EXCEPTION,
 		    PDO::ATTR_DEFAULT_FETCH_MODE 	=> PDO::FETCH_ASSOC,
-		    PDO::ATTR_EMULATE_PREPARES 	 	=> false, // Выключает режим эмуляции! проблемы с LIMIT ?,?
+		    // Выключает режим эмуляции! проблемы с LIMIT ?,?
+		    PDO::ATTR_EMULATE_PREPARES 	 	=> false, 
 		    PDO::ATTR_CURSOR 				=> PDO::CURSOR_FWDONLY
 		);
 
@@ -57,10 +58,9 @@ class Database {
 		} catch (Exception $e) {
 
 			if (DEBUG) {
-				//debugger($e->getMessage());
+				debugger($e->getMessage());
 			}
-			//die(DBERRINFO.' '.$e->getMessage());
-			die($e->getMessage());
+			die('ERROR! Host is exited! DB Connection Error.');
 		}
 	}
 

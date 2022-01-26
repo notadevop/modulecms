@@ -15,26 +15,6 @@ class Visitor extends Database {
 	// TODO: Для нормальной работы статического метода использовать для 
 	// переменнных self::
 
-	/*
-	public function get_data(): array {
-
-		return array(
-			'ua' 	=> $_SERVER['HTTP_USER_AGENT'],
-			'lang' 	=> $_SERVER['HTTP_ACCEPT_LANGUAGE']
-		);
-	}
-
-	public function get_userspecs(): array {
-
-		return array(
-			'userbrowser' 	=> $this->get_browser(),
-			'useros' 		=> $this->get_os(),
-			'userbrlang' 	=> $this->get_lang(),
-			'userremoteip' 	=> $this->get_ip()
-		);
-	}
-	*/
-
 	public function getUA(): string {
 
 		return $_SERVER['HTTP_USER_AGENT'];
@@ -271,8 +251,11 @@ class Visitor extends Database {
 			'uagent' 	=> (string)	serialize($userspecs),
 		);
 
+		vardump($p);
+
 		// Проверяем существует ли пользователь указанный в session_id
-		$sql = 'SELECT COUNT(*) as count FROM users_online WHERE session = :session';
+		$sql = 'SELECT COUNT(*) as count FROM users_online 
+										WHERE session = :session';
 
 		$binder = array(':session' => $p['session']);
 
