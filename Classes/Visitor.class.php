@@ -27,6 +27,18 @@ class Visitor extends Database {
 
 	public function getOS(): string {
 
+		/*
+				
+			1. Найти семейство операционной системы 
+				(Linux,MacOS,Windows,Dos,WebOS etc...)
+			2. Найти тип операционной системы 
+				Linux->Ubuntu,Slackware... 
+				MacOS->Intel,PPC,M1,M2.. 10.1, 10.9,11.1 etc...
+
+			Cохранить все в многомерный массив
+
+		*/
+	
 		$os_platform = "Unknown OS"; 
 	    $os_array = array(
 	    	'/Windows NT 10/i'     	=>  'Windows 10',
@@ -45,9 +57,11 @@ class Visitor extends Database {
             '/win98/i'              =>  'Windows 98',
             '/win95/i'              =>  'Windows 95',
             '/win16/i'              =>  'Windows 3.11',
-            '/macintosh/i' 			=>  'Macos X',
-            '/mac os x/i'			=>  'Intel Macos X',
+            '/Mac OS X 11/i'		=> 	'MacOS 11',
+            '/Intel Mac OS X/i'		=>  'MacOS X Intel',
+            '/M1 Mac OS X/i'		=> 	'MacOS Arm m1',
             '/mac_powerpc/i'        =>  'Macos PPC',
+            '/macintosh/i' 			=>  'Macos X',
             '/iphone/i'             =>  'iOS/iPhone',
             '/ipod/i'               =>  'iOS/iPod',           
             '/ipad/i'               =>  'iOS/iPad',
@@ -162,49 +176,43 @@ class Visitor extends Database {
 		$browser        = "Unknown Browser";  
 	    $browser_array  = array(
 
-	    	// -> EDGE, VIVALDI, CHROMIUM?
-	    	
-			'/safari/i'     =>  'Safari',
-            '/msie/i'       =>  'Internet Explorer',
-            '/edge/i'       =>  'Microsoft Edge',
-            '/firefox/i'    =>  'Firefox',
-            '/opera/i'      =>  'Opera',          
-            '/netscape/i'   =>  'Netscape',
-            '/maxthon/i'    =>  'Maxthon',
-            '/konqueror/i'  =>  'Konqueror',
-            '/chrome/i'     =>  'Chrome',
-            '/OPR/i'        =>  'Opera',
-            '/SeaMonkey/i'  =>  'SeaMonkey',
-            '/mobile/i'     =>  'Handheld Browser'
-
-            // TODO: Добавить новые браузеры
-            /*
-				'Opera',
-				'Opera Mini',
-				'WebTV',
-				'Pocket Internet Explorer',
-				'iCab',
-				'OmniWeb',
-				'Firebird',
-				'Iceweasel',
-				'Shiretoko',
-				'Mozilla',
-				'Amaya',
-				'Lynx',
-				'GoogleBot',
-				'Yahoo! Slurp',
-				'W3C Validator',
-				'BlackBerry',
-				'IceCat',
-				'Nokia S60 OSS Browser',
-				'Nokia Browser',
-				'MSN Browser',
-				'MSN Bot',
-				'Netscape Navigator',
-				'Galeon',
-				'NetPositive',
-				'Phoenix',
-			*/
+			'/safari/i'     				=> 'Safari',
+            '/msie/i'       				=> 'Internet Explorer',
+            '/edge/i'       				=> 'Microsoft Edge',
+            '/firefox/i'    				=> 'Firefox',
+            '/opera/i'      				=> 'Opera',          
+            '/netscape/i'   				=> 'Netscape',
+            '/maxthon/i'    				=> 'Maxthon',
+            '/konqueror/i'  				=> 'Konqueror',
+            '/chrome/i'     				=> 'Chrome',
+            '/OPR/i'        				=> 'Opera',
+            '/SeaMonkey/i'  				=> 'SeaMonkey',
+            '/mobile/i'     				=> 'Handheld Browser'
+			'/Opera/i'						=> 'Opera',
+			'/Opera Mini/i'					=> 'Opera Mini',	
+			'/WebTV/'						=> 'WebTV',
+			'/Pocket Internet Explorer/i'	=> 'Pocket IE',
+			'/iCab/i'						=> 'iCab',
+			'/OmniWeb/i'					=> 'OmniWeb',
+			'/Firebird/i'					=> 'Firebird',
+			'/Iceweasel/i'					=> 'IceWeasel',
+			'/Shiretoko/i'					=> 'Shiretoko',
+			'/Mozilla/i'					=> 'Mozilla',
+			'/Amaya/i'						=> 'Amaya',
+			'/Lynx/i'						=> 'Lynx',
+			'/GoogleBot/i'					=> 'GoogleBot',
+			'/Yahoo! Slurp/i'				=> 'Yahoo Slurp',
+			'/W3C Validator/i'				=> 'W3C Validator',
+			'/BlackBerry/i'					=> 'BlackBerry',
+			'/IceCat/i'						=> 'IceCat',
+			'/Nokia S60 OSS Browser/i'		=> 'Nokia S60 OSS Browser',
+			'/Nokia Browser/i'				=> 'Nokia Browser',
+			'/MSN Browser/i'				=> 'MSN Browser',
+			'/MSN Bot/i'					=> 'MSN Bot',
+			'/Netscape Navigator/i'			=> 'Netscape Navigatior',
+			'/Galeon/i'						=> 'Galeon',
+			'/NetPositive/i'				=> 'NetPositive',
+			'/Phoenix/i'					=> 'Phoenix',
 
 		);
 
