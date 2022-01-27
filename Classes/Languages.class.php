@@ -24,35 +24,44 @@
 
 class Languages {
 
-    private $defLang;
-    private $curLang;
-    private $languages; 
+    private $defaultLang;
 
     public function __construct(){ 
 
-    	$l = new Visitor();
 
-    	$this->curLang 		= $l->getLang();
-    	$this->languages 	= array();
-    	$this->defLang 		= DEFLANGUAGE;
+        $this->defaultLang = DEFLANGUAGE;
     }
 
 
-    function initLangFromCookie() {
+    function initLangFromCookie():?string {
+
+        return null;
+    }
+
+    function initLangFromBrowser():?string {
+
+        return null;
+    }
+
+    function initLangFromUser():?string {
+
+        return null;
+    }
+
+    function initLangSystem():?string {
+
+        return null;
+    }
+
+    function verifyExistingLang(): bool {
 
     }
 
-    function initLangFromBrowser() {
+
+    // Метод который устанавливает язык который будет в данной сессии
+
+    function initilizeLang(): string {
 
     }
-
-    function initLangFromUser() {
-
-    }
-
-    function initLangSystem() {
-
-    }
-
 
 }
