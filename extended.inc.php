@@ -8,15 +8,6 @@ function convert($size): ?string {
     return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
 }
 
-function getLanguage(array $langsSupported=[]): string {
-
-    $reservedLang = DEFLANGUAGE;
-}
-
-
-$lang = (new Visitor())->getLang();
-
-
 function languages(): string {
 
     // проверка не указал ли пользователь свой язык, 

@@ -55,11 +55,9 @@ $timer = function() use ($start){
 	return 'Загрузка: ' . $total_time . ' cекунд.';
 };
 
-$mem = convert(memory_get_usage(true));
-
 $v->replace(
 	array(
-		'%memused%'		=> 'Использованная память: '.$mem,
+		'%memused%'		=> 'Использованная память: '.convert(memory_get_usage(true)),
 		'%loadtime%' 	=> $timer(), 
 	)
 );

@@ -54,5 +54,3 @@ class GlobalParams {
 		return $this->isExist($key) ? $this->gp[$key] : null;
 	}
 }
-
-

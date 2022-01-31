@@ -115,7 +115,7 @@ $indexes = array(
                 ?>
               </ul>
 
-              <form class="d-flex" action="" method="get">
+              <form class="d-flex" action="/admin/search/" method="get">
                 <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Search">
                 <input type="submit" name="search" value="Поиск" class="btn btn-outline-success">
               </form>

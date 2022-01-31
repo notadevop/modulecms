@@ -179,7 +179,7 @@ class Visitor extends Database {
 			'/safari/i'     				=> 'Safari',
             '/msie/i'       				=> 'Internet Explorer',
             '/edge/i'       				=> 'Microsoft Edge',
-            '/firefox/i'    				=> 'Firefox',
+            '/Firefox/i'    				=> 'Firefox',
             '/opera/i'      				=> 'Opera',          
             '/netscape/i'   				=> 'Netscape',
             '/maxthon/i'    				=> 'Maxthon',
@@ -187,7 +187,7 @@ class Visitor extends Database {
             '/chrome/i'     				=> 'Chrome',
             '/OPR/i'        				=> 'Opera',
             '/SeaMonkey/i'  				=> 'SeaMonkey',
-            '/mobile/i'     				=> 'Handheld Browser'
+            '/mobile/i'     				=> 'Handheld Browser',
 			'/Opera/i'						=> 'Opera',
 			'/Opera Mini/i'					=> 'Opera Mini',	
 			'/WebTV/'						=> 'WebTV',
@@ -258,8 +258,6 @@ class Visitor extends Database {
 			'userip'  	=> (string)	$this->getIP(),
 			'uagent' 	=> (string)	serialize($userspecs),
 		);
-
-		vardump($p);
 
 		// Проверяем существует ли пользователь указанный в session_id
 		$sql = 'SELECT COUNT(*) as count FROM users_online 

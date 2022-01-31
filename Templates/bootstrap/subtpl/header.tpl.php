@@ -77,7 +77,7 @@ $indexes = array(
                 ?>
               </ul>
 
-              <form class="d-flex" action="" method="get">
+              <form class="d-flex" action="/search/" method="get">
                 <input class="form-control me-2" type="search" name="search" placeholder="Поиск" aria-label="Search">
                 <input type="submit" value="Поиск" class="btn btn-outline-success">
               </form>
@@ -93,7 +93,7 @@ $indexes = array(
         <strong>
             <div class="mb-3">
                 <?php 
-                    $alerts = array(
+                    $classes = array(
 
                         Logger::PRIMARY         => 'alert alert-primary',
                         Logger::SECONDARY       => 'alert alert-secondary',
@@ -105,7 +105,7 @@ $indexes = array(
                         Logger::DARK            => 'alert alert-dark',
 
                     );
-                    foreach ($alerts as $key => $value) {
+                    foreach ($classes as $key => $value) {
                         if (Logger::alertKeyExist($key)) {
                             echo '<div class="'.$value.'" role="alert"><ul>';
                             foreach (Logger::getAlerts($key) as $j => $i) {
