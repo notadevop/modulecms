@@ -178,6 +178,8 @@ class vRender {
 	function viewRender(): void {
 
 		header('Content-Type: text/html; charset=utf-8');
+		header('X-Powered-By: ModuleCMS');
+		
 		print($this->htmlRenderRes);
 	}
 

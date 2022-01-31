@@ -3,6 +3,37 @@
 (defined('ROOTPATH') && defined('DS')) or die('something wrong');
 
 
+$files = array(
+
+	'config.inc.php',
+	'settings.inc.php',
+	'extended.inc.php',
+	'Debugger.inc.php',
+
+	'meta/Attentions.meta.php',
+	'meta/Info.meta.php',
+	'meta/Errors.meta.php',
+	'meta/Staticlinks.meta.php',
+);
+
+foreach ($files as $key => $value) {
+
+	$r = ROOTPATH . $value;
+
+	try {
+		if (!file_exists($r)) {
+			throw new Exception('Core file not found!', 1);
+		}
+		
+		require_once ($r);
+
+	} catch (Exception $e) {
+		die($e->getMessage());
+	}
+}
+
+
+
 
 class ClassNotFoundException extends Exception { }
 

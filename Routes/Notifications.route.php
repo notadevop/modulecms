@@ -7,16 +7,15 @@
 return array(
 
 	// Профиль пользователя который хочет посмотреть свой аккаунт
-
+	
 	'notifications' => array(
 		'url' 		=> '',
 		'urltitle'  => '', 
 		'action' 	=> 'NotificationController/countNotifications',
-		//'action' 	=> '',
 		'template'	=> '',
 		'priority'	=> 3,
 	),
-
+	
 	'/admin/notifications' => array(
 		'url' 		=> '/admin/notifications', 
 		'urltitle'  => NOTIFSPAGE, 

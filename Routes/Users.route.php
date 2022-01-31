@@ -29,6 +29,7 @@ return array(
 
 	// Страница показывает всех пользователей онлайн
 
+	
 	'/usersonline' 	=> array(
 		'url' 		=> '/admin/online',
 		'urltitle'  => USERSONLINEPG,

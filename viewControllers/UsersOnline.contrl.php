@@ -20,6 +20,6 @@ class UsersOnline extends Visitor {
 
 	function countOnlineUsers(): int {
 
-		return $this->viewOnlineUsers();
+		return count($this->viewOnlineUsers());
 	}
 }

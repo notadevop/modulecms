@@ -15,7 +15,7 @@ return array(
 	),
 
 	// Авторизация через куки
-
+	
 	'auth' 			=> array(
 		'url' 		=> 'auth', 	
 		'urltitle'  => '',
@@ -23,7 +23,7 @@ return array(
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 1,
 	),
-
+	
 	// Регистрация пользователя
 
 	'/register' 	=> array(

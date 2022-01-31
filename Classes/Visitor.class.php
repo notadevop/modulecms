@@ -228,7 +228,7 @@ class Visitor extends Database {
 
 	public function getOnlineUsers() {
 
-		$sql = 'SELECT `session`, `visitime`, `uagent` FROM `users_online`';
+		$sql = 'SELECT `session`, `visitime`, `userip`, `uagent` FROM `users_online`';
 
 		$this->preAction($sql);
 
@@ -282,10 +282,10 @@ class Visitor extends Database {
 		}
 
 		$binder = array(
-			':vistime'	=> $p['vistime'],
-			':uip'		=> $p['userip'],
-			':sess'		=> $p['session'],
-			':uagent'	=> $p['uagent']
+			':vistime'	=> (string)$p['vistime'],
+			':uip'		=> (string)$p['userip'],
+			':sess'		=> (string)$p['session'],
+			':uagent'	=> (string)$p['uagent']
 		);
 
 		$this->preAction($sql, $binder);

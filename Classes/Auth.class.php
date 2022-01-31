@@ -57,7 +57,6 @@ class Auth extends Database {
 			$this->notActivated = true;
 			return false;
 		}else if (empty($profile['lastvisit']) || $profile['lastvisit'] == 0 || $profile['actstatus'] != 1) {
-
 			return false;
 		}
 
@@ -132,11 +131,11 @@ class Auth extends Database {
 
 
 		$binder = array(
-					':userid' 			=> $userid,
-					':uagent' 			=> serialize($userspecs),
-					':thash'			=> $newHash,
-					':tcreated'			=> time(),
-					':texpires' 		=> strtotime('+'.AUTHHASHUPDATETIME.' Days') // time() +3600*24
+					':userid' 			=> (int) $userid,
+					':uagent' 			=> (string) serialize($userspecs),
+					':thash'			=> (string) $newHash,
+					':tcreated'			=> (int) time(),
+					':texpires' 		=> (int) strtotime('+'.AUTHHASHUPDATETIME.' Days') // time() +3600*24
 		);
 
 		$this->preAction($sql, $binder);
@@ -231,11 +230,12 @@ class Auth extends Database {
 
 		// Обновляем время посещения! =======
 		$time = time();
-		$sql = 'UPDATE users SET user_last_visit= :visitime WHERE user_email = :useremail';
+
+		$sql = 'UPDATE users SET user_last_visit = :visitime WHERE user_email = :useremail';
 
 		$binder = array(
-			':visitime' 	=> $time,
-			':useremail'	=> $useremail
+			':visitime' 	=> (int)$time,
+			':useremail'	=> (string)$useremail,
 		);
 
 		$this->preAction($sql, $binder);

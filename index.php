@@ -6,7 +6,6 @@ $time = $time[1] + $time[0];
 $start = $time;
 
 if (version_compare(phpversion(), '7.0.0') <= 0) {
-	
 	die('PHP 7.0 or newer Only! Your version PHP is: '.phpversion());
 }
 
@@ -17,30 +16,16 @@ date_default_timezone_set('UTC');
 ini_set('error_reporting', 'E_ALL');
 error_reporting(E_ALL);
 
-header('Content-Type: text/html; charset=utf-8');
-header('X-Powered-By: ModuleCMS');
+//header('Content-Type: text/html; charset=utf-8');
+//header('X-Powered-By: ModuleCMS');
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOTPATH', dirname(__FILE__) . DS);
 
-
-$files = array(
-
-	'init.inc.php',
-	'config.inc.php',
-	'settings.inc.php',
-	'extended.inc.php',
-	'Debugger.inc.php',
-
-	'meta/Attentions.meta.php',
-	'meta/Info.meta.php',
-	'meta/Errors.meta.php',
-	'meta/Staticlinks.meta.php',
-);
-
-foreach ($files as $key => $value) {
-	$r = ROOTPATH . $value;
-	!file_exists($r) ? die('Не могу найти системный файл!') : require_once ($r);
+if (!file_exists(ROOTPATH.'init.inc.php')) {
+	die('no core loaded!');
+} else {
+	require_once (ROOTPATH.'init.inc.php');
 }
 
 $v = new vRender();

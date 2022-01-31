@@ -26,7 +26,7 @@ class Notifications extends Database  {
         WHERE user_id = :userid ';
 
         if ($readOnly) {
-            $sql                    .= ' and notif_read = :notifread ';
+            $sql .= ' and notif_read = :notifread ';
             $binder[':notifread']   = '0';
         }
 

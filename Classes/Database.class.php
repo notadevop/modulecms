@@ -74,7 +74,9 @@ class Database {
 
 	public function preAction(string $sql, array $prepared=array()): void {
 		// TODO: сделать фильтрацию типа mysql_escape_string();
+		
 		$this->sql = $sql;
+
 		if (!empty($prepared))
 			$this->prepared = $prepared;
 	}
@@ -98,18 +100,53 @@ class Database {
 			
 			if (!$this->stmt) 
 				throw new RuntimeException(DBERRPREPQUERY.' - '.$this->stmt->errorCode());
+			/*
+			vardump($this->sql);
+			vardump($this->prepared);
+			echo '<hr/>';
+			*/
 
 			if (!empty($this->prepared)) {
+
 				foreach ($this->prepared as $key => $value) {
+				
+					if (is_string($value)) {
+						$this->stmt->bindValue($key, $value, PDO::PARAM_STR);
+					} else if (is_int($value)) {
+						$this->stmt->bindValue($key, $value, PDO::PARAM_INT);
+					} else {
+						$this->stmt->bindValue($key, $value);
+					}
+
+					//PDO::PARAM_BOOL
+					//PDO::PARAM_NULL
+					// is_float
+					// is_numeric
+					// is_null
+					// is_array
+					// is_object
+
+
 					//$this->stmt->bindParam($key, $value);
-					$this->stmt->bindValue($key, $value);
-				}
+					//$this->stmt->bindValue($key, $value);
+				} 
+
+				$this->prepared = null;
 			} 
+
 			if (!$this->stmt->execute()) 
 				throw new RuntimeException(DBERRQUERY.' - '.$this->stmt->errorCode());
 			$r = true;
 		} catch (Exception $e) {
+
+			echo '<pre>';
+			if (DEBUG){
+				//print_r($this->sql);
+				echo '<br/>';
+			}
 			print_r($e->getMessage().'<br/>');
+			echo '</pre>';
+			echo '<hr/>';
 		}
 		return $r;
 	}
