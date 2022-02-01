@@ -34,6 +34,7 @@ class Database {
 		*/
 
 		$dsn = 'mysql:host='.DBHOST.';dbname='.DBNAME.';charset='.DBCHAR;
+
 		$opt = array(
 			PDO::ATTR_PERSISTENT		 	=> true,
 		    PDO::ATTR_ERRMODE            	=> PDO::ERRMODE_EXCEPTION,
@@ -60,7 +61,7 @@ class Database {
 			if (DEBUG) {
 				debugger($e->getMessage());
 			}
-			die('ERROR! Host is exited! DB Connection Error.');
+			die('Database connection error!');
 		}
 	}
 
@@ -77,8 +78,8 @@ class Database {
 		
 		$this->sql = $sql;
 
-		if (!empty($prepared))
-			$this->prepared = $prepared;
+		// Обнуляем при каждой подготовке, если пустое!
+		$this->prepared = !empty($prepared) ? $prepared : null;
 	}
 
 	// Онулируем все переменнные, при запуске данного метода!
@@ -109,14 +110,6 @@ class Database {
 			if (!empty($this->prepared)) {
 
 				foreach ($this->prepared as $key => $value) {
-				
-					if (is_string($value)) {
-						$this->stmt->bindValue($key, $value, PDO::PARAM_STR);
-					} else if (is_int($value)) {
-						$this->stmt->bindValue($key, $value, PDO::PARAM_INT);
-					} else {
-						$this->stmt->bindValue($key, $value);
-					}
 
 					//PDO::PARAM_BOOL
 					//PDO::PARAM_NULL
@@ -126,12 +119,36 @@ class Database {
 					// is_array
 					// is_object
 
+					
+					switch(true) {
+						case is_string($value):
+							$type = PDO::PARAM_STR;
+						break;
+						case (is_int($value) || is_numeric($value)):
+							$type = PDO::PARAM_INT;
+						break;
+						case is_null($value):
+							$type = PDO::PARAM_NULL;
+						break;
+						case is_bool($value):
+							$type = PDO::PARAM_BOOL;
+						break;
+						case (is_float($value) || is_double($value)):
+							$type = PDO::PARAM_FLOAT;
+						break;
+						default:
+							$type = PDO::PARAM_STR;
+						break;
+					}
+
+					$this->stmt->bindValue($key, $value, $type);
 
 					//$this->stmt->bindParam($key, $value);
 					//$this->stmt->bindValue($key, $value);
 				} 
 
 				$this->prepared = null;
+				$this->sql 		= null;
 			} 
 
 			if (!$this->stmt->execute()) 
@@ -141,7 +158,7 @@ class Database {
 
 			echo '<pre>';
 			if (DEBUG){
-				//print_r($this->sql);
+				print_r($this->sql);
 				echo '<br/>';
 			}
 			print_r($e->getMessage().'<br/>');

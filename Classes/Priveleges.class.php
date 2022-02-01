@@ -79,7 +79,7 @@ class Priveleges extends Database {
 
         $sql = 'TRUNCATE role_perm';
 
-				$this->preAction($sql);
-				return $this->doAction();
+		$this->preAction($sql);
+		return $this->doAction();
     }
 }
