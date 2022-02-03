@@ -10,17 +10,13 @@ require_once __DIR__path_to_file;
 use steveclifton\phpcsrftokens\Csrf;
 
 session_start();
-
 // 1. Testing token
 
 if (!empty($_GET['a'])) {
 	echo '<pre>' . print_r($_POST, true) . '</pre>';
 	echo 'Verification has been : ' . (Csrf::verifyToken('home') ? 'successful' : 'unsuccessful');
 }
-
-
 // 2. initilize token
-
 ?>
 
 <!DOCTYPE html>
@@ -28,17 +24,11 @@ if (!empty($_GET['a'])) {
 <head><title>Test Script</title></head>
 <body>
 	<form action="?a=submit" method="POST">
-		
 		<?php 
-
-		// echo Csrf::getInputToken('home')  <- here input from php  // old v.
-
-		$csrf = Csrf::getInputToken('home');
-	
+			// echo Csrf::getInputToken('home')  <- here input from php  // old v.
+			$csrf = Csrf::getInputToken('home');
 		?>
-		
 		<input type="hidden" class="id" name="<?=$csrf['key'];?>" value="<?=$csrf['value'];?>" />
-
 		<input type="text" name="name" placeholder="Test Input"><br>
 		<button>Submit!</button>
 	</form>

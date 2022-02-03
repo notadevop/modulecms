@@ -97,9 +97,6 @@ class vRender {
 		}
 
 
-		//vardump($ui);
-		//vardump($this->reservedPages['loginpage']);
-
 		// Определяет нужно заблокировать вывод или на оборот
 		// нужно например для административной части вывода вместо html json 
 
@@ -116,10 +113,6 @@ class vRender {
 			} else {
 				$r = $this->activateTemplate($this->params['website_template']);
 			}
-
-			// Тут нужно указать шаблон логина 
-			//$r = $this->activateTemplate($this->params['website_template']);
-			
 		}
 
 		// Определяет какую страницу нужно вывести 
@@ -145,12 +138,10 @@ class vRender {
 		try {
 
 			if(!$r || !file_exists($this->activeTpl.$defTpl)) {
-
 				throw new Exception(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl);
 			}
 
 			if(isset($r['languagePack'][DEFLANGUAGE])) {
-				
 				if (file_exists($this->activeTpl.$r['languagePack'][DEFLANGUAGE])) {
 					require_once($this->activeTpl.$r['languagePack'][DEFLANGUAGE]);
 				} else {

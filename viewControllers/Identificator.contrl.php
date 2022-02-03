@@ -200,9 +200,6 @@ class Identificator extends Filter {
 		if (!Csrf::verifyToken(self::CSRFKEY, false, $loginParams[self::CSRFVALUE])) {
 
 			Logger::collectAlert(Logger::ATTENTIONS, CSRFUNSUCCESSFULL);
-
-			var_dump(Csrf::verifyToken(self::CSRFKEY, false, $loginParams[self::CSRFVALUE]));
-
 			return false;
 		} 
 
