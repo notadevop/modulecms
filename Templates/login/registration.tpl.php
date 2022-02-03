@@ -7,13 +7,11 @@ defined('ROOTPATH') or die();
  */
 
 if ($this->regOk){
-
   return require_once ($this->activeTpl.$r['pages']['default']);
 }
 
-
 require_once($this->activeTpl.$r['templates']['header']);
-require_once($this->activeTpl.$r['templates']['banner']);
+//require_once($this->activeTpl.$r['templates']['banner']);
 
 ?>
 
@@ -55,5 +53,5 @@ require_once($this->activeTpl.$r['templates']['banner']);
 
 <?php 
 
-require_once($this->activeTpl.$r['templates']['sidebar']);
+//require_once($this->activeTpl.$r['templates']['sidebar']);
 require_once($this->activeTpl.$r['templates']['footer']);

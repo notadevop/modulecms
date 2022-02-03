@@ -11,7 +11,7 @@ if ($this->regOk){
 }
 
 require_once($this->activeTpl.$r['templates']['header']);
-require_once($this->activeTpl.$r['templates']['banner']);
+//require_once($this->activeTpl.$r['templates']['banner']);
 ?>
 
 
@@ -50,5 +50,5 @@ require_once($this->activeTpl.$r['templates']['banner']);
 
 <?php 
 
-require_once($this->activeTpl.$r['templates']['sidebar']);
+//require_once($this->activeTpl.$r['templates']['sidebar']);
 require_once($this->activeTpl.$r['templates']['footer']);

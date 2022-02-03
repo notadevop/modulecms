@@ -10,7 +10,7 @@ return array(
 		'url' 		=> '/login/login',
 		'urltitle'  => LOGINPG,
 		'action' 	=> 'Identificator/loginAction',
-		'template'	=> 'authforms/login.tpl.php',
+		'template'	=> 'login.tpl.php',
 		'priority'	=> 4,
 	),
 
@@ -30,7 +30,7 @@ return array(
 		'url' 		=> '/login/register', 
 		'urltitle'  => REGISTERPAGE,
 		'action' 	=> 'Identificator/registrationAction',
-		'template'	=> 'authforms/registration.tpl.php',
+		'template'	=> 'registration.tpl.php',
 		'priority'	=> 4,
 	),
 
@@ -40,7 +40,7 @@ return array(
 		'url' 		=> '/login/restore', 
 		'urltitle'  => RESTOREPAGE,
 		'action' 	=> 'Identificator/restoreAction',
-		'template'	=> 'authforms/restore.tpl.php',
+		'template'	=> 'restore.tpl.php',
 		'priority'	=> 4,
 	),
 
@@ -50,7 +50,7 @@ return array(
 		'url' 		=> '/login/verifyrestorerequest',
 		'urltitle'  => VERIFYRESTORE,
 		'action' 	=> 'Identificator/verifyUserActivation',
-		'template'	=> 'authforms/passwords.tpl.php',
+		'template'	=> 'passwords.tpl.php',
 		'priority'	=> 2,
 	),
 
@@ -60,7 +60,7 @@ return array(
 		'url' 		=> '/login/updatepassword', 
 		'urltitle'  => PWDUPDATE,
 		'action' 	=> 'Identificator/updateUserPassword',
-		'template'	=> 'authforms/passwords.tpl.php',
+		'template'	=> 'passwords.tpl.php',
 		'priority'	=> 2,
 	),
 

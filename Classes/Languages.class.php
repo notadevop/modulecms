@@ -26,11 +26,10 @@ class Languages {
 
     private $defaultLang;
 
-    public function __construct(){ 
-        
+    function __construct(){ 
+
         $this->defaultLang = DEFLANGUAGE;
     }
-
 
     function initLangFromCookie():?string {
 

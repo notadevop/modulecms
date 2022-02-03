@@ -147,7 +147,7 @@ class Csrf {
 		self::confirmSessionStarted();
 
 		if (empty($page)) {
-			//trigger_error('Page is missing.', E_USER_ERROR);
+			trigger_error('Page is missing.', E_USER_ERROR);
 			return false;
 		}
 
@@ -176,10 +176,10 @@ class Csrf {
 		//$requestToken = ($requestToken ?? $_POST['csrftoken'] ?? null);
 
 		if (empty($page)) {
-			//trigger_error('Page alias is missing', E_USER_WARNING);
+			trigger_error('Page alias is missing', E_USER_WARNING);
 			return false;
 		} else if (empty($requestToken)) {
-			//trigger_error('Token is missing', E_USER_WARNING);
+			trigger_error('Token is missing', E_USER_WARNING);
 			return false;
 		}
 
@@ -188,6 +188,8 @@ class Csrf {
 		// if the time is greater than the expiry form submission window
 		if (empty($token) || time() > (int) $token->expiry) {
 			self::removeToken($page);
+
+			vardump('sksdfsdfdfhk');
 			return false;
 		}
 
@@ -204,6 +206,8 @@ class Csrf {
 		if ($sessionConfirm && $cookieConfirm) {
 			return true;
 		}
+
+		vardump('skdfhkdlkfdkjlfg');
 
 		return false;
 	}

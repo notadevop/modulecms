@@ -70,8 +70,10 @@ class vRender {
 
 	function activateTemplate(string $name, string $folder=''): ?array {
 
+		// Устанавливает папку где лежат шаблоны, по умолчанию либо через пользователя
 		$folder = !empty($folder) ? ROOTPATH.$folder.DS : $this->currentTplDir;
 		
+		// Проверяем есть ли схема у нее
 		$fpath = $folder.$name.DS.TPLSCHEMEFILE;
 		
 		if (!file_exists($fpath)) { return null; }
@@ -94,6 +96,10 @@ class vRender {
 			$ui = $this->currentRoute['uriarr'][0];
 		}
 
+
+		//vardump($ui);
+		//vardump($this->reservedPages['loginpage']);
+
 		// Определяет нужно заблокировать вывод или на оборот
 		// нужно например для административной части вывода вместо html json 
 
@@ -101,13 +107,19 @@ class vRender {
 
 		if($ui == $this->reservedPages['adminpage'] && $this->regOk) {
 			$r = $this->activateTemplate('admin');
-		//}elseif ($ui == $this->reservedPages['loginpage']) {
-		//	$r = $this->activateTemplate('login');
+		}elseif ($ui == $this->reservedPages['loginpage']) {
+			$r = $this->activateTemplate('login');
 		} else {
 			if($ui == $this->reservedPages['adminpage'] && !$this->regOk) {
 				$deniedTpl = true;
+				$r = $this->activateTemplate('login');
+			} else {
+				$r = $this->activateTemplate($this->params['website_template']);
 			}
-			$r = $this->activateTemplate($this->params['website_template']);
+
+			// Тут нужно указать шаблон логина 
+			//$r = $this->activateTemplate($this->params['website_template']);
+			
 		}
 
 		// Определяет какую страницу нужно вывести 
