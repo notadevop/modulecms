@@ -3,7 +3,6 @@
 defined('ROOTPATH') or die();
 
 /**
- *
  * Баннер шаблона
  */
 
@@ -39,6 +38,9 @@ require_once($this->activeTpl.$r['templates']['banner']);
                 <label for="exampleInputPassword1" class="form-label"><?=FORMPWDTITLEREP;?></label>
                 <input type="password" class="form-control" id="exampleInputPassword1" name="userpassword2" value="Hesoyam12">
               </div>
+
+               <input type="hidden" class="id" name="<?=Identificator::CSRFVALUE;?>" value="<?=Csrf::getInputToken(Identificator::CSRFKEY);?>" />
+
               <input type="submit" class="btn btn-primary" name="Registration" value="Зарегестрироваться" />
             </form>
             <p class="lead">

@@ -14,12 +14,20 @@ class Identificator extends Filter {
 	const TOKENHSHVALUE = 'token';
 	const CONFRHSHVALUE = 'confirm';
 	const USERALIEN		= 'alienuser';
+	
 
 	// Ссылки на пути 
 
 	const REGLINK = '';
 
 	private $authSts;
+
+
+	// ключ который определяет где искать токен
+	//private $csrfKey 	= 'authCsrfToken';
+
+	const CSRFKEY 		= 'authCsrfToken';
+	const CSRFVALUE 	= 'isthatu'; 
 
 	
 	function __construct() {
@@ -61,6 +69,9 @@ class Identificator extends Filter {
 
 				'userTokenHashMaxSym' 	=> 255,
 				'userTokenHashMinSym' 	=> 4,
+
+				'csrfTokenMaxSym' 		=> 255,
+				'csrfTokenMinSym' 		=> 10,
 			)
 			// Данные с проверки подтверждения авторизации
 		);
@@ -175,6 +186,7 @@ class Identificator extends Filter {
 			self::USERMAILVALUE => false,
 			self::USERPWD1VALUE => false,
 			//self::USERALIEN 	=> false,
+			self::CSRFVALUE 	=> false,
 		);
 
 		$loginParams = $this->getInputParams($loginParams, '_POST');
@@ -183,6 +195,16 @@ class Identificator extends Filter {
 			return false;
 		}
 
+		// Временно установленно
+
+		if (!Csrf::verifyToken(self::CSRFKEY, false, $loginParams[self::CSRFVALUE])) {
+
+			Logger::collectAlert(Logger::ATTENTIONS, CSRFUNSUCCESSFULL);
+			return false;
+		} 
+
+		//$csrf = Csrf::getInputToken($this->csrfKey);
+		
 		$userExist = $this->users->userExist($loginParams[self::USERMAILVALUE]);
 
 		if(!$userExist) {
@@ -351,7 +373,8 @@ class Identificator extends Filter {
 		}
 
 		$restoreParams = array(
-			self::USERMAILVALUE => false
+			self::USERMAILVALUE => false,
+			self::CSRFVALUE 	=> false,
 		);
 
 		$restoreParams = $this->getInputParams($restoreParams, '_POST');
@@ -359,6 +382,13 @@ class Identificator extends Filter {
 		if(!$this->isNotEmpty($restoreParams)) {
 			return false;
 		}
+
+		// Временно установленно
+
+		if (!Csrf::verifyToken(self::CSRFKEY, false, $restoreParams[self::CSRFVALUE])) {
+			Logger::collectAlert(Logger::ATTENTIONS, CSRFUNSUCCESSFULL);
+			return false;
+		}  
 
 		$userExist = $this->users->userExist($restoreParams[self::USERMAILVALUE]);
 
@@ -400,6 +430,10 @@ class Identificator extends Filter {
 	}
 
 
+	// Метод для подтверждения регистрации пользователя
+
+	// Тут используется внешняя ссылка id, confirm hash и token hash
+
 	function verifyUserActivation($silence=false): ?array {
 
 		if(!$this->authSts['restore_status']) {
@@ -427,7 +461,6 @@ class Identificator extends Filter {
 				Logger::collectAlert(Logger::ATTENTIONS, AUTHPARAMSERR);
 			}
 
-			
 			return null;
 		}
 
@@ -464,6 +497,7 @@ class Identificator extends Filter {
 
 			self::USERPWD1VALUE => false,
 			self::USERPWD2VALUE => false,
+			self::CSRFVALUE 	=> false,
 		);
 
 		$updateParams = $this->getInputParams($updateParams, '_POST');
@@ -471,6 +505,14 @@ class Identificator extends Filter {
 		if(!$this->isNotEmpty($updateParams)) {
 			return false;
 		}
+
+		// Временно установленно
+
+		if (!Csrf::verifyToken(self::CSRFKEY, false, $updateParams[self::CSRFVALUE])) {
+			Logger::collectAlert(Logger::ATTENTIONS, CSRFUNSUCCESSFULL);
+			return false;
+		} 
+
 
 		if ($updateParams[self::USERPWD1VALUE] !== $updateParams[self::USERPWD2VALUE]) {
 			Logger::collectAlert(Logger::ATTENTIONS, PWDNOTMATCH);
@@ -509,6 +551,7 @@ class Identificator extends Filter {
 			self::USERMAILVALUE => false,
 			self::USERPWD1VALUE => false,
 			self::USERPWD2VALUE => false,
+			self::CSRFVALUE 	=> false,
 		);
 
 		$registrationParams = $this->getInputParams($registrationParams, '_POST');
@@ -516,6 +559,13 @@ class Identificator extends Filter {
 		if(!$this->isNotEmpty($registrationParams)) {
 			return false;
 		}
+
+		// Временно установленно
+
+		if (!Csrf::verifyToken(self::CSRFKEY, false, $registrationParams[self::CSRFVALUE])) {
+			Logger::collectAlert(Logger::ATTENTIONS, CSRFUNSUCCESSFULL);
+			return false;
+		}  
 
 		if ($registrationParams[self::USERPWD1VALUE] !== $registrationParams[self::USERPWD2VALUE]) {
 
@@ -642,6 +692,10 @@ class Identificator extends Filter {
 				case self::USERIDVALUE:
 					$max = $this->authParams['transport']['useridMaxSym'];
 					$min = $this->authParams['transport']['useridMinSym'];
+				break;
+				case self::CSRFVALUE:
+					$max = $this->authParams['transport']['csrfTokenMaxSym'];
+					$min = $this->authParams['transport']['csrfTokenMinSym'];
 				break;
 				default:
 					$max = 0;

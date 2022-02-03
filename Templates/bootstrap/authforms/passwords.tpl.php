@@ -41,6 +41,9 @@ require_once($this->activeTpl.$r['templates']['banner']);
           <input type="password" class="form-control" id="exampleInputPassword1" name="userpassword2">
         </div>
         <div class="mb-3">
+
+          <input type="hidden" class="id" name="<?=Identificator::CSRFVALUE;?>" value="<?=Csrf::getInputToken(Identificator::CSRFKEY);?>" />
+
           <input type="submit" class="btn btn-primary" name="Restoreaction" value="<?=FORMPWDBUTTON;?>" />
         </div>
 

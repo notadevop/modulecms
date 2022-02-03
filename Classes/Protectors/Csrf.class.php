@@ -10,10 +10,17 @@ require_once __DIR__path_to_file;
 use steveclifton\phpcsrftokens\Csrf;
 
 session_start();
+
+// 1. Testing token
+
 if (!empty($_GET['a'])) {
 	echo '<pre>' . print_r($_POST, true) . '</pre>';
 	echo 'Verification has been : ' . (Csrf::verifyToken('home') ? 'successful' : 'unsuccessful');
 }
+
+
+// 2. initilize token
+
 ?>
 
 <!DOCTYPE html>
@@ -21,19 +28,28 @@ if (!empty($_GET['a'])) {
 <head><title>Test Script</title></head>
 <body>
 	<form action="?a=submit" method="POST">
-		<?php echo Csrf::getInputToken('home')  <- here input from php  ?> 
+		
+		<?php 
+
+		// echo Csrf::getInputToken('home')  <- here input from php  // old v.
+
+		$csrf = Csrf::getInputToken('home');
+	
+		?>
+		
+		<input type="hidden" class="id" name="<?=$csrf['key'];?>" value="<?=$csrf['value'];?>" />
+
 		<input type="text" name="name" placeholder="Test Input"><br>
 		<button>Submit!</button>
 	</form>
 </body>
 </html>
-
 */
 
 
 // This code taken from: https://github.com/steveclifton/phpcsrftokens/
 
-namespace steveclifton\phpcsrftokens;
+//namespace steveclifton\phpcsrftokens;
 
 class Csrf {
 
@@ -63,15 +79,12 @@ class Csrf {
 	protected static function getSessionToken(string $page) {
 
 		/*  
-
 		// issue: not cleaning old token, fix from issues???
 		$token = $_SESSION['csrftokens'][$page];
 	    if (empty($token) || time() > (int) $token->expiry) {
-
 	        self::removeToken($page);
 	        $token = null;
 	    }
-
 	    return $token;
 		*/
 
@@ -134,13 +147,16 @@ class Csrf {
 		self::confirmSessionStarted();
 
 		if (empty($page)) {
-			trigger_error('Page is missing.', E_USER_ERROR);
+			//trigger_error('Page is missing.', E_USER_ERROR);
 			return false;
 		}
 
 		$token = (self::getSessionToken($page) ?? self::setNewToken($page, $expiry));
 
-		return '<input type="hidden" id="csrftoken" name="csrftoken" value="'. $token->sessiontoken .'">';
+		//return '<input type="hidden" id="csrftoken" name="csrftoken" value="'. $token->sessiontoken .'">';
+		//return ['key' => 'csrftoken', 'value' => $token->sessiontoken];
+		
+		return $token->sessiontoken;
 	}
 
 
@@ -154,15 +170,16 @@ class Csrf {
 
 		self::confirmSessionStarted();
 
+		// disable _POST from Model 
+
 		// if the request token has not been passed, check POST
-		$requestToken = ($requestToken ?? $_POST['csrftoken'] ?? null);
+		//$requestToken = ($requestToken ?? $_POST['csrftoken'] ?? null);
 
 		if (empty($page)) {
-			trigger_error('Page alias is missing', E_USER_WARNING);
+			//trigger_error('Page alias is missing', E_USER_WARNING);
 			return false;
-		}
-		else if (empty($requestToken)) {
-			trigger_error('Token is missing', E_USER_WARNING);
+		} else if (empty($requestToken)) {
+			//trigger_error('Token is missing', E_USER_WARNING);
 			return false;
 		}
 

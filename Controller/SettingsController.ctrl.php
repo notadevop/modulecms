@@ -14,10 +14,10 @@ class SettingsController {
     	$this->params = array(
 
     		'website_template' 			=> false,
-    		'website_title' 			=> '',
-    		'website_title_description' => '',
-    		'admin' 					=> '',
-    		'login' 					=> '',
+    		'website_title' 			=> 'ModuleCMS',
+    		'website_title_description' => 'ModuleCMSDescription',
+    		'admin' 					=> 'admin',
+    		'login' 					=> 'login',
     		'login_status' 				=> LOGINALLOW,
     		'auth_status' 				=> AUTHALLOW,
     		'reg_status' 				=> REGISTRATIONALLOW,
@@ -34,13 +34,10 @@ class SettingsController {
 
     function initDefSettings() {
 
-
     }
 
 
     function updateSettings() {
-
-
     	return $this->paramRes;
     }
 

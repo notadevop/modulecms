@@ -5,15 +5,15 @@
 
 $files = array(
 
-	'config.inc.php',
-	'settings.inc.php',
-	'extended.inc.php',
-	'Debugger.inc.php',
+	'Includes/config.inc.php',
+	'Includes/settings.inc.php',
+	'Includes/extended.inc.php',
+	'Includes/Debugger.inc.php',
 
-	'meta/Attentions.meta.php',
-	'meta/Info.meta.php',
-	'meta/Errors.meta.php',
-	'meta/Staticlinks.meta.php',
+	'languagePack/Ru-ru/Attentions.lang.php',
+	'LanguagePack/Ru-ru/Info.lang.php',
+	'LanguagePack/Ru-ru/Errors.lang.php',
+	'LanguagePack/Ru-ru/Staticlinks.lang.php',
 );
 
 foreach ($files as $key => $value) {

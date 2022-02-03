@@ -13,6 +13,7 @@ defined('ROOTPATH') or die();
 $indexes = array(
     '/',
     '/admin',
+    '/profile/',
     /*'/test' => array(
         '/submenu' => 'submenu1',
         '/submenu1' => 'submenu2',
@@ -94,7 +95,6 @@ $indexes = array(
             <div class="mb-3">
                 <?php 
                     $classes = array(
-
                         Logger::PRIMARY         => 'alert alert-primary',
                         Logger::SECONDARY       => 'alert alert-secondary',
                         Logger::SUCCESS         => 'alert alert-success',
@@ -103,7 +103,6 @@ $indexes = array(
                         Logger::INFORMATION     => 'alert alert-info',
                         Logger::LIGHT           => 'alert alert-light',
                         Logger::DARK            => 'alert alert-dark',
-
                     );
                     foreach ($classes as $key => $value) {
                         if (Logger::alertKeyExist($key)) {

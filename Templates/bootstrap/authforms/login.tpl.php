@@ -3,18 +3,15 @@
 defined('ROOTPATH') or die();
 
 /**
- *
  * Баннер шаблона
  */
 
 if ($this->regOk){
-
   return require_once ($this->activeTpl.$r['pages']['default']);
 }
 
 require_once($this->activeTpl.$r['templates']['header']);
 require_once($this->activeTpl.$r['templates']['banner']);
-
 ?>
 
 
@@ -36,6 +33,9 @@ require_once($this->activeTpl.$r['templates']['banner']);
                 value="" />
                 <label class="form-check-label" for="exampleCheck1"><?=FORMALIENPCTITLE;?></label>
               </div>
+
+              <input type="hidden" class="id" name="<?=Identificator::CSRFVALUE;?>" value="<?=Csrf::getInputToken(Identificator::CSRFKEY);?>" />
+
               <input type="submit" class="btn btn-primary" name="loginaction" value="Войти" />
             </form>
             <p class="lead">

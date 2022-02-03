@@ -94,7 +94,6 @@ class vRender {
 			$ui = $this->currentRoute['uriarr'][0];
 		}
 
-
 		// Определяет нужно заблокировать вывод или на оборот
 		// нужно например для административной части вывода вместо html json 
 
@@ -135,7 +134,7 @@ class vRender {
 
 			if(!$r || !file_exists($this->activeTpl.$defTpl)) {
 
-				throw new Exception(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl. ' code 1000');
+				throw new Exception(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl);
 			}
 
 			if(isset($r['languagePack'][DEFLANGUAGE])) {

@@ -45,4 +45,13 @@ return array(
 		'template'	=> 'infopage.tpl.php',
 		'priority'	=> 3,
 	),
+
+	'/profile/' => array(
+		'url' 		=> '/profile',
+		'urltitle'  => 'Профиль',
+		'action' 	=> 'ProfileController/getUserProfile',
+		'template'	=> 'infopage.tpl.php',
+		'priority'	=> 3,
+	),
+
 );

@@ -11,11 +11,11 @@ echo '<pre>';
 print_r($this->result);
 echo '</pre>';
 
-$website_title = (!empty($this->result['templateRes']['website_title']) ? $this->result['templateRes']['website_title'] : '');
 
-$website_desc = (!empty($this->result['templateRes']['website_title_description']) ? $this->result['templateRes']['website_title_description'] : '');
+$website_title 	= $this->result['templateRes']['website_title'];
+$website_desc 	= $this->result['templateRes']['website_title_description'];
+$admin 					= $this->result['templateRes']['admin'];
 
-$admin = $this->result['templateRes']['admin'];
 
 
 require_once($this->activeTpl.$r['templates']['header']);
@@ -34,7 +34,7 @@ require_once($this->activeTpl.$r['templates']['banner']);
 
 				<form class="row g-3 needs-validation" novalidate action="" method="POST">
 					<div class="input-group input-group-lg">
-					  <span class="input-group-text" id="inputGroup-sizing-lg">Имя вебсайта</span>
+					  <span class="input-group-text" id="inputGroup-sizing-lg">Заголовок вебсайта</span>
 					  <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg" name="websiteTitle" value="<?=$website_title;?>" required>
 					</div>
 					

@@ -54,3 +54,5 @@ define('USERNULL',			'Некорректный или отсутствует ID 
 define('NOPRIVELEGES', 		'Ошибка, У вас недостаточно привелегий');
 
 define('NOTEMPLETEFOUND', 	'Шаблон не найден!');
+
+define('CSRFUNSUCCESSFULL', 'Ошибка проверки CSRF');

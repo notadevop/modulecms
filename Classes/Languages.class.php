@@ -27,8 +27,7 @@ class Languages {
     private $defaultLang;
 
     public function __construct(){ 
-
-
+        
         $this->defaultLang = DEFLANGUAGE;
     }
 

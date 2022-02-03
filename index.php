@@ -22,10 +22,10 @@ error_reporting(E_ALL);
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOTPATH', dirname(__FILE__) . DS);
 
-if (!file_exists(ROOTPATH.'init.inc.php')) {
+if (!file_exists(ROOTPATH.'Includes/init.inc.php')) {
 	die('no core loaded!');
 } else {
-	require_once (ROOTPATH.'init.inc.php');
+	require_once (ROOTPATH.'Includes/init.inc.php');
 }
 
 $v = new vRender();
