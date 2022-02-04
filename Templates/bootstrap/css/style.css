@@ -1,7 +1,7 @@
 
 
 body,html {
-	background-color: #FFF;
+    background-color: #FFF;
 }
 header {
     background: #AEC6CF;
@@ -23,7 +23,7 @@ nav ul li a {
     border-radius: 10px;
 }
 nav ul li a:hover {
-	background: #FFF;
+    background: #FFF;
 }
 nav ul li {
     display: inline-block;
@@ -38,12 +38,12 @@ nav ul {
     border: none;
 }
 main {
-	float: center;
-	width: 60%;
+    float: left;
+    width: 60%;
 }
 aside {
-	float: right;
-	width: 30%;
+    float: right;
+    width: 30%;
 }
 article {
     border-bottom: 2px dotted #999;
@@ -55,30 +55,30 @@ article h2 {
     margin-bottom: 12px;
 }
 article p {
-	
+    
 }
 main section {
-	
+    
 }
 footer {
-	background: #AEC6CF;
-	max-width: 1200px;
-	margin: auto;
-	clear: both;
-	text-align: right;
+    background: #AEC6CF;
+    max-width: 1200px;
+    margin: auto;
+    clear: both;
+    text-align: right;
     border-radius: 10px;
 }
 footer p {
-	padding: 20px;
+    padding: 20px;
 }
 address {
     padding: 10px 20px 30px 10px;
 }
 aside > div {
-	margin: 10px auto;
+    margin: 10px auto;
     padding: 10px;
-	background: #AEC6CF;
-	min-height: 100px;
+    background: #AEC6CF;
+    min-height: 100px;
     border-radius: 10px;
 }
 #logo {
@@ -103,18 +103,17 @@ body > section {
 }
 
 @media screen and (max-width: 1200px) {
-	body > section {
-		padding: 10px 10px;
-	}
+    body > section {
+        padding: 10px 10px;
+    }
 }
 @media screen and (max-width: 600px) {
-	main {
-		float: none;
-		width: 100%;
-	}
-	aside {
-		float: none;
-		width: 100%;
-	}
-
+    main {
+        float: none;
+        width: 100%;
+    }
+    aside {
+        float: none;
+        width: 100%;
+    }
 }

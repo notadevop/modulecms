@@ -4,7 +4,7 @@ body,html {
     background-color: #FFF;
 }
 header {
-    background: #AEC6CF;
+    background: #FFF;
     padding: 10px 15px;
     max-width: 1200px;
     margin: auto;
@@ -14,7 +14,7 @@ nav {
     display: inline-block;
 }
 nav ul li a {
-    background: #EEE;
+    background: #FFF;
     padding: 2px 10px;
     font-size: 20px;
     text-decoration: none;
@@ -46,7 +46,7 @@ aside {
     width: 30%;
 }
 article {
-    border-bottom: 2px dotted #999;
+    border-bottom: 2px dotted #FFF;
     padding-bottom: 20px;
     margin-bottom: 20px;
 }
@@ -61,7 +61,7 @@ main section {
     
 }
 footer {
-    background: #AEC6CF;
+    background: #FFF;
     max-width: 1200px;
     margin: auto;
     clear: both;
@@ -99,7 +99,7 @@ body > section {
     margin: auto;
     padding: 10px 0px;
     border-bottom: 0px solid #999;
-    color: #333;
+    color: #FFF;
 }
 
 @media screen and (max-width: 1200px) {

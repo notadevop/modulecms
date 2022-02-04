@@ -42,9 +42,14 @@ require_once($this->activeTpl.$r['templates']['header']);
               <input type="submit" class="btn btn-primary" name="Registration" value="Зарегестрироваться" />
             </form>
             <p class="lead">
+
+              <a href="<?=$this->allRoutes['/']['url'];?>">
+                  <?=$this->allRoutes['/']['urltitle'];?>
+              </a> |
+
               <a href="<?=$this->allRoutes['/login']['url'];?>">
                   <?=$this->allRoutes['/login']['urltitle'];?>
-              </a>  | 
+              </a> | 
               <a href="<?=$this->allRoutes['/restore']['url'];?>">
                   <?=$this->allRoutes['/restore']['urltitle'];?>
                 </a>   

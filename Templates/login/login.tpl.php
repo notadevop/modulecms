@@ -39,6 +39,11 @@ require_once($this->activeTpl.$r['templates']['header']);
               <input type="submit" class="btn btn-primary" name="loginaction" value="Войти" />
             </form>
             <p class="lead">
+
+                <a href="<?=$this->allRoutes['/']['url'];?>">
+                  <?=$this->allRoutes['/']['urltitle'];?>
+                </a> |
+
                 <a href="<?=$this->allRoutes['/restore']['url'];?>">
                   <?=$this->allRoutes['/restore']['urltitle'];?>
                 </a> | 

@@ -50,6 +50,17 @@ require_once($this->activeTpl.$r['templates']['header']);
         <?php //debugger($this->result);  ?>
       
       </form>
+
+      <p class="lead">
+          <a href="<?=$this->allRoutes['/']['url'];?>">
+            <?=$this->allRoutes['/']['urltitle'];?>
+          </a> |
+
+          <a href="<?=$this->allRoutes['/login']['url'];?>">
+              <?=$this->allRoutes['/login']['urltitle'];?>
+          </a> 
+      </p>
+      
     </main>
 <?php 
 

@@ -11,7 +11,7 @@ defined('ROOTPATH') or die();
 // Индексы для ссылок
 
 $indexes = array(
-    '/',
+    //'/',
     //'/admin',
     //'/profile/',
     /*'/test' => array(

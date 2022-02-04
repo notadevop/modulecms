@@ -178,8 +178,6 @@ class Csrf {
 		// if the time is greater than the expiry form submission window
 		if (empty($token) || time() > (int) $token->expiry) {
 			self::removeToken($page);
-
-			vardump('sksdfsdfdfhk');
 			return false;
 		}
 
@@ -196,9 +194,6 @@ class Csrf {
 		if ($sessionConfirm && $cookieConfirm) {
 			return true;
 		}
-
-		vardump('skdfhkdlkfdkjlfg');
-
 		return false;
 	}
 

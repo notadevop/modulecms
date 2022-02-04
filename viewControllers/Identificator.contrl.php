@@ -155,6 +155,8 @@ class Identificator extends Filter {
 
 		$this->saveAuthAction('','',true,true);
 
+		Csrf::removeToken(self::CSRFKEY);
+
 		Logger::collectAlert(Logger::SUCCESS, LOGGEDOUT);
 
 		if(!$redirect || !defined('LOGOUTALLOW')) { return true; }
@@ -203,8 +205,6 @@ class Identificator extends Filter {
 			return false;
 		} 
 
-		//$csrf = Csrf::getInputToken($this->csrfKey);
-		
 		$userExist = $this->users->userExist($loginParams[self::USERMAILVALUE]);
 
 		if(!$userExist) {
