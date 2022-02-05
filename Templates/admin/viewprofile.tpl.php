@@ -28,31 +28,41 @@ require_once($this->activeTpl.$r['templates']['banner']);
 
 <section id="pageContent">
     <main role="main">
-	    	<h2>Пользователь - <?=$this->result['templateRes']['name'];?></h2>
+	    	<h2>Пользовательский профиль</h2>
 	    	<p><?=$this->result['templateRes']['userpicture'];?></p>
-	    	<table class="table">
+
+	    	 <caption>Данные пользователя</caption>
+	    	<table class="table table-sm">
+			
+	    	
 			  <thead>
 			    <tr>
 			      <th scope="col"></th>
-			      <th scope="col">Профиль</th>
-			      <th scope="col"><?=$this->result['templateRes']['id'];?></th>
+			      <td scope="col"></td>
+			      <td scope="col"></td>
 			    </tr>
 			  </thead>
 			  <tbody>
-
-			  	<?php 
-			  	if ($this->result['templateRes']['actstatus'] == 1) {
-			  		echo '<tr class="table-success">';
-			  		$stat = 'Активирован!';
-			  	} else {
-			  		echo '<tr class="table-warning">';
-			  		$stat = 'Не Активирован!';
-			  	}
-
-			  	?>
+			  	<tr>
+			      <th scope="col"></th>
+			      <td scope="col">ID Пользователя</td>
+			      <td scope="col"><?=$this->result['templateRes']['id'];?></td>
+			    </tr>
+			  	<tr>
+				  	<th scope="row"></th>
+				  	<td>Имя пользователя</td>
+				  	<td>@<?=$this->result['templateRes']['name'];?></td>
+			  	</tr>
+			  	<tr>
 			      <th scope="row"></th>
 			      <td>Cтатус пользователя</td>
-			      <td><?=$stat;?></td>
+			      <td>
+				  	<?php 
+				  	echo $this->result['templateRes']['actstatus'] == 1 
+				  	? '<b><span class="link-success">Активирован!</span></b>' :
+				  	'<b><span class="link-warning">Не Активирован!</span></b>';
+				  	?>
+			      </td>
 			    </tr>
 			    <tr>
 			      <th scope="row"></th>
@@ -72,18 +82,18 @@ require_once($this->activeTpl.$r['templates']['banner']);
 			    <tr>
 			      <th scope="row"></th>
 			      <td>Привелегии установленными для пользователя</td>
-			      <td>Привелегии не установленны!</td>
+			      <td>N/A</td>
 			    </tr>
 			    <tr>
 			      <th scope="row"></th>
 			      <td>Cоциальные данные</td>
-			      <td>Данных нету</td>
+			      <td>N/A</td>
 			    </tr>
-			    <tr>
-			      <th scope="row"></th>
+			    <tfooter>
+			      <th></th>
 			      <td>О себе</td>
-			      <td>Данных нету</td>
-			    </tr>
+			      <td>N/A</td>
+			    </tfooter>
 			  </tbody>
 			</table>
 		<br />

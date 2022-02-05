@@ -47,12 +47,11 @@ $indexes = array(
 
         <p> %site_description% </p>
        
+       <!--
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <div class="container-fluid" style="background-color: #AEC6CF;">
+          <div class="container-fluid">
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-             
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
                 <?php 
                 foreach ($indexes as $key => $value) {
                     if(is_array($value)) {
@@ -79,15 +78,10 @@ $indexes = array(
                 }
                 ?>
               </ul>
-              <!--
-              <form class="d-flex" action="/search/" method="get">
-                <input class="form-control me-2" type="search" name="search" placeholder="Поиск" aria-label="Search">
-                <input type="submit" value="Поиск" class="btn btn-outline-success">
-              </form>
-            -->
             </div>
           </div>
         </nav>
+        -->
     </header>
     
 

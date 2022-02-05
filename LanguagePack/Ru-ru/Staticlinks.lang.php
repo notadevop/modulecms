@@ -1,10 +1,10 @@
 <?php 
 
-define('LINKMAIN', 		'Главная');
+define('LINKMAIN', 		'🏠 Главная');
 define('LINKMAINADMIN', 'Админка');
 define('NOPAGE404', 	'Не найденая страница');
 define('NOTIFSPAGE',	'Уведомления');
-define('PROFILEVIEW', 	'Профиль');
+define('PROFILEVIEW', 	'👤 Профиль');
 define('PROFILEEDIT',	'Редактирование профиля');
 define('PROFILEREMOVE', 'Удаление профиля');
 define('LOGINPG', 		'Логин');

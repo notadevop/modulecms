@@ -202,6 +202,7 @@ class Identificator extends Filter {
 		if (!Csrf::verifyToken(self::CSRFKEY, false, $loginParams[self::CSRFVALUE])) {
 
 			Logger::collectAlert(Logger::ATTENTIONS, CSRFUNSUCCESSFULL);
+			Csrf::removeToken(self::CSRFKEY);
 			return false;
 		} 
 
@@ -274,6 +275,8 @@ class Identificator extends Filter {
 		}
 		
 		Logger::collectAlert(Logger::SUCCESS, LOGINSUCCESS);
+
+		Csrf::removeToken(self::CSRFKEY);
 
 		return true;
 	}

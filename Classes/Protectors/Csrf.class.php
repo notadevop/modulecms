@@ -211,7 +211,8 @@ class Csrf {
 			return false;
 		}
 
-		unset($_COOKIE[self::makeCookieName($page)], $_SESSION['csrftokens'][$page]);
+		unset($_COOKIE[self::makeCookieName($page)]); 
+		unset($_SESSION['csrftokens'][$page]);
 
 		return true;
 	}

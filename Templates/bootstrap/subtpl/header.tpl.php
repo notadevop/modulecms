@@ -46,7 +46,7 @@ $indexes = array(
         <p> %site_description% </p>
        
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <div class="container-fluid" style="background-color: #AEC6CF;">
+          <div class="container-fluid">
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">

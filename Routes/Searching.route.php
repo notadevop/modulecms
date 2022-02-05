@@ -11,7 +11,7 @@ return array(
 		'url' 		=> '/search',
 		'urltitle'  => 'Поиск по сайту', 
 		'action' 	=> 'Explorer/getSearch',
-		'template'	=> 'infopage.tpl.php',
+		'template'	=> 'searcher.tpl.php',
 		'priority'	=> 3,
 	),
 
