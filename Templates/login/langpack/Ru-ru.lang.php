@@ -14,7 +14,7 @@ define('FORMNAMETITLE',     'Имя пользователя');
 define('FORMEMAILDESC',     'Емайл не используется ни где, кроме авторизации!');
 define('FORMPWDTITLE',      'Пароль пользователя');
 define('FORMPWDTITLEREP',   'Пароль пользователя повторить!');
-define('FORMALIENPCTITLE',  'Чужой компьютер!');
+define('FORMALIENPCTITLE',  'Запомнить!');
 define('FORMLOGINBUTTON',   'Вход');
 
 // Passwords 
