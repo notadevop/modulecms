@@ -50,7 +50,7 @@ return array(
 		'url' 		=> '/admin/profile',
 		'urltitle'  => 'Профиль',
 		'action' 	=> 'ProfileController/getUserProfile',
-		'template'	=> 'infopage.tpl.php',
+		'template'	=> 'viewprofile.tpl.php',
 		'priority'	=> 3,
 	),
 

@@ -1,6 +1,6 @@
 <?php 
 
-define('LINKMAIN', 		'🏠 Главная');
+define('LINKMAIN', 		'Главная');
 define('LINKMAINADMIN', 'Админка');
 define('NOPAGE404', 	'Не найденая страница');
 define('NOTIFSPAGE',	'Уведомления');

@@ -5,18 +5,18 @@ defined('ROOTPATH') or die();
 return array(
 
 	'templates' => array(
-		'header' 	=> 'subtpl/header.tpl.php',
-		//'banner' 	=> 'subtpl/banner.tpl.php',
-		//'sidebar' => 'subtpl/sidebar.tpl.php',
-		'footer' 	=> 'subtpl/footer.tpl.php',
+		'header' 	=> 'header.tpl.php',
+		'banner' 	=> 'banner.tpl.php',
+		'sidebar' 	=> 'sidebar.tpl.php',
+		'footer' 	=> 'footer.tpl.php',
 	),
-	'css' => array(
-		'css1'		=> 'css/style.css',
-	),
+
 	'pages' => array(
 
-		'default'  => 'infopage.tpl.php',
+		'default'  	=> 'infopage.tpl.php',
 	),
+	
+	'css' => null,
 	'languagePack' => array(
 		'Ru-ru' 	=> 'langpack/Ru-ru.lang.php',
 	)

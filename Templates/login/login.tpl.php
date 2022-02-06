@@ -11,47 +11,61 @@ if ($this->regOk){
 }
 
 require_once($this->activeTpl.$r['templates']['header']);
-//require_once($this->activeTpl.$r['templates']['banner']);
 ?>
 
+			<!-- end for header -->
 
-<section id="pageContent">
-    <main role="main">
-        <h1><?=FORMLOGINTITLE;?></h1>
-            <form action="<?=$this->allRoutes['/login']['url'];?>" method="post">
-              <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label"><?=FORMEMAILTITLE;?></label>
-                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="<?=Identificator::USERMAILVALUE;?>" value="jcmaxuser@gmail.com">
-                <div id="emailHelp" class="form-text"><?=FORMEMAILDESC;?></div>
-              </div>
-              <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label"><?=FORMPWDTITLE;?></label>
-                <input type="password" class="form-control" id="exampleInputPassword1" name="<?=Identificator::USERPWD1VALUE;?>" value="Hesoyam12">
-              </div>
-              <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" name="<?=Identificator::USERALIEN;?>" id="exampleCheck1" 
-                value="" />
-                <label class="form-check-label" for="exampleCheck1"><?=FORMALIENPCTITLE;?></label>
-              </div>
 
-              <input type="hidden" class="id" name="<?=Identificator::CSRFVALUE;?>" value="<?=Csrf::getInputToken(Identificator::CSRFKEY);?>" />
+			<div class="row justify-content-center">
+				<div class="col-md-7 col-lg-5">
+					<div class="login-wrap p-4 p-md-5">
+				      	<div class="icon d-flex align-items-center justify-content-center">
+				      		<span class="fa fa-user-o"></span>
+				      	</div>
+		      			<h3 class="text-center mb-4"><?=FORMLOGINTITLE;?></h3>
 
-              <input type="submit" class="btn btn-primary" name="loginaction" value="Войти" />
-            </form>
-            <p class="lead">
+				<form action="<?=$this->allRoutes['/login']['url'];?>" method="post" class="login-form">
 
-                <a href="<?=$this->allRoutes['/']['url'];?>">
-                  <?=$this->allRoutes['/']['urltitle'];?>
-                </a> |
+		      		<div class="form-group">
+		      			<input type="email" name="<?=Identificator::USERMAILVALUE;?>" value="jcmaxuser@gmail.com" class="form-control rounded-left" placeholder="<?=FORMEMAILTITLE;?>" required>
+		      			<div id="emailHelp" class="form-text"><?=FORMEMAILDESC;?></div>
+		      		</div>
+		            <div class="form-group d-flex">
+		              <input type="password" name="<?=Identificator::USERPWD1VALUE;?>" value="Hesoyam12" class="form-control rounded-left" placeholder="<?=FORMPWDTITLE;?>" required>
+		            </div>
+		            <div class="form-group">
+		            	<input class="form-control btn btn-primary rounded submit px-3" type="submit" name="loginaction" value="Войти">
+		            </div>
 
-                <a href="<?=$this->allRoutes['/restore']['url'];?>">
-                  <?=$this->allRoutes['/restore']['urltitle'];?>
-                </a> | 
-                <a href="<?=$this->allRoutes['/register']['url'];?>">
-                  <?=$this->allRoutes['/register']['urltitle'];?>
-                </a>
-            </p>
-    </main>
+
+		            <div class="form-group d-md-flex">
+		            	<input type="hidden" name="<?=Identificator::CSRFVALUE;?>" value="<?=Csrf::getInputToken(Identificator::CSRFKEY);?>" />
+		            </div>
+		           	
+
+					<div class="form-check">
+					  <input class="form-check-input" type="checkbox" name="<?=Identificator::USERALIEN;?>" value="" id="flexCheckDefault">
+					  <label class="form-check-label" for="flexCheckDefault">
+					    <?=FORMALIENPCTITLE;?>
+					  </label>
+					</div>
+
+
+					<div class="form-group d-flex">
+		            	<label><a href="<?=$this->allRoutes['/']['url'];?>">
+                  				<?=$this->allRoutes['/']['urltitle'];?></a> | <a href="<?=$this->allRoutes['/restore']['url'];?>">
+                  				<?=$this->allRoutes['/restore']['urltitle'];?></a> | <a href="<?=$this->allRoutes['/register']['url'];?>">
+                 				<?=$this->allRoutes['/register']['urltitle'];?></a>
+                 		</label>
+		            </div>
+
+	          </form>
+	        </div>
+				</div>
+			</div>
+		
+
+			<!-- end for body -->
 
 <?php 
 

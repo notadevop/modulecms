@@ -34,14 +34,19 @@ $profile = array(
 
 $settings = array(
     $this->allRoutes['/admin/settings/website']['url'] => $this->allRoutes['/admin/settings/website']['urltitle'],
-    '4433' => 'Добавить общие привелегии',
-    '128f' => 'Редактирование общих привелегий',
+    '4433'  => 'Добавить общие привелегии',
+    '128f'  => 'Редактирование общих привелегий',
+    '#'     =>  'Задания крона',
 );
+
+
+// Сделать таблицу в базе данных -> html links -> link -> value использовать как widget!
 
 $tools = array(
 
     HOST.'/phpMyAdmin5/'        => 'PHPMyAdmin',
     'http://phptester.net/'     => 'PHPTester',
+    'https://getbootstrap.com/docs/5.1/getting-started/introduction/' => 'Документация по bootstrap 5.1', 
 );
 
 ?>
