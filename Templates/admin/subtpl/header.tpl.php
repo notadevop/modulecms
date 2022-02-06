@@ -13,7 +13,6 @@ defined('ROOTPATH') or die();
 $indexes = array(
     '/',
     '/admin',
-    '/profile/',
     /*'/test' => array(
         '/submenu' => 'submenu1',
         '/submenu1' => 'submenu2',

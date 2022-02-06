@@ -264,7 +264,7 @@ class Identificator extends Filter {
 
 		
 		if(LOGINREDIRECT) {
-			$source = Router::getRoute('/admin/profile/:num');
+			$source = Router::getRoute('/profile/:num');
 			$path = str_replace(':num', $findUser['userid'] ,$source['url']);
 
 			if(LOGINREDIRTIMEOUT > 0) {

@@ -8,7 +8,7 @@ return array(
 
 	// Вывод указанного пользователя
 	
-	'/admin/profile/:num' => array(
+	'/profile/:num' => array(
 		'url' 		=> '/admin/profile/:num',
 		'urltitle'  => PROFILEVIEW, 
 		'action' 	=> 'ProfileController/getUserProfile/$1',
@@ -18,7 +18,7 @@ return array(
 
 	// Редактирование пользователя 
 
-	'/admin/profile/edit/:num' => array(
+	'/profile/edit/:num' => array(
 		'url' 		=> '/admin/profile/edit/:num',
 		'urltitle' 	=> PROFILEEDIT,
 		'action' 	=> 'ProfileController/editUserProfile/$1',
@@ -28,7 +28,7 @@ return array(
 
 	// Удаление пользователя 
 
-	'/admin/profile/remove' => array(
+	'/profile/remove' => array(
 		'url' 		=> '/admin/profile/remove',
 		'urltitle'  => PROFILEREMOVE,
 		'action' 	=> 'ProfileController/getUserProfile',
@@ -38,7 +38,7 @@ return array(
 
 	// Заглушка для всех других ссылок
 
-	'/admin/profile/:any' => array(
+	'/profile/:any' => array(
 		'url' 		=> '/admin/profile/:any',
 		'urltitle'  => NOPAGE404,
 		'action' 	=> 'ProfileController/getUserProfile',
@@ -47,7 +47,7 @@ return array(
 	),
 
 	'/profile/' => array(
-		'url' 		=> '/profile',
+		'url' 		=> '/admin/profile',
 		'urltitle'  => 'Профиль',
 		'action' 	=> 'ProfileController/getUserProfile',
 		'template'	=> 'infopage.tpl.php',

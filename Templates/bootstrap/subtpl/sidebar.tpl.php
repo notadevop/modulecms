@@ -20,13 +20,13 @@ defined('ROOTPATH') or die();
                     <hr />
                     
                     <li>Пользователь: 
-                        <a href="<?=str_replace(':num', PROFILE['userid'] ,$this->allRoutes['/admin/profile/:num']['url']);?>">
+                        <a href="<?=str_replace(':num', PROFILE['userid'] ,$this->allRoutes['/profile/:num']['url']);?>">
                             <?=PROFILE['username'];?></a></li>
 
                     <li>Cтатус: <a href="<?=$this->allRoutes['/logout']['url'];?>"><?=$this->allRoutes['/logout']['urltitle'];?></a></li>
                     
-                    <li><?=$this->allRoutes['/usersonline']['urltitle'];?>: 
-                        <a href="<?=$this->allRoutes['/usersonline']['url'];?>">
+                    <li><?=$this->allRoutes['/admin/users/online']['urltitle'];?>: 
+                        <a href="<?=$this->allRoutes['/admin/users/online']['url'];?>">
                         (<?=$this->result['permanetRes']['online'];?>)
                         </a>
                     </li>

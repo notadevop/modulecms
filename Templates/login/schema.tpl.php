@@ -18,7 +18,6 @@ return array(
 		'default'  => 'infopage.tpl.php',
 	),
 	'languagePack' => array(
-		'rus' 		=> 'langpack/rus.lang.php',
-		'eng'		=> 'langpack/eng.lang.php'
+		'Ru-ru' 	=> 'langpack/Ru-ru.lang.php',
 	)
 );

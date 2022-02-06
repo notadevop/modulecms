@@ -5,10 +5,8 @@
 
 $files = array(
 
-	'Includes/config.inc.php',
 	'Includes/settings.inc.php',
-	'Includes/extended.inc.php',
-	'Includes/Debugger.inc.php',
+	'Includes/Library.inc.php',
 
 	'languagePack/Ru-ru/Attentions.lang.php',
 	'LanguagePack/Ru-ru/Info.lang.php',
@@ -55,6 +53,7 @@ spl_autoload_register(function ($class_name) {
 		'Bin'				=> '.bin.',
 		'viewControllers'	=> '.contrl.',
 		'Classes/Protectors'=> '.class.',
+		'Classes/Priveleges'=> '.class.',
 	);
 
 	try {

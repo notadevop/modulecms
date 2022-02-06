@@ -138,7 +138,10 @@ class vRender {
 		try {
 
 			if(!$r || !file_exists($this->activeTpl.$defTpl)) {
-				throw new Exception(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl);
+				if (DEBUG)
+					throw new Exception(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl);
+				else 
+					throw new Exception(NOTEMPLETEFOUND . ' -->  '. $this->params['website_template'] . ' --> '. $defTpl);
 			}
 
 			if(isset($r['languagePack'][DEFLANGUAGE])) {
@@ -153,7 +156,7 @@ class vRender {
 				throw new Exception('tpl require error x.x');
 			}
 		} catch (Exception $e) {
-			echo $e->getMessage();
+			debugger($e->getMessage());
 		}
 
 		$this->htmlRenderRes = ob_get_contents();

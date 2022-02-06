@@ -13,14 +13,12 @@ return array(
 
 	'pages' => array(
 
-		'default'  => 'infopage.tpl.php',
+		'default'  	=> 'infopage.tpl.php',
 	),
 	
 	'css' => null,
 	'languagePack' => array(
-
-		'rus' => 'langpack/rus.lang.php',
-		'eng' => 'langpack/eng.lang.php'
+		'Ru-ru' 	=> 'langpack/Ru-ru.lang.php',
 	)
 );
 

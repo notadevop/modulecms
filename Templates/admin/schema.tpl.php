@@ -18,7 +18,8 @@ return array(
 	'css' => null,
 	'languagePack' => array(
 
-		'rus' => 'langpack/rus.lang.php',
+		//'rus' => 'langpack/rus.lang.php',
+		'Ru-ru' => 'langpack/Ru-ru.lang.php',
 		'eng' => 'langpack/eng.lang.php'
 	)
 );

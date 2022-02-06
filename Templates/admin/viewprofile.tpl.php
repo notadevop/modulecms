@@ -28,7 +28,12 @@ require_once($this->activeTpl.$r['templates']['banner']);
 
 <section id="pageContent">
     <main role="main">
-	    	<h2>Пользовательский профиль</h2>
+	    	<h2>Профиль <?php 
+    		if ($this->result['templateRes']['id'] == PROFILE['userid']) {
+
+    			echo '(<b> Это Ваш аккаунт </b>)';
+    		} 
+	    	?></h2>
 	    	<p><?=$this->result['templateRes']['userpicture'];?></p>
 
 	    	 <caption>Данные пользователя</caption>
@@ -82,23 +87,35 @@ require_once($this->activeTpl.$r['templates']['banner']);
 			    <tr>
 			      <th scope="row"></th>
 			      <td>Привелегии установленными для пользователя</td>
-			      <td>N/A</td>
-			    </tr>
+			      <td class="link-warning">N/A</td>
 			    <tr>
+			    </tr>
 			      <th scope="row"></th>
 			      <td>Cоциальные данные</td>
-			      <td>N/A</td>
+			      <td class="link-warning">N/A</td>
 			    </tr>
 			    <tfooter>
 			      <th></th>
 			      <td>О себе</td>
-			      <td>N/A</td>
+			      <td class="link-warning">N/A</td>
 			    </tfooter>
 			  </tbody>
 			</table>
 		<br />
 		<hr />
-		<p>Удалить профиль нажать <a href="<?=$this->allRoutes['/admin/profile/remove']['url'];?>">сюда!</a></p>
+		<p>
+			<label>Действия с аккаунтом</label>
+			<hr />
+		<?php 
+		if ($this->result['templateRes']['id'] != PROFILE['userid']) {
+
+			echo '<a href="">Написать сообщение!</a> <br /> ';
+			echo '<a href="">Заблокировать аккаунт!</a> <br /> ';
+    	}
+    	?>
+
+		<a href="<?=$this->allRoutes['/profile/remove']['url'];?>">Отредактировать профиль</a> <br /> 
+		<a href="<?=$this->allRoutes['/profile/remove']['url'];?>">Хочу удалить аккаунт</a></p>
 	</main>
 
 <?php 

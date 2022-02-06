@@ -44,7 +44,7 @@ class ProfileController {
         // Проверяем  есть у даннго пользователя привелегии
         
         if (!$checkPerm) {
-            Logger::collectAlert('attentions', NOPRIVELEGES);
+            Logger::collectAlert(Logger::ATTENTIONS, NOPRIVELEGES);
             return null;
         } 
 
@@ -53,17 +53,25 @@ class ProfileController {
         // Фильтруем данные 
 
         if ($userid == 0) {
-            Logger::collectAlert('attentions', USERNULL);
+
+            $userid = PROFILE['userid'];
+        }
+
+        if ($userid == 0) {
+            Logger::collectAlert(Logger::ATTENTIONS, USERNULL);
             return null;
         }
 
-        $users = $this->users->getUserProfile($userid);
+        $user = $this->users->getUserProfile($userid);
 
-        if (!$users) {
-            Logger::collectAlert('attentions', USERNOTFOUND);
+        if (!$user) {
+            Logger::collectAlert(Logger::ATTENTIONS, USERNOTFOUND);
             return null;
         }
-        return $users;
+
+        Logger::collectAlert(Logger::INFORMATION, USERNOTCOMPLETE);
+
+        return $user;
 	 }
 
      function editUserProfile($uid = 0) {
@@ -89,7 +97,7 @@ class ProfileController {
         $users      = $this->users->getListUsers();
 
         if (!$users) {
-            Logger::collectAlert('attentions', NOLISTUSERS);
+            Logger::collectAlert(Logger::ATTENTIONS, NOLISTUSERS);
         }
 
         $this->granter->initUser();
@@ -97,7 +105,7 @@ class ProfileController {
 
         // Проверяем  есть у даннго пользователя привелегии
         if (!$checkPerm) {
-            Logger::collectAlert('attentions', NOPRIVELEGES);
+            Logger::collectAlert(Logger::ATTENTIONS, NOPRIVELEGES);
             return null;
         } else {
 

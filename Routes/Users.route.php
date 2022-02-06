@@ -30,8 +30,8 @@ return array(
 	// Страница показывает всех пользователей онлайн
 
 	
-	'/usersonline' 	=> array(
-		'url' 		=> '/admin/online',
+	'/admin/users/online' 	=> array(
+		'url' 		=> '/admin/users/online',
 		'urltitle'  => USERSONLINEPG,
 		'action' 	=> 'UsersOnline/viewOnlineUsers',
 		'action' 	=> '',
