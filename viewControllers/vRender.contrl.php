@@ -40,9 +40,11 @@ class vRender {
 
 		$this->result 		= Router::getResult();
 		$this->currentRoute = Router::getRoute();
+
+		
 		$this->allRoutes 	= Router::getAllRoutes(); // Все пути 
 
-		$this->regOk = (defined('PROFILE') && !empty(PROFILE['useremail'])) ? true : false;
+		$this->regOk = (!defined('PROFILE') || empty(PROFILE['useremail'])) ? false : true;
 
 		// pages это массив для определения шаблона для определенных страниц 
 		// например чтобы разные страницы имели разные шаблоны
@@ -162,8 +164,17 @@ class vRender {
 		$this->htmlRenderRes = ob_get_contents();
 		ob_end_clean();
 
+		// Даем заголовок странице
+
+		if (!empty(isset($this->result['templateRes']['pageTitle']))) {
+			$title = $this->result['templateRes']['pageTitle'];
+		} else {
+			$title = $this->params['website_title_description'];
+		}	
+
+
 		$replaceParams = array(
-			' %title% ' 			=> $this->params['website_title_description'],
+			' %title% ' 			=> $title,
 			' %sitetitle% ' 		=> $this->params['website_title'],
 			' %site_description% ' 	=> $this->params['website_title_description'],
 		);

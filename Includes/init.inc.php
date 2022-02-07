@@ -65,7 +65,6 @@ spl_autoload_register(function ($class_name) {
 	$folders = array(
 		'Includes' 	 		=> '.inc.',
 		'Classes' 	 		=> '.class.',
-		'Controller' 		=> '.ctrl.',   // Удалить поже!!!
 		'Bin'				=> '.bin.',
 		'viewControllers'	=> '.contrl.',
 		'Classes/Protectors'=> '.class.',

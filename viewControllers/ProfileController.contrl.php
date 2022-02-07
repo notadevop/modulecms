@@ -84,7 +84,8 @@ class ProfileController {
             'viewListUsers' => false,
             'allowEditing'  => false,
             'allowRemoving' => false,
-            'users'         => null
+            'users'         => null,
+            'pageTitle'     => 'Список пользователей',
         );
 
         $perms = array(
@@ -113,7 +114,8 @@ class ProfileController {
             $arrUsers['allowRemoving']  = true;
         }
 
-        $arrUsers['users'] = $users;
+        $arrUsers['users']      = $users;
+
         return $arrUsers;
      }
 

@@ -165,7 +165,7 @@ final class Router {
 
 				return array(
 					'uriarr' 	=> Urlfixer::splitUrl($ctrl['url']),
-					'uri' 		=> $ctrl['url'], //$key
+					//'uri' 		=> $ctrl['url'], //$key
 					'url' 		=> $key,
 					'action' 	=> Urlfixer::splitUrl($ctrl['action']),
 					'params'	=> self::$defaultRoutes[$key],

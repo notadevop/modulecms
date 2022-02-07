@@ -72,7 +72,7 @@ require_once($this->activeTpl.$r['templates']['banner']);
 				      <td><a href="<?=str_replace(':num', PROFILE['userid'] ,$this->allRoutes['/profile/edit/:num']['url']);?>">Редактировать</a></td>
 				      <td><a href="">Написать</a></td>
 				      <td><a href=""  class="link-warning">Заблокировать</a></td>
-				      <td><a href="" class="link-danger" >Удалить</a></td>
+				      <td><a href="" class="link-danger" >🗑</a></td>
 				    </tr>
 		  		<?php 
 		  	}

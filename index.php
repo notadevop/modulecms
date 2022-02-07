@@ -28,6 +28,15 @@ if (!file_exists(ROOTPATH.'Includes/init.inc.php')) {
 	require_once (ROOTPATH.'Includes/init.inc.php');
 }
 
+
+// Определить разные типа аттак
+//  CSRF
+//  XSS
+//  SQL-INJECTION
+//  BRUTEFORCE
+//  PHP/JS CODE INJECTION
+
+
 $v = new vRender();
 $v->prepareRender();
 

@@ -68,10 +68,10 @@ $password = '12345678';
 		        	<label>
 		        		<a href="<?=$this->allRoutes['/']['url'];?>">
 		      				<?=$this->allRoutes['/']['urltitle'];?></a> | 
+		      			<a href="<?=$this->allRoutes['/login']['url'];?>">
+            			<?=$this->allRoutes['/login']['urltitle'];?></a> |
 		      			<a href="<?=$this->allRoutes['/restore']['url'];?>">
-		      				<?=$this->allRoutes['/restore']['urltitle'];?></a> | 
-		      			<a href="<?=$this->allRoutes['/register']['url'];?>">
-		     				<?=$this->allRoutes['/register']['urltitle'];?></a>
+		      				<?=$this->allRoutes['/restore']['urltitle'];?></a> 
 		     		</label>
 		        </div>
 

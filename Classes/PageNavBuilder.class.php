@@ -5,12 +5,16 @@
 $arr = array('one', 'two', 'three');
 
 try {
-	$navBuild = new PageNavBuilder();
+	
+    $navBuild = new PageNavBuilder();
 	$p = $navBuild->build(3, count($arr), 32);
+
 	echo '<pre>';
 	print_r($p);
-	$navView = new PageNavView('/','comments');
+	
+    $navView = new PageNavView('/','comments');
 	$navView->NavViewBuild($p);
+
 } catch (Exception $e) {
 	print($e->getMessage());
 }

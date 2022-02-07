@@ -2,9 +2,6 @@
 
 defined('ROOTPATH') or die('something wrong!');
 
-
-
-
 define('DEBUG', 			true);
 
 // Database Auth Params
@@ -14,7 +11,7 @@ define('DBPASS', 			'121212');
 define('DBCHAR', 			'utf8');
 define('DBHOST', 			'localhost');
 define('DBNAME', 			'ModuleCMS');
-define('DBPREF', 			'_prefx');
+define('DBPREF', 			'_MCMSprefix');
 
 define('DBENGINE', 			'mysql');
 
@@ -22,8 +19,9 @@ define('DBENGINE', 			'mysql');
 
 // сгенерировать при установке
 
-define('SOLT',				'abcabcabc'); 
 
+// Инициализировать при установке !
+define('SOLT',				'abcabcabc'); 
 define('PRIVATEKEY', 		'mycoolprivatekeytohidesomething');
 define('PUBLICKEY', 		'mymorecoolpublickeytohidesomething');
 
@@ -34,7 +32,9 @@ define('WEBTITLEDESC',		'Module description!');
 define('DEFLANGUAGE', 		'Ru-ru');
 
 define('DEFROUTEPATH', 		'Routes'.DS);
-//TODO: Нужно отфильтровать
+//TODO: Нужно отфильтровать 
+// Тут нужно использовать хост который будет сохранен в базе данных !!!!
+// Можно инилизировать в классе
 define('HOST', 				'http://'.$_SERVER['HTTP_HOST']);
 define('HOSTENABLED', 		true);
 define('HOSTREDIRECT',		'');
@@ -113,3 +113,19 @@ define('VISITOR', 			7);
 	не идентифицированный пользователь
 ------------------
 */
+
+
+
+class StoredSettings {
+
+	// Просто хранит настройки в классе 
+
+	// Нужно отделить настройки которые будут конфигурироваться или доставаться из базы при runtime'ме 
+
+	// и те что будут сгенерированны при первом запуске 
+
+	// в сonfig.inc.php  <-- так, как в класс их не запихнуть
+
+	// иницилизировать определенные типы настроек 	
+
+}
