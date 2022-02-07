@@ -17,10 +17,14 @@ define('FORMPWDTITLEREP',   'Пароль пользователя повтор�
 define('FORMALIENPCTITLE',  'Запомнить!');
 define('FORMLOGINBUTTON',   'Вход');
 
+define('FORMREGBUTTON',     'Зарегестрироваться');
+define('FORMRESBUTTON',     'Дать запрос');
+
 // Passwords 
 
 define('FORMAPWDTITLE',     'Форма восстановления пароля');
 define('FORMPWDREQUEST',    'Форма запроса пароля!');
+define('FORMREGTITLE',      'Регистрация пользователя');
 define('FORMNEWPWD1',       'Новый пароль пользователя');
 define('FORMNEWPWD2',       'Новый пароль пользователя еще раз');
 define('FORMPWDBUTTON',     'Обновить пароль!');

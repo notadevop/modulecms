@@ -59,6 +59,15 @@ final class Cookies{
 
 		if (!$this->cookieKeyExist($cookie_name)) {return false; }
 
+
+		   $disallowed = array('http://', 'https://');
+
+		   foreach($disallowed as $d) {
+		      if(strpos($cookie_domain, $d) === 0) {
+		         $cookie_domain = str_replace($d, '', $cookie_domain);
+		      }
+		   }
+
 		$this->cookies[$cookie_name]['cookieDomen'] = $cookie_domain;
 
 		return true;
@@ -119,7 +128,6 @@ final class Cookies{
 
 		$cookie = $this->cookies[$cookie_name];
 		$cookie['name'] = $cookie_name;
-		//debugger($cookie);
 
 		$result = setcookie($cookie_name, $cookie['cookieValue'], $cookie['cookieTime'], $cookie['cookiePath'], $cookie['cookieDomen']);
 

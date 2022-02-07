@@ -3,27 +3,43 @@
 (defined('ROOTPATH') && defined('DS')) or die('something wrong');
 
 
-$files = array(
+// Временно, для использования заменить на FileManipulator!
 
-	'Includes/settings.inc.php',
-	'Includes/Library.inc.php',
+(function ():void {
 
-	'languagePack/Ru-ru/Attentions.lang.php',
-	'LanguagePack/Ru-ru/Info.lang.php',
-	'LanguagePack/Ru-ru/Errors.lang.php',
-	'LanguagePack/Ru-ru/Staticlinks.lang.php',
-);
+	$file = '.htaccess';
 
-foreach ($files as $key => $value) {
+	$data = '
+		Options -MultiViews
+		RewriteEngine On
+		RewriteCond %{REQUEST_FILENAME} !-f
+		RewriteRule ^ index.php [QSA,L]
+	';
 
-	$r = ROOTPATH . $value;
+	if (!file_exists(ROOTPATH . $file)) {
+		file_put_contents($file, $data);
+	}
+})();
 
+
+foreach ((function (): array {
+	return array(
+		'Includes/settings.inc.php',
+		'Includes/Library.inc.php',
+
+		'LangLibrary/Ru-ru/Attentions.lang.php',
+		'LangLibrary/Ru-ru/Info.lang.php',
+		'LangLibrary/Ru-ru/Errors.lang.php',
+		'LangLibrary/Ru-ru/Staticlinks.lang.php',
+	);
+})() as $key => $value) {
+	
 	try {
-		if (!file_exists($r)) {
+		if (!file_exists(ROOTPATH.$value)) {
 			throw new Exception('Core file not found!', 1);
 		}
 		
-		require_once ($r);
+		require_once (ROOTPATH.$value);
 
 	} catch (Exception $e) {
 		die($e->getMessage());

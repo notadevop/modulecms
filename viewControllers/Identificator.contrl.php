@@ -24,10 +24,16 @@ class Identificator extends Filter {
 
 
 	// ключ который определяет где искать токен
-	//private $csrfKey 	= 'authCsrfToken';
 
 	const CSRFKEY 		= 'authCsrfToken';
 	const CSRFVALUE 	= 'isthatu'; 
+
+	// POST keys for forms buttons 
+
+	const LOGINBKEY = 'loginAction';
+	const REGISBKEY = 'RegistrationAction';
+	const RESTORBKEY= 'RestoreAction';
+	const UPDPWDBKEY= 'UpdatePwdAction';
 
 	
 	function __construct() {
@@ -39,8 +45,8 @@ class Identificator extends Filter {
 
 			'future' 	=> '+2 Hours',
 			'past' 		=> '-2 Hours',
-			'host' 		=> '/',
-			'domain' 	=> 'localhost',//HOST,	
+			'host' 		=> '/',	
+			'domain' 	=> HOST,	
 
 			// Параметры пользователя по умолчанию
 
@@ -295,6 +301,7 @@ class Identificator extends Filter {
 			// Выходим при условии, что если мы пытаемся сохраниться в будущее, а не выйти 
 			// переменная указывает на удаление или сохранение
 			
+
 			if(!$this->isNotEmpty($value) && !$goPast) { return false; }
 
 			$time = !$goPast ? $this->authParams['future'] : $this->authParams['past'];
