@@ -115,7 +115,7 @@ require_once($this->activeTpl.$r['templates']['banner']);
     	?>
 
 		<a href="<?=$this->allRoutes['/profile/remove']['url'];?>">Отредактировать профиль</a> <br /> 
-		<a href="<?=$this->allRoutes['/profile/remove']['url'];?>">Хочу удалить аккаунт</a></p>
+		Удалить профиль можно: <a href="<?=$this->allRoutes['/profile/remove']['url'];?>">тут</a></p>
 	</main>
 
 <?php 

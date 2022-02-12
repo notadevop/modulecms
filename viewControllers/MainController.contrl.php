@@ -15,9 +15,17 @@ class MainController {
 		$this->glob 	= new GlobalParams();
 	}
 	
-	function defaultMethod() {
+	function defaultMethod(): array {
 
 		Logger::collectAlert('primary', 'DEFAULT метод');
+	
+		$pageTitle = array(
+
+			'pageTitle' 	=> 'По умолчанию!', // TODO: <--- Cперва нужно исправить приоритеты загрузок через пути 
+			'successfull'	=> false,
+		);
+
+		return $pageTitle;
 	}
 
 	/**

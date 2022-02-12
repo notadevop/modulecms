@@ -4,9 +4,12 @@
  *  Языковый пакет для шаблона 
  */
 
+// pages and forms (login, register, restore, update passwords form, confirm activation and confirm update)
+
+
+
 
 // LOGIN 
-// 
 
 define('FORMLOGINTITLE',    'Окно входа в систему!');
 define('FORMEMAILTITLE',    'Емайл пользователя!');

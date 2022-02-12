@@ -23,7 +23,6 @@ require_once($this->activeTpl.$r['templates']['header']);
 
 		  		<div class="form-group">
 		  			<input type="email" name="<?=Identificator::USERMAILVALUE;?>" value="testuser@test.com" class="form-control rounded-left" placeholder="<?=FORMEMAILTITLE;?>" required>
-		  			<div id="emailHelp" class="form-text"><?=FORMEMAILDESC;?></div>
 		  		</div>
 
 		        <div class="form-group d-flex">

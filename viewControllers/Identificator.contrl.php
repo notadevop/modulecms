@@ -179,14 +179,23 @@ class Identificator extends Filter {
 	}
 
 
+
+
 	// МЕТОД ДЛЯ ВХОДА В СИСТЕМУ ------------------------
 
-	function loginAction(): bool {
+	function loginAction(): array {
+
+		$pageTitle = array(
+
+			'pageTitle' 	=> 'Окно входа', // TODO: <--- Cперва нужно исправить приоритеты загрузок через пути 
+			'successfull'	=> false,
+		);
+
 
 		if(!$this->authSts['login_status']) {
 
 			Logger::collectAlert(Logger::INFORMATION, LOGINDISABLED);
-			return false;
+			return $pageTitle;
 		}
 
 		$loginParams = array(
@@ -200,16 +209,16 @@ class Identificator extends Filter {
 		$loginParams = $this->getInputParams($loginParams, '_POST');
 		
 		if(!$this->isNotEmpty($loginParams)) {
-			return false;
+			return $pageTitle;
 		}
 
 		// Временно установленно
 
-		if (!Csrf::verifyToken(self::CSRFKEY, false, $loginParams[self::CSRFVALUE])) {
+		if (!Csrf::verifyToken(self::CSRFKEY, true, $loginParams[self::CSRFVALUE])) {
 
 			Logger::collectAlert(Logger::ATTENTIONS, CSRFUNSUCCESSFULL);
-			Csrf::removeToken(self::CSRFKEY);
-			return false;
+			//Csrf::removeToken(self::CSRFKEY);
+			return $pageTitle;
 		} 
 
 		$userExist = $this->users->userExist($loginParams[self::USERMAILVALUE]);
@@ -217,7 +226,7 @@ class Identificator extends Filter {
 		if(!$userExist) {
 
 			Logger::collectAlert(Logger::ATTENTIONS, ERREMAILWRONG);
-			return false; 
+			return $pageTitle; 
 		}
 
 		$userNotBlocked = $this->auth->userActivated($loginParams[self::USERMAILVALUE]);
@@ -225,13 +234,13 @@ class Identificator extends Filter {
 		if($this->auth->didYouActivated()) {
 
 			Logger::collectAlert(Logger::ATTENTIONS, USERNOTCONFREG);
-			return false;
+			return $pageTitle;
 		}
 
 		if (!$userNotBlocked) {
 
 			Logger::collectAlert(Logger::ATTENTIONS, USERBANNED);
-			return false;
+			return $pageTitle;
 		}
 
 		$findUser = $this->auth->findUser($loginParams[self::USERMAILVALUE], $loginParams[self::USERPWD1VALUE]);
@@ -239,7 +248,7 @@ class Identificator extends Filter {
 		if(!$this->isNotEmpty($findUser) || !array_key_exists(self::USERIDVALUE, $findUser)) {
 
 			Logger::collectAlert(Logger::ATTENTIONS, ERREMAILWRONG);
-			return false;
+			return $pageTitle;
 		}
 
 		// тут получаем хеш, если нету то генерируется новый 
@@ -249,7 +258,7 @@ class Identificator extends Filter {
 		if(!$this->isNotEmpty($findUser['tokenHash'])) {
 
 			Logger::collectAlert(Logger::ATTENTIONS, ERRGENHASH);
-			return false;
+			return $pageTitle;
 		}
 
 		// Тут нужно установить долгое время или нет 
@@ -265,7 +274,7 @@ class Identificator extends Filter {
 		if(!$isItSaved) {
 
 			Logger::collectAlert(Logger::ATTENTIONS, ERRSAVEMETA);
-			return false;
+			return $pageTitle;
 		} 
 
 		
@@ -284,7 +293,9 @@ class Identificator extends Filter {
 
 		Csrf::removeToken(self::CSRFKEY);
 
-		return true;
+		$pageTitle['successfull'] = true;
+
+		return $pageTitle;
 	}
 
 
@@ -375,11 +386,18 @@ class Identificator extends Filter {
 
 	// Тут нужно установить брать данные из параметров метода, а не с _POST 
 
-	function restoreAction(): ?string {
+	function restoreAction(): array {
+
+
+		$pageTitle = array(
+
+			'pageTitle' 	=> 'Форма восстановления пароля',
+			'successfull'	=> false,
+		);
 
 		if(!$this->authSts['restore_status']) {
 			Logger::collectAlert(Logger::ATTENTIONS, RESTOREDISABLED);
-			return false;
+			return $pageTitle;
 		}
 
 		$restoreParams = array(
@@ -390,21 +408,21 @@ class Identificator extends Filter {
 		$restoreParams = $this->getInputParams($restoreParams, '_POST');
 
 		if(!$this->isNotEmpty($restoreParams)) {
-			return false;
+			return $pageTitle;
 		}
 
 		// Временно установленно
 
 		if (!Csrf::verifyToken(self::CSRFKEY, false, $restoreParams[self::CSRFVALUE])) {
 			Logger::collectAlert(Logger::ATTENTIONS, CSRFUNSUCCESSFULL);
-			return false;
+			return $pageTitle;
 		}  
 
 		$userExist = $this->users->userExist($restoreParams[self::USERMAILVALUE]);
 
 		if(!$userExist) {
 			Logger::collectAlert(Logger::ATTENTIONS, USERNOTFOUND);
-			return false; 
+			return $pageTitle; 
 		}
 
 		$userNotBlocked = $this->auth->userActivated($restoreParams[self::USERMAILVALUE]);
@@ -412,19 +430,19 @@ class Identificator extends Filter {
 		if($this->auth->didYouActivated()) {
 
 			Logger::collectAlert(Logger::ATTENTIONS, USERNOTCONFREG);
-			return false;
+			return $pageTitle;
 		}
 
 		if (!$userNotBlocked) {
 			Logger::collectAlert(Logger::ATTENTIONS, USERBANNED);
-			return false;
+			return $pageTitle;
 		}
 
 		$genResult = $this->auth->generateActivations($restoreParams[self::USERMAILVALUE]);
 
 		if(!$genResult) {
 			Logger::collectAlert(Logger::ATTENTIONS, ERRGENHASH);
-			return false;
+			return $pageTitle;
 		}
 
 		// TODO: Отправка емайла пользователю для восстановления пароля
@@ -436,7 +454,9 @@ class Identificator extends Filter {
 
 		Logger::collectAlert(Logger::INFORMATION, $link);	
 
-		return true;
+		$pageTitle['successfull'] = true;
+
+		return $pageTitle;
 	}
 
 
@@ -547,12 +567,18 @@ class Identificator extends Filter {
 	}
 
 
-	function registrationAction(): bool {
+	function registrationAction(): array {
+
+		$pageTitle = array(
+
+			'pageTitle' 	=> 'Форма регистрации',
+			'successfull'	=> false,
+		);
 
 		if(!$this->authSts['reg_status']) {
 
 			Logger::collectAlert(Logger::INFORMATION, REGDISABLED);
-			return false;
+			return $pageTitle;
 		}
 
 		$registrationParams = array(
@@ -567,41 +593,41 @@ class Identificator extends Filter {
 		$registrationParams = $this->getInputParams($registrationParams, '_POST');
 
 		if(!$this->isNotEmpty($registrationParams)) {
-			return false;
+			return $pageTitle;
 		}
 
 		// Временно установленно
 
 		if (!Csrf::verifyToken(self::CSRFKEY, false, $registrationParams[self::CSRFVALUE])) {
 			Logger::collectAlert(Logger::ATTENTIONS, CSRFUNSUCCESSFULL);
-			return false;
+			return $pageTitle;
 		}  
 
 		if ($registrationParams[self::USERPWD1VALUE] !== $registrationParams[self::USERPWD2VALUE]) {
 
 			Logger::collectAlert(Logger::ATTENTIONS, PWDNOTMATCH);
-			return false;
+			return $pageTitle;
 		}
 
 		$userExist = $this->users->userExist($registrationParams[self::USERMAILVALUE]);
 
 		if($userExist) {
 			Logger::collectAlert(Logger::ATTENTIONS, USEREXIST);
-			return false; 
+			return $pageTitle; 
 		}
 
 		$insert = $this->users->insertNewUser($registrationParams[self::USERMAILVALUE], $registrationParams[self::USERPWD1VALUE], $registrationParams[self::USERNAMEVALUE]);
 
 		if (!$insert) {
 			Logger::collectAlert(Logger::ATTENTIONS, ADDUSERERR); 
-			return false;
+			return $pageTitle;
 		}
 
 		$meta = $this->auth->generateActivations($registrationParams[self::USERMAILVALUE]);
 
 		if(!$meta) {
 			Logger::collectAlert(Logger::ATTENTIONS, ERRGENLINK);
-			return false;
+			return $pageTitle;
 		}
 
 		// TODO: Отправка емайла пользователю для восстановления пароля
@@ -612,7 +638,10 @@ class Identificator extends Filter {
 		$link = HOST .$source['url'].'/?'.self::USERIDVALUE.'=' . $meta['id'] . '&'.self::CONFRHSHVALUE.'=' . $meta['cofirm'] . '&'.self::TOKENHSHVALUE.'=' . $meta['token'];
 
 		Logger::collectAlert(Logger::INFORMATION, $link);
-		return true;
+
+		$pageTitle['successfull'] = true;
+
+		return $pageTitle;
 
 	}
 
@@ -647,7 +676,7 @@ class Identificator extends Filter {
 
 	// Функция которая возвращает данные из вне чтобы не дублировать код впихнул все сюда 
 
-	function getInputParams(array $params, string $method, bool $silence=false): ?array {
+	private function getInputParams(array $params, string $method, bool $silence=false): ?array {
 
 		if(!$this->isNotEmpty($params) || !$this->isNotEmpty($method)) { 
 			return null;

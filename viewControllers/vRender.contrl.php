@@ -21,30 +21,17 @@ class vRender {
 
 	function __construct() {
 
-		// Как то определить к какому пути относится какой шаблон
+		$settings = new HostSettings();
 
 		Router::initDefaultRoutes();
+
+		// Как то определить к какому пути относится какой шаблон
 
 		$this->reservedPages = array(
 
 			'adminpage'   	=> Router::modifyRoutes('admin'),
 			'loginpage'  	=> Router::modifyRoutes('login'),
 		);
-
-		// Результат от постоянных исполнителей 
-		// и от того, что идет по определенному пути  
-		//$this->permanRes 		= Router::getPermanentResult();
-		//$this->currenRes 		= Router::getResult();
-
-		// Тут нужно разделить исполнение постоянное и то, что запускается по пути шаблона
-
-		$this->result 		= Router::getResult();
-		$this->currentRoute = Router::getRoute();
-
-		
-		$this->allRoutes 	= Router::getAllRoutes(); // Все пути 
-
-		$this->regOk = (!defined('PROFILE') || empty(PROFILE['useremail'])) ? false : true;
 
 		// pages это массив для определения шаблона для определенных страниц 
 		// например чтобы разные страницы имели разные шаблоны
@@ -57,8 +44,6 @@ class vRender {
 
 		$this->currentTplDir = TPLFOLDER;
 
-		$settings = new HostSettings();
-
 		// TODO: Сперва определить куда попал ?????
 
 		$prm = array(
@@ -68,6 +53,25 @@ class vRender {
 		);
 
 		$this->params = $settings->getSettings($prm);
+
+		
+
+		// Результат от постоянных исполнителей 
+		// и от того, что идет по определенному пути  
+		//$this->permanRes 		= Router::getPermanentResult();
+		//$this->currenRes 		= Router::getResult();
+
+		// Тут нужно разделить исполнение постоянное и то, что запускается по пути шаблона
+
+		$this->result 		= Router::getResult(); 
+		$this->currentRoute = Router::getRoute();
+
+		
+		$this->allRoutes 	= Router::getAllRoutes(); // Все пути 
+
+		$this->regOk 		= (!defined('PROFILE') || empty(PROFILE['useremail'])) ? false : true;
+
+
 	}
 
 	function activateTemplate(string $name, string $folder=''): ?array {

@@ -4,10 +4,11 @@ return array(
 
 	'templates' => array(
 
-		'header' 	=> 'subtpl/header.tpl.php',
-		'banner' 	=> 'subtpl/banner.tpl.php',
-		'sidebar' 	=> 'subtpl/sidebar.tpl.php',
-		'footer' 	=> 'subtpl/footer.tpl.php',
+		'header' 		=> 'subtpl/header.tpl.php',
+		'banner' 		=> 'subtpl/banner.tpl.php',
+		'sidebar' 		=> 'subtpl/sidebar.tpl.php',
+		//'profileSidebar'=> 'subtpl/profileSidebar.tpl.php',
+		'footer' 		=> 'subtpl/footer.tpl.php',
 	),
 
 	'pages' => array(

@@ -41,13 +41,6 @@ class ProfileController {
         $this->granter->initUser();
         $checkPerm = $this->granter->verifyRest($perms);
 
-        // Проверяем  есть у даннго пользователя привелегии
-        
-        if (!$checkPerm) {
-            Logger::collectAlert(Logger::ATTENTIONS, NOPRIVELEGES);
-            return null;
-        } 
-
         $userid = intval($uid);
 
         // Фильтруем данные 
@@ -55,12 +48,21 @@ class ProfileController {
         if ($userid == 0) {
 
             $userid = PROFILE['userid'];
+            Logger::collectAlert(Logger::ATTENTIONS, USERNULL);
         }
 
-        if ($userid == 0) {
-            Logger::collectAlert(Logger::ATTENTIONS, USERNULL);
-            return null;
-        }
+        // Проверяем  есть у даннго пользователя привелегии
+        
+        if (!$checkPerm) {
+
+
+            Logger::collectAlert(Logger::ATTENTIONS, NOPRIVELEGES);
+            //return null;
+        } 
+
+        
+
+
 
         $user = $this->users->getUserProfile($userid);
 
