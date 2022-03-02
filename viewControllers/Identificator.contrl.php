@@ -289,6 +289,7 @@ class Identificator extends Filter {
 			}
 		}
 		
+
 		Logger::collectAlert(Logger::SUCCESS, LOGINSUCCESS);
 
 		Csrf::removeToken(self::CSRFKEY);
@@ -330,6 +331,7 @@ class Identificator extends Filter {
 				if(DEBUG) { 
 					Logger::collectAlert(Logger::WARNING, $e->getMessage()); 
 				}	
+				return false;
 			}
 		}
 		return true;
@@ -365,6 +367,7 @@ class Identificator extends Filter {
 		$findUser = $this->auth->authUser($authParam[self::USERMAILVALUE], $authParam[self::TOKENHSHVALUE]);
 
 		if(!$this->isNotEmpty($findUser) || !array_key_exists(self::USERIDVALUE, $findUser)) { 
+
 			return $this->setUserProfile(false); 
 		}
 
