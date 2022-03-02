@@ -216,7 +216,4 @@ class Csrf {
 
 		return true;
 	}
-
-
-
 } // Csrf

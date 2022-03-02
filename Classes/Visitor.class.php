@@ -17,12 +17,16 @@ class Visitor extends Database {
 
 	public function getUA(): string {
 
-		return $_SERVER['HTTP_USER_AGENT'];
+		$input = $_SERVER['HTTP_USER_AGENT'];
+
+		return $input;
 	}
 
 	public function getLang(): string {
 
-		return substr( $_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+		$input = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+
+		return substr($input, 0, 2);
 	}
 
 	public function getOS(): string {

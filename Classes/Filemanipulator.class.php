@@ -92,17 +92,20 @@ class Filemanipulator {
 		    } 
 
 		    // Check $_FILES['upfile']['error'] value.
-		    switch ($myFile['error']) 
-		    {
+		    switch ($myFile['error']) {
+		    	
 		        case UPLOAD_ERR_OK:
 		            break;
 		        case UPLOAD_ERR_NO_FILE:
 		            throw new RuntimeException('No file sent');
+		            break;
 		        case UPLOAD_ERR_INI_SIZE:
 		        case UPLOAD_ERR_FORM_SIZE:
 		            throw new RuntimeException('Exceeded filesize limit');
+		            break;
 		        default:
 		            throw new RuntimeException('Unknown errors');
+		            break;
 		    }
 
 		    // You should also check filesize here. 
