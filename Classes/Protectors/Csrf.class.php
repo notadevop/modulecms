@@ -6,7 +6,6 @@
 <?php
 
 require_once __DIR__path_to_file;
-
 use steveclifton\phpcsrftokens\Csrf;
 
 session_start();
@@ -14,26 +13,22 @@ session_start();
 
 if (!empty($_GET['a'])) {
 	echo '<pre>' . print_r($_POST, true) . '</pre>';
-	echo 'Verification has been : ' . (Csrf::verifyToken('home') ? 'successful' : 'unsuccessful');
+	echo 'Verification has been: ' . (Csrf::verifyToken('home') ? 'successful' : 'unsuccessful');
 }
+
 // 2. initilize token
 ?>
 
-<!DOCTYPE html>
-<html>
-<head><title>Test Script</title></head>
-<body>
-	<form action="?a=submit" method="POST">
-		<?php 
-			// echo Csrf::getInputToken('home')  <- here input from php  // old v.
-			$csrf = Csrf::getInputToken('home');
-		?>
-		<input type="hidden" class="id" name="<?=$csrf['key'];?>" value="<?=$csrf['value'];?>" />
-		<input type="text" name="name" placeholder="Test Input"><br>
-		<button>Submit!</button>
-	</form>
-</body>
-</html>
+<form action="?a=submit" method="POST">
+	<?php 
+		// echo Csrf::getInputToken('home')  <- here input from php  // old v.
+		$csrf = Csrf::getInputToken('home');
+	?>
+	<input type="hidden" class="id" name="<?=$csrf['key'];?>" value="<?=$csrf['value'];?>" />
+	<input type="text" name="name" placeholder="Test Input"><br>
+	<button>Submit!</button>
+</form>
+
 */
 
 
@@ -101,11 +96,9 @@ class Csrf {
 	 * @return [string]   cookie token name / empty string
 	 */
 	protected static function makeCookieName(string $page) : string {
-
 		if (empty($page)) {
 			return '';
 		}
-
 		return 'csrftoken-' . substr(md5($page), 0, 10);
 	}
 

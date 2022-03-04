@@ -82,12 +82,16 @@ class Identificator extends Filter {
 			// Данные с проверки подтверждения авторизации
 		);
 
+
+
+
 		$this->cjob 	= new Cookies();
 		$this->auth 	= new Auth();
 		$this->glob 	= new GlobalParams();
 		$this->users 	= new Users();
 		$this->granter 	= new PrivelegesController();
 
+		$this->cookie 	= new Cookie();
 
 		$this->authSts = array(
 
@@ -105,6 +109,7 @@ class Identificator extends Filter {
 			$this->authSts[$key] = (!$value || !$this->authSts[$key]) ? false : true;
 		}
 	}
+
 
 	private $cjob;
 	private $auth;
@@ -148,24 +153,44 @@ class Identificator extends Filter {
 		return $profileStatusInit;
 	}
 
-
+	private $cookie = '';//new Cookie1();
 	
 
 	// переменная это принудительный выход из системы, если даже нету _GET => logout параметра!
 
-	function logout(bool $redirect=false, bool $permQuit=false): bool {
+	function logout(bool $redirect=false, bool $permQuit=false): array {
+
+		$pageTitle = array(
+			'pageTitle' 	=> 'Окно выхода!',
+			'successfull'	=> false,			
+		);
 
 		$this->glob->setGlobParam('_GET');
 
-		if(!$this->glob->isExist('logout') && !$permQuit) { return false; }
+		if(!$this->glob->isExist('logout') && !$permQuit) { return $pageTitle; }
+		
+		$authParam = array(
+			self::USERMAILVALUE => '',
+			self::TOKENHSHVALUE => '',
+		);
 
-		$this->saveAuthAction('','',true,true);
-
+		foreach ($authParam as $key => $value) {
+			
+			$this->cookie->setName($key);
+			$this->cookie->setDomain($this->authParams['domain']);
+			$this->cookie->setPath($this->authParams['host']);
+			$this->cookie->delete();
+		}
+		
 		Csrf::removeToken(self::CSRFKEY);
 
 		Logger::collectAlert(Logger::SUCCESS, LOGGEDOUT);
 
-		if(!$redirect || !defined('LOGOUTALLOW')) { return true; }
+		$pageTitle['successfull'] = true;
+
+		if(!$redirect || !defined('LOGOUTALLOW')) { 
+			return $pageTitle; 
+		}
 
 		if(LOGOUTALLOW) {
 
@@ -175,7 +200,8 @@ class Identificator extends Filter {
 				header('Location: '. LOGOUTREDIRPATH);
 			}
 		}
-		return true;
+
+		return $pageTitle;
 	}
 
 
@@ -269,13 +295,26 @@ class Identificator extends Filter {
 		//}
 
 
-		$isItSaved = $this->saveAuthAction($findUser['useremail'], $findUser['tokenHash'], false, true);
+		$params = array(
 
-		if(!$isItSaved) {
+			self::USERMAILVALUE => $findUser['useremail'],
+			self::TOKENHSHVALUE => $findUser['tokenHash'],
+		);
 
-			Logger::collectAlert(Logger::ATTENTIONS, ERRSAVEMETA);
-			return $pageTitle;
-		} 
+		foreach ($params as $key => $value) {
+
+			$this->cookie->setName($key);
+			$this->cookie->setDomain($this->authParams['domain']);
+			$this->cookie->setPath($this->authParams['host']);
+
+			$this->cookie->setValue($value);
+			$this->cookie->setTime($this->authParams['future']);
+
+			if (!$this->cookie->create()) {
+				Logger::collectAlert(Logger::ATTENTIONS, ERRSAVEMETA);
+				return $pageTitle;
+			}
+		}
 
 		
 		if(LOGINREDIRECT) {
@@ -299,51 +338,18 @@ class Identificator extends Filter {
 	}
 
 
-	private function saveAuthAction(string $email, string $hash, bool $goPast=false, bool $showerr=DEBUG): bool {
-
-		$authParams = array(
-
-			self::USERMAILVALUE => $email,
-			self::TOKENHSHVALUE => $hash,
-		);
-
-		foreach ($authParams as $key => $value) {
-
-			// Выходим при условии, что если мы пытаемся сохраниться в будущее, а не выйти 
-			// переменная указывает на удаление или сохранение
-			
-
-			if(!$this->isNotEmpty($value) && !$goPast) { return false; }
-
-			$time = !$goPast ? $this->authParams['future'] : $this->authParams['past'];
-
-			try {
-				$this->cjob->initCookie($key);
-				$this->cjob->setCookieValue($key, $value);
-				$this->cjob->setCookieTime($key, $time);
-				$this->cjob->setCookiePath($key, $this->authParams['host']);
-				$this->cjob->setCookieDomen($key, $this->authParams['domain']);
-				$this->cjob->saveCookie($key);
-				$this->cjob->cleanMapArray($key);
-			} catch (Exception $e) {
-				
-				if(DEBUG) { 
-					Logger::collectAlert(Logger::WARNING, $e->getMessage()); 
-				}	
-			}
-		}
-		return true;
-	}
-
-
 	function AuthAction(): bool {
+
+		$initUser = function () {
+
+
+		};
 
 		if(!$this->authSts['auth_status']) {
 			return $this->setUserProfile(false);
 		}
 
 		$authParam = array(
-
 			self::USERMAILVALUE => false,
 			self::TOKENHSHVALUE => false,
 		);
@@ -374,13 +380,24 @@ class Identificator extends Filter {
 
 		if(!$this->isNotEmpty($findUser['tokenhash'])) { return $this->setUserProfile(false); }
 
-		$isItSaved = $this->saveAuthAction($findUser['useremail'], $findUser['tokenhash'], false, true);
+		$authParam[self::USERMAILVALUE] = $findUser['useremail'];
+		$authParam[self::TOKENHSHVALUE] = $findUser['tokenhash'];
 
-		if(!$isItSaved) { return $this->setUserProfile(false); } 
+		foreach ($authParam as $key => $value) {
+			
+			$this->cookie->setName($key);
+			$this->cookie->setDomain($this->authParams['domain']);
+			$this->cookie->setPath($this->authParams['host']);
 
-		$this->setUserProfile($findUser);
+			$this->cookie->setValue($value);
+			$this->cookie->setTime($this->authParams['future']);
 
-		return true;
+			if (!$this->cookie->create()) {
+				return $this->setUserProfile(false);
+			}
+		}
+
+		return $this->setUserProfile($findUser);
 	}
 
 

@@ -36,7 +36,6 @@ if (!file_exists(ROOTPATH.'Includes/init.inc.php')) {
 //  BRUTEFORCE
 //  PHP/JS CODE INJECTION
 
-
 $v = new vRender();
 $v->prepareRender();
 
@@ -55,6 +54,7 @@ $v->replace(
 		'%loadtime%' 	=> $timer(), 
 	)
 );
+
 
 $v->viewRender();
 
