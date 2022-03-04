@@ -32,9 +32,11 @@ define('WEBTITLEDESC',		'Module description!');
 define('DEFLANGUAGE', 		'Ru-ru');
 
 define('DEFROUTEPATH', 		'Routes'.DS);
+
 //TODO: Нужно отфильтровать 
 // Тут нужно использовать хост который будет сохранен в базе данных !!!!
 // Можно инилизировать в классе
+
 define('HOST', 				'http://'.$_SERVER['HTTP_HOST']);
 define('HOSTENABLED', 		true);
 define('HOSTREDIRECT',		'');

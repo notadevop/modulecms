@@ -24,9 +24,10 @@ define('ROOTPATH', dirname(__FILE__) . DS);
 
 if (!file_exists(ROOTPATH.'Includes/init.inc.php')) {
 	die('no core loaded!');
-} else {
-	require_once (ROOTPATH.'Includes/init.inc.php');
-}
+} 
+	
+require_once (ROOTPATH.'Includes/init.inc.php');
+
 
 
 // Определить разные типа аттак

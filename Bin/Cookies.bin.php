@@ -62,6 +62,8 @@ final class Cookies{
 
 		   $disallowed = array('http://', 'https://');
 
+		   // remove all by :8888
+
 		   foreach($disallowed as $d) {
 		      if(strpos($cookie_domain, $d) === 0) {
 		         $cookie_domain = str_replace($d, '', $cookie_domain);
