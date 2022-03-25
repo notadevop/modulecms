@@ -14,6 +14,14 @@ return array(
 		'priority'	=> 4,
 	),
 
+	'/login1' => array( 
+		'url' 		=> '/login',
+		'urltitle'  => LOGINPG,
+		'action' 	=> 'Identificator/loginAction',
+		'template'	=> 'login.tpl.php',
+		'priority'	=> 4,
+	),
+
 	// Авторизация через куки
 	
 	'auth' 			=> array(

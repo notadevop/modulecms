@@ -54,8 +54,6 @@ class vRender {
 
 		$this->params = $settings->getSettings($prm);
 
-		
-
 		// Результат от постоянных исполнителей 
 		// и от того, что идет по определенному пути  
 		//$this->permanRes 		= Router::getPermanentResult();
@@ -70,8 +68,6 @@ class vRender {
 		$this->allRoutes 	= Router::getAllRoutes(); // Все пути 
 
 		$this->regOk 		= (!defined('PROFILE') || empty(PROFILE['useremail'])) ? false : true;
-
-
 	}
 
 	function activateTemplate(string $name, string $folder=''): ?array {
@@ -94,14 +90,12 @@ class vRender {
 	function prepareRender() {
 
 		$ui = null;
-
 		// Разделяем URI для определения какая страница перед нами
 
 		if(!empty(isset($this->currentRoute['uriarr'][0]))){
 
 			$ui = $this->currentRoute['uriarr'][0];
 		}
-
 
 		// Определяет нужно заблокировать вывод или на оборот
 		// нужно например для административной части вывода вместо html json 

@@ -48,13 +48,6 @@ class Identificator extends Filter {
 			'host' 		=> '/',	
 			'domain' 	=> HOST,	
 
-			// Параметры пользователя по умолчанию
-
-			'userid'	=> 0,
-			'username'	=> 'Анонимный пользователь',
-			'useremail' => false,
-			'priveleges'=> false,
-
 			// Использовать из базы сохраненные параметры !!! 
 
 			// Данные при входе, так же для регистрации, и восстановления пароля
@@ -84,14 +77,15 @@ class Identificator extends Filter {
 
 
 
-
-		$this->cjob 	= new Cookies();
 		$this->auth 	= new Auth();
 		$this->glob 	= new GlobalParams();
 		$this->users 	= new Users();
 		$this->granter 	= new PrivelegesController();
-
 		$this->cookie 	= new Cookie();
+
+		// Переменные для отключения авторизации и регистрации 
+		// В зависимости от тех параметров которые в системе 
+		// и установленны пользователем
 
 		$this->authSts = array(
 
@@ -110,50 +104,12 @@ class Identificator extends Filter {
 		}
 	}
 
-
-	private $cjob;
 	private $auth;
 	private $glob;
 	private $users;
 	private $granter;
 	private $authParams;
-
-
-	function setUserProfile($profile=''): bool {
-
-		$profileStatusInit = false;
-
-		// Достаем дефольтные данные (статичные)
-		$userProfile = array(
-			'userid' 	=> $this->authParams['userid'],
-			'username' 	=> $this->authParams['username'],
-			'priveleges'=> $this->authParams['priveleges'],
-			'useremail' => $this->authParams['useremail'],
-		);
-
-		if($this->isNotEmpty($profile) && array_key_exists('userid', $profile)) { 
-
-			foreach ($profile as $key => $value) {
-				
-				$userProfile[$key] = $value;
-			}
-
-			$this->granter->initUser($profile['userid']);
-			$perms = $this->granter->getPermsOfUser();
-
-			if ($this->isNotEmpty($perms)) {
-				$userProfile['priveleges'] = implode(', ', $perms);
-			}
-
-			$profileStatusInit = true;
-		}
-
-		if(!defined('PROFILE')) define('PROFILE',$userProfile);
-		
-		return $profileStatusInit;
-	}
-
-	private $cookie = '';//new Cookie1();
+	private $cookie; 
 	
 
 	// переменная это принудительный выход из системы, если даже нету _GET => logout параметра!
@@ -168,7 +124,10 @@ class Identificator extends Filter {
 		$this->glob->setGlobParam('_GET');
 
 		if(!$this->glob->isExist('logout') && !$permQuit) { return $pageTitle; }
-		
+
+		// Установить Csrf для проверки пользователь это сделал или нет
+		//$loginParams = $this->getInputParams($loginParams, '_GET');
+
 		$authParam = array(
 			self::USERMAILVALUE => '',
 			self::TOKENHSHVALUE => '',
@@ -338,15 +297,47 @@ class Identificator extends Filter {
 	}
 
 
-	function AuthAction(): bool {
+	function AuthAction($profile = null): bool {
 
-		$initUser = function () {
+		$initUser = function ($profile) {
 
+			$initialized = false;
 
+			// По умолчанию пустой массив так, как пользователя нету 
+
+			$user = array(
+				'userid' 	=> 0,
+				'username' 	=> null,
+				'useremail' => null,
+				'priveleges'=> null,
+			);
+
+			if(!empty($profile) && array_key_exists('userid', $profile)) {
+
+				foreach ($profile as $key => $value) {
+					
+					$user[$key] = $value;
+				}
+
+				$this->granter->initUser($user['userid']);
+
+				$perms = $this->granter->getPermsOfUser();
+
+				if ($this->isNotEmpty($perms)) {
+					$user['priveleges'] = implode(', ', $perms);
+				}
+
+				$initialized = true;
+			}
+
+			if(!defined('PROFILE')) 
+				define('PROFILE',$user);
+
+			return $initialized;
 		};
 
 		if(!$this->authSts['auth_status']) {
-			return $this->setUserProfile(false);
+			return $initUser(false);
 		}
 
 		$authParam = array(
@@ -357,28 +348,38 @@ class Identificator extends Filter {
 		$authParam = $this->getInputParams($authParam, '_COOKIE');
 
 		if(!$this->isNotEmpty($authParam)) {
-			return $this->setUserProfile(false);
+
+			return $initUser(false);
 		}
 
 		$userExist = $this->users->userExist($authParam[self::USERMAILVALUE]);
 
-		if(!$userExist) { return $this->setUserProfile(false); }
+		if(!$userExist) { 
+			return $initUser(false);
+		}
 
 		$userNotBlocked = $this->auth->userActivated($authParam[self::USERMAILVALUE]);
 
-		if (!$userNotBlocked) { return $this->setUserProfile(false); }
+		if (!$userNotBlocked) { 
+
+			return $initUser(false);
+		}
 
 		$findUser = $this->auth->authUser($authParam[self::USERMAILVALUE], $authParam[self::TOKENHSHVALUE]);
 
 		if(!$this->isNotEmpty($findUser) || !array_key_exists(self::USERIDVALUE, $findUser)) { 
-			return $this->setUserProfile(false); 
+
+			return $initUser(false);
 		}
 
 		// Тут обновляем хеш, если закончилось время
 
 		$findUser['tokenhash'] = $this->auth->updateUserHash($findUser['userid'], false);
 
-		if(!$this->isNotEmpty($findUser['tokenhash'])) { return $this->setUserProfile(false); }
+		if(!$this->isNotEmpty($findUser['tokenhash'])) { 
+
+			return $initUser(false);
+		}
 
 		$authParam[self::USERMAILVALUE] = $findUser['useremail'];
 		$authParam[self::TOKENHSHVALUE] = $findUser['tokenhash'];
@@ -393,18 +394,18 @@ class Identificator extends Filter {
 			$this->cookie->setTime($this->authParams['future']);
 
 			if (!$this->cookie->create()) {
-				return $this->setUserProfile(false);
+
+				return $initUser(false);
 			}
 		}
 
-		return $this->setUserProfile($findUser);
+		return $initUser($findUser);
 	}
 
 
 	// Тут нужно установить брать данные из параметров метода, а не с _POST 
 
 	function restoreAction(): array {
-
 
 		$pageTitle = array(
 
@@ -659,7 +660,6 @@ class Identificator extends Filter {
 		$pageTitle['successfull'] = true;
 
 		return $pageTitle;
-
 	}
 
 

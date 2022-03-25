@@ -7,9 +7,7 @@ defined('ROOTPATH') or die();
  * 
  */
 
-echo '<pre>';
-print_r($this->result);
-echo '</pre>';
+
 
 
 $website_title 	= $this->result['templateRes']['website_title'];
@@ -27,7 +25,11 @@ require_once($this->activeTpl.$r['templates']['banner']);
 
   <section id="pageContent">
 		<main role="main">
-
+			<?php
+			echo '<pre>';
+				print_r($this->result);
+			echo '</pre>';
+			?>
 			<h2>Настройки вебсайта</h2>
 
 				<br /><hr />
