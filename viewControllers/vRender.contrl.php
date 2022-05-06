@@ -15,7 +15,6 @@ class vRender {
 	private $htmlRenderRes;
 	private $pages;
 	private $allRoutes;
-
 	private $reservedPages;
 
 

@@ -1,14 +1,51 @@
 <?php 
 
 /**
-*	Класс отработки путей веб сайта
-*
-*/
+	MANUAL HOWTO USE:
+	
+	.htaccess required 
+	-------------------------------------------
+	// для нормального использования роутера 
+	// нужно добавить в .htaccess параметры 
 
-	//  ------------------------------------
-	//  +          пример использования
-	//  ------------------------------------
+	Options -MultiViews
+	RewriteEngine On
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^ index.php [QSA,L]
+	-------------------------------------------
 
+	инициализировать пути по умолчанию
+	Router::initDefaultRoutes();
+
+	Добавить новые пути можно вызвать 
+
+	Router::addRoute($route);
+
+	// Пример массива индекса пути
+
+	$route = array(
+		'/' => array( 
+			'url' 		=> '/', 							// uri 
+			'urltitle'  => LINKMAIN, 						// Пояснение к ссылке
+			'action' 	=> 'MainController/defaultMethod', 	// Класс/метод исполнения <== Только контроллеры 
+			'template'	=> 'index.tpl.php',					// Шаблон или файл вывода 
+			'priority'	=> 4,  								// Приоритет для показывания или исполнения
+		),
+	);
+
+	// непосредственно запуск обработки // Старое 
+	Router::dispatch();
+
+	// запуск исполнителей делиться на две части 
+	// 1. Не зависимо от пути исполняется постоянно 
+	// 2. Зависит от пути, исполняется то, что соответсвует указанному ключу массива 
+
+	Router::getPermanentResult(); 	// Постоянный исполнитель
+	Router::dispatch();				// Зависящий от место куда пользователь попал
+
+
+	Индексы путей 
+	---------------------------------------------------
 	// маршруты (можно хранить в конфиге приложения)
 	// можно использовать wildcards (подстановки):
 	// :any - любое цифробуквенное сочетание
@@ -24,27 +61,7 @@
 	  '/blog/:any/:num' => 'BlogController/$1/$2' // действия над постом, например, /blog/edit/123 или /blog/dеlete/123
 	  '/:any'           => 'BlogController/anyAction' // все остальные запросы обрабатываются здесь
 	));
-
-	// добавляем все маршруты за раз
-	Routing::addRoute($routes);
-
-	// а можно добавлять по одному
-	Routing::addRoute('/about', 'MainController/about');  <== изменено используется просто массив со всем параметрами
-
-	// непосредственно запуск обработки
-	Routing::dispatch();
-
- 
-
-
-// для нормального использования роутера 
-// нужно добавить в .htaccess параметры 
-
-Options -MultiViews
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^ index.php [QSA,L]
-
+	---------------------------------------------------
 */
 
 final class Router {
@@ -64,7 +81,6 @@ final class Router {
 		$fileObj 	= new Filemanipulator();
 		$fileObj->setDirName(self::$defaultRoutesDir);
 		$files 		= $fileObj->listFolder();
-		//$files = preg_grep('/.route.php/i', $files);
 
 		if(count($files) < 1 || !($files = preg_grep('/.route.php/i', $files))) {
 			die(NOROUTES);
@@ -72,8 +88,11 @@ final class Router {
 
 		foreach ($files as $key => $value) {
 			$result = self::$defaultRoutesDir.$value;
+
 			if (!file_exists($result)) { continue; }
+			
 			$result = require_once $result;
+			
 			if (is_array($result) && count($result) > 0) {
 				self::addRoute($result);
 			}
@@ -105,7 +124,9 @@ final class Router {
 		// Получаем данные из базы данных
 		$stg = new HostSettings();
 		$tmp = $stg->getSettings([$page=>$page]);
+
 		if(!$tmp || $tmp[$page] == $page) { return $page; }
+		
 		foreach (self::$defaultRoutes as $key => $value) {
 			$newValue = str_ireplace(DS.$page, DS.$tmp[$page], $value['url']);
 			self::$defaultRoutes[$key]['url'] = $newValue;
@@ -119,19 +140,23 @@ final class Router {
 	public static function addRoute(array $route): void {
 
 		if (empty($route) || !is_array($route)) { return; }
+		
 		$newArr = array();
+
 		foreach ($route as $key => $value) {
 			if (!array_key_exists($key, self::$defaultRoutes)) {
 				$newArr[$key] = $value;
 			}
 		}
+		
 		if (count($newArr) < 1) { return; }
 		self::$defaultRoutes = array_merge(self::$defaultRoutes, $newArr);
 	}
 
-	// Очищаем путь роутера
+	// Очищаем путь роутера --------------------------
 
 	public static function cleanRoute(string $routeName): bool {
+
 		if (array_key_exists($routeName, self::$defaultRoutes)) {
 			unset(self::$defaultRoutes[$routeName]);
 			return true;
@@ -165,7 +190,6 @@ final class Router {
 
 				return array(
 					'uriarr' 	=> Urlfixer::splitUrl($ctrl['url']),
-					//'uri' 		=> $ctrl['url'], //$key
 					'url' 		=> $key,
 					'action' 	=> Urlfixer::splitUrl($ctrl['action']),
 					'params'	=> self::$defaultRoutes[$key],
@@ -228,7 +252,7 @@ final class Router {
 	// 3. Возвращает результат постоянных исполнителей в виде массива $result 
 	// 4. И путь по которому зашел пользователь self::dispatch()
 	
-
+	// TODO: Возможно dispatch выполняет два раза постоянные исполнители !!!!!!!!!!!!!!!!!!
 
 	public static function getPermanentResult(): array {
 
@@ -236,7 +260,6 @@ final class Router {
 		foreach (self::$defaultRoutes as $key => $value) {
 			if(substr($key, 0, 1) != '/') {
 				$result[$key] = self::dispatch($key);
-				//self::cleanRoutes($key);
 			}
 		}
 
@@ -252,22 +275,16 @@ final class Router {
 			'templateRes' 	=> self::dispatch(), 			// Результат от пути 
 		);
 	}
+
+
+	function execPermanentRes() {
+
+		return null;
+	}
+
+	function execUriRes() {
+
+		return self::dispatch();
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
