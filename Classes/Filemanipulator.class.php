@@ -64,7 +64,7 @@ class Filemanipulator {
 		    } 
 	    	return round($filesize,2).' '.$prefix[$step];
 	    } else {
-	    	return 'NaN';
+	    	return 'None';
 	    }
 	}
 
