@@ -16,13 +16,13 @@ date_default_timezone_set('UTC');
 ini_set('error_reporting', 'E_ALL');
 error_reporting(E_ALL);
 
-//header('Content-Type: text/html; charset=utf-8');
-//header('X-Powered-By: ModuleCMS');
+header('Content-Type: text/html; charset=utf-8');
+header('X-Powered-By: ModuleCMS');
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOTPATH', dirname(__FILE__) . DS);
 
-if (!file_exists(ROOTPATH.'Includes/init.inc.php')) {
+if (!file_exists(ROOTPATH.'includes/init.inc.php')) {
 	die('no core loaded!');
 } 
 	

@@ -82,21 +82,27 @@ function debugger($input='emptyOutput', $category=DEBUG, $params=array()): void 
     if ($category) {
 
         echo '<span style="color: red;">DEBUG OUTPUT: </span><br/>';
-
-        echo '<p><bold> Тип переменной: '.gettype($input).' </bold></p>';
+        echo '<hr />';
 
         $debug = debug_backtrace();
         //debug_print_backtrace();
         if (!empty($debug)){
             for ($i=0; $i < count($debug); $i++) { 
                 if($debug[$i]['function'] == 'debugger' ) {
-                    echo 'Debug Line: '. $debug[$i]['line'].'<br/>';
-                    echo 'File: '.$debug[$i]['file'].'<br/>';
-                    echo '<span style="color: red;">Variable OUTPUT: </span><br/>';
-                    print_r($debug[$i]['args']);
-                    //var_dump($debug[$i]['args']);
+                    
+                    echo 'Error File: '.$debug[$i]['file'].'<br/>';
+                    echo 'Error Line: '. $debug[$i]['line'].'<br/>';
+                    
+                    if(!empty($debug[$i]['args'])) {
+                        foreach ($debug[$i]['args'] as $key => $value) {
+                            print("Error Name: ".$value);
+                        }
+                    }
                 } 
             }
+
+            echo '<p>Var Type: '.strtoupper(gettype($input)).' </p>';
+            echo '<hr />';
             
             if($userfunc) {
                 echo '<span style="color: red;">Пользовательские функции: </span><br/>';

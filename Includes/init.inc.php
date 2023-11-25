@@ -24,9 +24,8 @@
 
 foreach ((function (): array {
 	return array(
-		'Includes/settings.inc.php',
-		'Includes/Library.inc.php',
-
+		'includes/settings.inc.php',
+		'includes/Library.inc.php',
 		'LangLibrary/Ru-ru/Attentions.lang.php',
 		'LangLibrary/Ru-ru/Info.lang.php',
 		'LangLibrary/Ru-ru/Errors.lang.php',
@@ -63,12 +62,12 @@ spl_autoload_register(function ($class_name) {
 	$found = false;
 
 	$folders = array(
-		'Includes' 	 		=> '.inc.',
-		'Classes' 	 		=> '.class.',
-		'Bin'				=> '.bin.',
-		'viewControllers'	=> '.contrl.',
-		'Classes/Protectors'=> '.class.',
-		'Classes/Priveleges'=> '.class.',
+		'includes' 	 				=> '.inc.',
+		'Classes' 	 				=> '.class.',
+		'Bin'						=> '.bin.',
+		'viewControllers'			=> '.contrl.',
+		'Classes'.DS.'Protectors'	=> '.class.',
+		'Classes'.DS.'Priveleges'	=> '.class.',
 	);
 
 	try {
