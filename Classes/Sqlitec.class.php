@@ -1,10 +1,10 @@
-<?php 
+<?php
 
-/**
- * 
- */
+namespace Database\SQLite3;
+
+
 class Sqlitec {
-	
+
 	function __construct(string $pathtodb, string $mode=SQLITE3_ASSOC, bool $multiconn=false) {
 
 		if ($multiconn) {
@@ -21,7 +21,7 @@ class Sqlitec {
 	private $mode;
 
 	function __destruct() {
-		
+
 		$this->sqlite->close();
 	}
 
@@ -60,7 +60,7 @@ class Sqlitec {
 	}
 
 	function queryOne( $query ){
-		
+
 		$res = $this->sqlite->querySingle( $query );
 		return $res;
 	}

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  *  Отображает вывод из шаблона
  */
@@ -32,7 +32,7 @@ class vRender {
 			'loginpage'  	=> Router::modifyRoutes('login'),
 		);
 
-		// pages это массив для определения шаблона для определенных страниц 
+		// pages это массив для определения шаблона для определенных страниц
 		// например чтобы разные страницы имели разные шаблоны
 
 		$this->pages = array(
@@ -46,25 +46,25 @@ class vRender {
 		// TODO: Сперва определить куда попал ?????
 
 		$prm = array(
-			'website_template' 			=> '', // Пользовательский шаблон
-			'website_title'  			=> '', 
+			'website_template' 					=> '', // Пользовательский шаблон
+			'website_title'  						=> '', 
 			'website_title_description' => '',
 		);
 
 		$this->params = $settings->getSettings($prm);
 
-		// Результат от постоянных исполнителей 
-		// и от того, что идет по определенному пути  
+		// Результат от постоянных исполнителей
+		// и от того, что идет по определенному пути
 		//$this->permanRes 		= Router::getPermanentResult();
 		//$this->currenRes 		= Router::getResult();
 
 		// Тут нужно разделить исполнение постоянное и то, что запускается по пути шаблона
 
-		$this->result 		= Router::getResult(); 
+		$this->result 		= Router::getResult();
 		$this->currentRoute = Router::getRoute();
 
-		
-		$this->allRoutes 	= Router::getAllRoutes(); // Все пути 
+
+		$this->allRoutes 	= Router::getAllRoutes(); // Все пути
 
 		$this->regOk 		= (!defined('PROFILE') || empty(PROFILE['useremail'])) ? false : true;
 	}
@@ -73,12 +73,12 @@ class vRender {
 
 		// Устанавливает папку где лежат шаблоны, по умолчанию либо через пользователя
 		$folder = !empty($folder) ? ROOTPATH.$folder.DS : $this->currentTplDir;
-		
+
 		// Проверяем есть ли схема у нее
 		$fpath = $folder.$name.DS.TPLSCHEMEFILE;
-		
+
 		if (!file_exists($fpath)) { return null; }
-		
+
 		$tplarr = require_once($fpath);
 		if(empty($tplarr)) { return null; }
 		$this->activeTpl 					= $folder.$name.DS;
@@ -97,7 +97,7 @@ class vRender {
 		}
 
 		// Определяет нужно заблокировать вывод или на оборот
-		// нужно например для административной части вывода вместо html json 
+		// нужно например для административной части вывода вместо html json
 
 		$deniedTpl = false;
 
@@ -114,7 +114,7 @@ class vRender {
 			}
 		}
 
-		// Определяет какую страницу нужно вывести 
+		// Определяет какую страницу нужно вывести
 
 		if(empty($this->currentRoute)) {
 			$defTpl = $this->allRoutes['/404page']['template'];
@@ -122,11 +122,11 @@ class vRender {
 			$defTpl = $this->allRoutes['/login']['template'];
 		//}elseif ($hostDisabled && !LOGIN && !ADMIN) {
 		//	$defTpl = $this->allRoutes['/disabled']['template'];
-		} else { 
+		} else {
 			$defTpl = $this->allRoutes[$this->currentRoute['url']]['template'];
 		}
 
-		// Тут устанавливается cистемный или резервный шаблон  
+		// Тут устанавливается cистемный или резервный шаблон
 		// если в системе не оказалось шаблона
 		if (!$r) {
 			$r = $this->activateTemplate(TPLTEMPLATE);
@@ -139,7 +139,7 @@ class vRender {
 			if(!$r || !file_exists($this->activeTpl.$defTpl)) {
 				if (DEBUG)
 					throw new Exception(NOTEMPLETEFOUND.' -> '.$this->activeTpl.$defTpl);
-				else 
+				else
 					throw new Exception(NOTEMPLETEFOUND . ' -->  '. $this->params['website_template'] . ' --> '. $defTpl);
 			}
 
@@ -167,7 +167,7 @@ class vRender {
 			$title = $this->result['templateRes']['pageTitle'];
 		} else {
 			$title = $this->params['website_title_description'];
-		}	
+		}
 
 
 		$replaceParams = array(
@@ -192,7 +192,7 @@ class vRender {
 
 		header('Content-Type: text/html; charset=utf-8');
 		header('X-Powered-By: ModuleCMS');
-		
+
 		print($this->htmlRenderRes);
 	}
 

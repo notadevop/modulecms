@@ -1,13 +1,19 @@
-<?php 
+<?php
+
+namespace Database;
+
+use Debug\DebuggerСlass as DEBGR;
+use PDO;
+use PDOException as PDOEx;
 
 /**
- * mysql database connector 
+ * mysql database connector
  */
 class Database {
 
-	function __construct(bool $connect) {	
+	function __construct(bool $connect) {
 		// Устанавливаем соединение, только если указали на подключение
-		if ($connect) { $this->make_con(); }
+		//if ($connect) { $this->make_con(); }
 	}
 
 	function __destruct() {
@@ -17,65 +23,90 @@ class Database {
 		unset($stmt);
 	}
 
-	private $sql;		// Хронит SQL запрос с индексами 
+	private $sql;		// Хронит SQL запрос с индексами
 	private $prepared; 	// хранит индексы запроса например :user или :score
-	private $link;		// Хранит соединение запроса 
+	private $link;		// Хранит соединение запроса
 	private $stmt;		// Хронит результат запроса для последущей обр. в виде Object
 
-	private function make_con(): void {
+	private $cred = Array();
 
-		/*
-		if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql') {
-    		$stmt = $db->prepare('select * from foo',
-        	array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true));
-		} else {
-		    die("...");
-		}
-		*/
+	function authParams($cred) {
 
-		$dsn = 'mysql:host='.DBHOST.';dbname='.DBNAME.';charset='.DBCHAR;
+		$this->cred = array(
+			'dbuser' => $cred['dbuser'],
+			'dbpass' => $cred['dbpass'],
+			'dbhost' => $cred['dbhost'],
+			'dbname' => $cred['dbname'],
+			'dbchar' => $cred['dbchar'],
+			'dbengine'=>$cred['dbengine'],
+			'dbpref' => $cred['dbpref'],
+		);
+
+		unset($cred);
+	}
+
+	private $alerts;
+
+	function setAlerts( $infoMenu) {
+
+		$this->alerts['dberrconn'] 			= $infoMenu['dberrconn'];
+		$this->alerts['dbengineerr'] 		= $infoMenu['dbengineerr'];
+		$this->alerts['dbemptysql']  		= $infoMenu['dbemptysql'];
+		$this->alerts['dberrprepquery'] = $infoMenu['dberrprepquery'];
+		$this->alerts['dberrquery']			= $infoMenu['dberrquery'];
+	}
+
+
+	function make_con(): void {
+
+		$dsn = 'mysql:host='.$this->cred['dbhost'].';dbname='.$this->cred['dbname'].';charset='.$this->cred['dbchar'];
 
 		$opt = array(
-			PDO::ATTR_PERSISTENT		 	=> true,
-		    PDO::ATTR_ERRMODE            	=> PDO::ERRMODE_EXCEPTION,
-		    PDO::ATTR_DEFAULT_FETCH_MODE 	=> PDO::FETCH_ASSOC,
-		    // Выключает режим эмуляции! проблемы с LIMIT ?,?
-		    PDO::ATTR_EMULATE_PREPARES 	 	=> false, 
-		    PDO::ATTR_CURSOR 				=> PDO::CURSOR_FWDONLY
+			PDO::ATTR_PERSISTENT		 			=> true,
+			//PDO::ATTR_ERRMODE            	=> PDO::ERRMODE_EXCEPTION,
+			PDO::ATTR_ERRMODE            	=> PDO::ERRMODE_SILENT,
+			PDO::ATTR_DEFAULT_FETCH_MODE 	=> PDO::FETCH_ASSOC,
+			// Выключает режим эмуляции! проблемы с LIMIT ?,?
+			PDO::ATTR_EMULATE_PREPARES 	 	=> false,
+			PDO::ATTR_CURSOR 							=> PDO::CURSOR_FWDONLY
 		);
 
 		try {
-			$link = new PDO($dsn, DBUSER, DBPASS, $opt);
+
+			$link = new PDO($dsn, $this->cred['dbuser'], $this->cred['dbpass'], $opt);
+
 			if (!$link) {
-				throw new Exception(DBERRCONN, 4);
+				throw new Exception($this->alert['dberrconn'], 4);
 			}
 
-			if ($link->getAttribute(PDO::ATTR_DRIVER_NAME) != DBENGINE) {
-				throw new Exception(DBENGINEERR, 4);
+			if ($link->getAttribute(PDO::ATTR_DRIVER_NAME) != $this->cred['dbengine']) {
+				throw new Exception($this->alert['dbengineerr'], 4);
 			}
 
 			$this->link = $link;
-		
-		} catch (Exception $e) {
+
+		//} catch (Exception $e) {
+
+		} catch (PDOEx $e) {
 
 			if (DEBUG) {
-				debugger($e->getMessage());
+				DEBGR::debugger($e->getMessage());
 			}
-			die('Database connection error!');
+			die($this->alerts['dberrconn']);
 		}
 	}
 
 	// Возвращает соединение к базе данных в виде обьекта
 
 	public function get_con(): PDO {
-		return $this->link; 
+		return $this->link;
 	}
 
 	// пример: $sql = 'SELECT table_id FROM table WHERE abc LIKE :abc AND a = :a OR b = :b ';
 
 	public function preAction(string $sql, array $prepared=array()): void {
 		// TODO: сделать фильтрацию типа mysql_escape_string();
-		
+
 		$this->sql = $sql;
 
 		// Обнуляем при каждой подготовке, если пустое!
@@ -92,20 +123,16 @@ class Database {
 	public function doAction(): bool{
 
 		$r = false;
-		
+
 		try {
-			if (empty($this->sql)) 
-				throw new RuntimeException(DBEMPTYSQL);
+			if (empty($this->sql))
+				throw new RuntimeException($this->alert['dbemptysql']);
 
 			$this->stmt = $this->get_con()->prepare($this->sql);
-			
-			if (!$this->stmt) 
-				throw new RuntimeException(DBERRPREPQUERY.' - '.$this->stmt->errorCode());
-			/*
-			vardump($this->sql);
-			vardump($this->prepared);
-			echo '<hr/>';
-			*/
+
+			if (!$this->stmt)
+				throw new RuntimeException($this->alert['dberrprepquery'].' - '.$this->stmt->errorCode());
+
 
 			if (!empty($this->prepared)) {
 
@@ -119,7 +146,7 @@ class Database {
 					// is_array
 					// is_object
 
-					
+
 					switch(true) {
 						case is_string($value):
 							$type = PDO::PARAM_STR;
@@ -145,25 +172,21 @@ class Database {
 
 					//$this->stmt->bindParam($key, $value);
 					//$this->stmt->bindValue($key, $value);
-				} 
+				}
 
 				$this->prepared = null;
 				$this->sql 		= null;
-			} 
+			}
 
-			if (!$this->stmt->execute()) 
-				throw new RuntimeException(DBERRQUERY.' - '.$this->stmt->errorCode());
+			if (!$this->stmt->execute())
+				throw new RuntimeException($this->alert['dberrquery'].' - '.$this->stmt->errorCode());
 			$r = true;
 		} catch (Exception $e) {
 
-			echo '<pre>';
-			if (DEBUG){
-				print_r($this->sql);
-				echo '<br/>';
+			if ($this->cred['debug']){
+				DEBGR::debugger($this->sql);
 			}
-			print_r($e->getMessage().'<br/>');
-			echo '</pre>';
-			echo '<hr/>';
+			DEBGR::debugger($e->getMessage());
 		}
 		return $r;
 	}
@@ -178,17 +201,17 @@ class Database {
 
 		$sql = 'SELECT * FROM table WHERE a = ? and b = ?';
 		$data = array('a', 'b');
-		
+
 		$this->sql($sql);				// Готовим запрос
 		$this->sqlData($data); 		// Готовим параметры
-		// Исполняем запрос 
-		$this->execute();							
+		// Исполняем запрос
+		$this->execute();
 		$this->execute()->fetch(); // Получаем ряд
 		$this->execute()->fetchColumn(); // Получаем колонку
 		$this->execute()->fetchAll(PDO::FETCH_COLUMN); // Получаем колонку
 		$this->execute()->fetchAll(); // Получаем все ячейки
 		// получаем ввиде пермен
-		foreach ($result as $row) 
+		foreach ($result as $row)
 			echo $row['name'];
 	*/
 }

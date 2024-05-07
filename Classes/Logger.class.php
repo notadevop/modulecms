@@ -1,11 +1,21 @@
-<?php 
+<?php
 
 /*
-    
-    Данный скрипт собирает все ошибки в controller'е и выводит их во view 
-
+    Данный скрипт собирает все ошибки в controller'е и выводит их во view
     NB! Не удалять!!!!!!
 */
+
+// namespace LoggCollector
+
+enum Status: string {
+  case primary    = 'primary';
+  case secondary  = 'secondary';
+  case success    = 'success';
+  case attentions = 'attentions';
+}
+
+// LoggCollector\Status::primary->value # primary
+
 
 
 final class Logger {
@@ -13,7 +23,7 @@ final class Logger {
     const PRIMARY       = 'primary';
     const SECONDARY     = 'secondary';
     const SUCCESS       = 'success';
-    const ATTENTIONS    = 'attentions'; 
+    const ATTENTIONS    = 'attentions';
     const WARNING       = 'warning';
     const INFORMATION   = 'information';
     const LIGHT         = 'light';
@@ -21,7 +31,7 @@ final class Logger {
 
 
     // Статический конструктор
-    static protected function __constructorStatic() { 
+    static protected function __constructorStatic() {
 
     	self::$alertKeys = array(
 
@@ -41,7 +51,7 @@ final class Logger {
 
     	static $called = false;
 
-    	if (!$called) { 
+    	if (!$called) {
     		$called = true;
     		// static::${$name};
     		self::__constructorStatic();
@@ -57,14 +67,14 @@ final class Logger {
 
     	if(array_key_exists($type, self::$alertKeys)) {
 
-            if(isset(self::$alerts[$type]) 
-                && in_array($description, 
+            if(isset(self::$alerts[$type])
+                && in_array($description,
                     self::$alerts[$type])) {
                 return;
             }
 
-    		self::$alerts[$type][] = $description; 
-    	} 
+    		self::$alerts[$type][] = $description;
+    	}
     }
 
     public static function alertKeyExist(string $type): bool {

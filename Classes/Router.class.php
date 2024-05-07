@@ -1,12 +1,12 @@
-<?php 
+<?php
 
-/**
+/*
 	MANUAL HOWTO USE:
-	
-	.htaccess required 
+
+	.htaccess required
 	-------------------------------------------
-	// для нормального использования роутера 
-	// нужно добавить в .htaccess параметры 
+	// для нормального использования роутера
+	// нужно добавить в .htaccess параметры
 
 	Options -MultiViews
 	RewriteEngine On
@@ -17,34 +17,34 @@
 	инициализировать пути по умолчанию
 	Router::initDefaultRoutes();
 
-	Добавить новые пути можно вызвать 
+	Добавить новые пути можно вызвать
 
 	Router::addRoute($route);
 
 	// Пример массива индекса пути
 
 	$route = array(
-		'/' => array( 
-			'url' 		=> '/', 							// uri 
+		'/' => array(
+			'url' 		=> '/', 							// uri
 			'urltitle'  => LINKMAIN, 						// Пояснение к ссылке
-			'action' 	=> 'MainController/defaultMethod', 	// Класс/метод исполнения <== Только контроллеры 
-			'template'	=> 'index.tpl.php',					// Шаблон или файл вывода 
+			'action' 	=> 'MainController/defaultMethod', 	// Класс/метод исполнения <== Только контроллеры
+			'template'	=> 'index.tpl.php',					// Шаблон или файл вывода
 			'priority'	=> 4,  								// Приоритет для показывания или исполнения
 		),
 	);
 
-	// непосредственно запуск обработки // Старое 
+	// непосредственно запуск обработки // Старое
 	Router::dispatch();
 
-	// запуск исполнителей делиться на две части 
-	// 1. Не зависимо от пути исполняется постоянно 
-	// 2. Зависит от пути, исполняется то, что соответсвует указанному ключу массива 
+	// запуск исполнителей делиться на две части
+	// 1. Не зависимо от пути исполняется постоянно
+	// 2. Зависит от пути, исполняется то, что соответсвует указанному ключу массива
 
 	Router::getPermanentResult(); 	// Постоянный исполнитель
 	Router::dispatch();				// Зависящий от место куда пользователь попал
 
 
-	Индексы путей 
+	Индексы путей
 	---------------------------------------------------
 	// маршруты (можно хранить в конфиге приложения)
 	// можно использовать wildcards (подстановки):
@@ -73,7 +73,7 @@ final class Router {
 
 
 	// Инициализирует все пути по умолчанию
-	// Которые не обходимы для базовой работы 
+	// Которые не обходимы для базовой работы
 	// Если в пути не найдены убиваем процесс die();
 
 	public static function initDefaultRoutes(): void{
@@ -90,28 +90,28 @@ final class Router {
 			$result = self::$defaultRoutesDir.$value;
 
 			if (!file_exists($result)) { continue; }
-			
+
 			$result = require_once $result;
-			
+
 			if (is_array($result) && count($result) > 0) {
 				self::addRoute($result);
 			}
 		}
 	}
 
-	// Метод который модифицирует пути к спец, страницам 
+	// Метод который модифицирует пути к спец, страницам
 	// например к аdmin переименновать в administrator
-	// 
-	// 	  нужно исполнять в константе чтобы можно было использовать 
-	// 	  в где то еще 
-	// 	  
+	//
+	// 	  нужно исполнять в константе чтобы можно было использовать
+	// 	  в где то еще
+	//
 	// 	  Использовать только для одной константы определения
-	// 
+	//
 
 	public static function modifyRoutes(string $page): string {
 
-		// TODO: сделать добавление к URI к некоторым типам UI доп, префикс либо в самом ури URI удалять префикс 
-		// 
+		// TODO: сделать добавление к URI к некоторым типам UI доп, префикс либо в самом ури URI удалять префикс
+		//
 		// как пример /js/post/123  где /js/ указывает на вывод в json
 		// fatal!
 
@@ -119,14 +119,14 @@ final class Router {
 			die(NOROUTES);
 		} else if(empty($page)) {
 			die(ROUTEAFFECTED);
-		}	
+		}
 
 		// Получаем данные из базы данных
 		$stg = new HostSettings();
 		$tmp = $stg->getSettings([$page=>$page]);
 
 		if(!$tmp || $tmp[$page] == $page) { return $page; }
-		
+
 		foreach (self::$defaultRoutes as $key => $value) {
 			$newValue = str_ireplace(DS.$page, DS.$tmp[$page], $value['url']);
 			self::$defaultRoutes[$key]['url'] = $newValue;
@@ -140,7 +140,7 @@ final class Router {
 	public static function addRoute(array $route): void {
 
 		if (empty($route) || !is_array($route)) { return; }
-		
+
 		$newArr = array();
 
 		foreach ($route as $key => $value) {
@@ -148,7 +148,7 @@ final class Router {
 				$newArr[$key] = $value;
 			}
 		}
-		
+
 		if (count($newArr) < 1) { return; }
 		self::$defaultRoutes = array_merge(self::$defaultRoutes, $newArr);
 	}
@@ -170,8 +170,8 @@ final class Router {
 	}
 
 
-	// Возвращает действующий путь и его свойства 
-	// (путь где сейчас находиться пользоватль) 
+	// Возвращает действующий путь и его свойства
+	// (путь где сейчас находиться пользоватль)
 
 	public static function getRoute(string $getSelectedRoute=''): ?array {
 
@@ -215,19 +215,19 @@ final class Router {
 		// если URL и маршрут полностью совпадают
 		if (isset(self::$defaultRoutes[$requestedUrl])) {
 			self::$params = Urlfixer::splitUrl(self::$defaultRoutes[$requestedUrl]['action']); // $requestedUrl
-		} else { 
+		} else {
 			foreach (self::$defaultRoutes as $route => $uri) {
 				// Заменяем wildcards на рег. выражения
 				if (strpos($uri['url'], ':') !== false) {
 					$uri['url'] = str_replace(':any', '(.+)', str_replace(':num', '([0-9]+)', $uri['url']));
 				}
 
-				if (preg_match('#^'.$uri['url'] .'$#', $requestedUrl)) { 
+				if (preg_match('#^'.$uri['url'] .'$#', $requestedUrl)) {
 					if (strpos($uri['action'], '$') !== false && strpos($uri['url'], '(') !== false) {
 						$uri['action'] = preg_replace('#^'.$uri['url'].'$#', $uri['action'], $requestedUrl);
 					}
 					// разбиваем value роута на параметры и сохраняем
-					self::$params = Urlfixer::splitUrl($uri['action']); 
+					self::$params = Urlfixer::splitUrl($uri['action']);
 					break; // URL обработан!
 				}
 			}
@@ -247,11 +247,11 @@ final class Router {
 	}
 
 	// Метод достает все пути сохраненные в переменной self::defaultRoutes
-	// 1. Отрабатывает все пути которые не имеют URI, постоянные типа авторизации 
-	// 2. Отрабатывает один путь который указан в URI 
-	// 3. Возвращает результат постоянных исполнителей в виде массива $result 
+	// 1. Отрабатывает все пути которые не имеют URI, постоянные типа авторизации
+	// 2. Отрабатывает один путь который указан в URI
+	// 3. Возвращает результат постоянных исполнителей в виде массива $result
 	// 4. И путь по которому зашел пользователь self::dispatch()
-	
+
 	// TODO: Возможно dispatch выполняет два раза постоянные исполнители !!!!!!!!!!!!!!!!!!
 
 	public static function getPermanentResult(): array {
@@ -272,7 +272,7 @@ final class Router {
 		return array(
 			'permanetRes'	=> self::getPermanentResult(), 	// Результат перманент.
 			// Отрабатывает по указанному пути
-			'templateRes' 	=> self::dispatch(), 			// Результат от пути 
+			'templateRes' 	=> self::dispatch(), 			// Результат от пути
 		);
 	}
 
@@ -287,4 +287,3 @@ final class Router {
 		return self::dispatch();
 	}
 }
-
