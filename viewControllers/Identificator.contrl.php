@@ -1,6 +1,12 @@
 <?php
 
-// Класс идентификации пользователя
+namespace Authoriziation;
+
+enum PostIndexes {
+	case USERID_VALUE = '';
+}
+
+
 
 class Identificator extends Filter {
 

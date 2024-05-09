@@ -29,8 +29,10 @@ namespace {
 	require_once (ROOTPATH.'Classes'.DS.'Logger.class.php');
 	require_once (ROOTPATH.'Classes'.DS.'Languages.class.php');
 	require_once (ROOTPATH.'Classes'.DS.'Database.class.php');
+	require_once (ROOTPATH.'Bin'.DS.'GlobalParams.bin.php');
 
 	require_once (ROOTPATH.'viewControllers'.DS.'SettingsLoader.controller.php');
+
 
 	require_once (ROOTPATH.'MainFile.exec.php');
 

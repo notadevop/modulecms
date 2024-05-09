@@ -37,7 +37,7 @@ class SettingsController {
 		}
 	}
 
-	function getSettings() {
+	function takeSettings() {
 
 		return $this->settings;
 	}

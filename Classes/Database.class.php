@@ -30,30 +30,35 @@ class Database {
 
 	private $cred = Array();
 
-	function authParams($cred) {
+	function setupSettings(Array $cred) {
 
-		$this->cred = array(
-			'dbuser' => $cred['dbuser'],
-			'dbpass' => $cred['dbpass'],
-			'dbhost' => $cred['dbhost'],
-			'dbname' => $cred['dbname'],
-			'dbchar' => $cred['dbchar'],
-			'dbengine'=>$cred['dbengine'],
-			'dbpref' => $cred['dbpref'],
+		$keys = Array(
+			'dbuser',
+			'dbpass',
+			'dbhost',
+			'dbname',
+			'dbchar',
+			'dbengine',
+			'dbpref'
 		);
 
-		unset($cred);
+		$this->cred = array_intersect_key($cred, array_flip($keys));
+
 	}
 
 	private $alerts;
 
-	function setAlerts( $infoMenu) {
+	function alertsLanguagePack(Array $alerts) {
 
-		$this->alerts['dberrconn'] 			= $infoMenu['dberrconn'];
-		$this->alerts['dbengineerr'] 		= $infoMenu['dbengineerr'];
-		$this->alerts['dbemptysql']  		= $infoMenu['dbemptysql'];
-		$this->alerts['dberrprepquery'] = $infoMenu['dberrprepquery'];
-		$this->alerts['dberrquery']			= $infoMenu['dberrquery'];
+		$keys = Array(
+			'dberrconn',
+			'dbengineerr',
+			'dbemptysql',
+			'dberrprepquery',
+			'dberrquery',
+		);
+
+		$this->alerts = array_intersect_key($alerts, array_flip($keys));
 	}
 
 
@@ -63,8 +68,8 @@ class Database {
 
 		$opt = array(
 			PDO::ATTR_PERSISTENT		 			=> true,
-			//PDO::ATTR_ERRMODE            	=> PDO::ERRMODE_EXCEPTION,
-			PDO::ATTR_ERRMODE            	=> PDO::ERRMODE_SILENT,
+			PDO::ATTR_ERRMODE            	=> PDO::ERRMODE_EXCEPTION,
+			//PDO::ATTR_ERRMODE            	=> PDO::ERRMODE_SILENT,
 			PDO::ATTR_DEFAULT_FETCH_MODE 	=> PDO::FETCH_ASSOC,
 			// Выключает режим эмуляции! проблемы с LIMIT ?,?
 			PDO::ATTR_EMULATE_PREPARES 	 	=> false,

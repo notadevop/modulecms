@@ -2,13 +2,13 @@
 
 namespace MainFile;
 
-
+use \PDO;
 use Debug\DebuggerСlass as DEBGR;
 use LanguagePack\LanguagePack as LP;
 use Database\Database as DB;
-use \PDO;
-
 use Settings\SettingsController as SC;
+
+use Globals\GlobalParams as Globus;
 
 class MainExecutor {
 
@@ -40,16 +40,26 @@ class MainExecutor {
 
   function initCoreSettings() {
 
-    $this->lang     = new LP();
-    $this->settings = new SC();
-    $this->database = new DB(true);
+    $lang     = new LP();
+    $settings = new SC();
+    $database = new DB(true);
 
-    $this->settings->loadSettings();
-    $this->lang->loadLanguage();
+    $settings->loadSettings();
+    $lang->loadLanguage();
 
-    $this->database->authParams($this->settings->getSettings()[0]['database']);
-    $this->database->setAlerts($this->lang->getLanguage()[0]);
-    $this->database->make_con();
+    $database->setupSettings($settings->takeSettings()[0]['database']);
+    $database->alertsLanguagePack($lang->getLanguage()[0]);
+    //$database->make_con();
+
+    Globus::initGlobalParams();
+
+    print_r(Globus::getGlobalParams('GET'));
+
+
+
+    $this->lang     = $lang;
+    $this->settings = $settings;
+    $this->database = $database;
 
   }
 
