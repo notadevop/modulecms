@@ -34,11 +34,17 @@ return Array(
   ),
   'paths' => Array(
     'language_folder'   => 'LangLibrary',
+
     'user_routes_folder'=> 'Routes',
     'templates_folder'  => 'Templates',
     'sqlite_folder'     => 'sqlitefolder',
     'sqlitefile'        => 'sqlitefile.db',
   ),
+
+  //BASE_DIR="/var/webroot/project-root"
+  //CACHE_DIR="${BASE_DIR}/cache"
+  //TMP_DIR="${BASE_DIR}/tmp"
+
   'limits' => Array(
     'hash_min_value'  => 30,
     'hash_max_value'  => 100,

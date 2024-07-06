@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+//declare(encoding='UTF-8');
 
 namespace {
 
@@ -33,14 +34,11 @@ namespace {
 
 	require_once (ROOTPATH.'viewControllers'.DS.'SettingsLoader.controller.php');
 
-
 	require_once (ROOTPATH.'MainFile.exec.php');
-
 
 	$mainExec = new MainFile\MainExecutor();
 
 	$mainExec->initCoreSettings();
-
 
 	$mainExec->showView();
 

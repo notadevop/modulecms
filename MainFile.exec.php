@@ -45,17 +45,19 @@ class MainExecutor {
     $database = new DB(true);
 
     $settings->loadSettings();
+
+    $db = $settings->takeSettings()[0]['database'];
+
     $lang->loadLanguage();
 
-    $database->setupSettings($settings->takeSettings()[0]['database']);
-    $database->alertsLanguagePack($lang->getLanguage()[0]);
+    $database->require($db);
+
+    $database->alerts($lang->getLanguage()[0]);
     //$database->make_con();
 
     Globus::initGlobalParams();
 
-    print_r(Globus::getGlobalParams('GET'));
-
-
+    //print_r(Globus::getGlobalParams('GET'));
 
     $this->lang     = $lang;
     $this->settings = $settings;
@@ -68,7 +70,7 @@ class MainExecutor {
 
   function showView() {
 
-    DEBGR::debugger(strtoupper('Ошибка рендеринга!'));
+    DEBGR::debugger(strtoupper('Ошибка рендеринга!'), __FUNCTION__);
 
     /*
     $v = new vRender();

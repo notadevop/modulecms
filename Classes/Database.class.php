@@ -30,25 +30,16 @@ class Database {
 
 	private $cred = Array();
 
-	function setupSettings(Array $cred) {
+	private $settings = Array();
 
-		$keys = Array(
-			'dbuser',
-			'dbpass',
-			'dbhost',
-			'dbname',
-			'dbchar',
-			'dbengine',
-			'dbpref'
-		);
+	function require(Array $cred) {
 
-		$this->cred = array_intersect_key($cred, array_flip($keys));
-
+		$this->settings = $cred;
 	}
 
 	private $alerts;
 
-	function alertsLanguagePack(Array $alerts) {
+	function alerts(Array $alerts) {
 
 		$keys = Array(
 			'dberrconn',
@@ -64,7 +55,19 @@ class Database {
 
 	function make_con(): void {
 
-		$dsn = 'mysql:host='.$this->cred['dbhost'].';dbname='.$this->cred['dbname'].';charset='.$this->cred['dbchar'];
+		$dbk = Array(
+			'dbuser',
+			'dbpass',
+			'dbhost',
+			'dbname',
+			'dbchar',
+			'dbengine',
+			'dbpref'
+		);
+
+		$dbk = array_intersect_key($this->settings, array_flip($dbk));
+
+		$dsn = 'mysql:host='.$dbk['dbhost'].';dbname='.$dbk['dbname'].';charset='.$dbk['dbchar'];
 
 		$opt = array(
 			PDO::ATTR_PERSISTENT		 			=> true,
@@ -78,13 +81,13 @@ class Database {
 
 		try {
 
-			$link = new PDO($dsn, $this->cred['dbuser'], $this->cred['dbpass'], $opt);
+			$link = new PDO($dsn, $dbk['dbuser'], $dbk['dbpass'], $opt);
 
 			if (!$link) {
 				throw new Exception($this->alert['dberrconn'], 4);
 			}
 
-			if ($link->getAttribute(PDO::ATTR_DRIVER_NAME) != $this->cred['dbengine']) {
+			if ($link->getAttribute(PDO::ATTR_DRIVER_NAME) != $dbk['dbengine']) {
 				throw new Exception($this->alert['dbengineerr'], 4);
 			}
 
@@ -135,8 +138,14 @@ class Database {
 
 			$this->stmt = $this->get_con()->prepare($this->sql);
 
-			if (!$this->stmt)
+			if (!$this->stmt){
+				$sqlerr 	= $this->stmt->errorCode();
+				$alerterr = $this->alert['dberrprepquery'];
+
 				throw new RuntimeException($this->alert['dberrprepquery'].' - '.$this->stmt->errorCode());
+			}
+
+
 
 
 			if (!empty($this->prepared)) {
